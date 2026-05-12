@@ -23,9 +23,9 @@ func WhatsAuthReceiver(c *fiber.Ctx) error {
 		if err != nil {
 			return err
 		}
-		if IsLoginRequest(msg, config.WAKeyword) { //untuk whatsauth request login
+		if IsLoginRequest(msg, config.WAKeyword) { 
 			resp = HandlerQRLogin(msg, config.WAKeyword)
-		} else { //untuk membalas pesan masuk
+		} else { 
 			resp = HandlerIncomingMessage(msg)
 		}
 	} else {
@@ -78,7 +78,7 @@ func HandlerIncomingMessage(msg model.IteungMessage) (resp model.Response) {
 		IsGroup:  false,
 		Messages: GetRandomReplyFromMongo(msg),
 	}
-	if msg.Chat_server == "g.us" { //jika pesan datang dari group maka balas ke group
+	if msg.Chat_server == "g.us" {
 		dt.IsGroup = true
 	}
 	if (msg.Phone_number != "628112000279") && (msg.Phone_number != "6283131895000") { //ignore pesan datang dari iteung

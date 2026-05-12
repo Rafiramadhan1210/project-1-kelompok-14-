@@ -53,11 +53,29 @@ func GetIPaddress() string {
 
 func SRVLookup(srvuri string) (mongouri string) {
 	atsplits := strings.Split(srvuri, "@")
-	userpass := strings.Split(atsplits[0], "//")[1]
+	if len(atsplits) < 2 {
+		return srvuri
+	}
+	userpassSplits := strings.Split(atsplits[0], "//")
+	if len(userpassSplits) < 2 {
+		return srvuri
+	}
+	userpass := userpassSplits[1]
 	mongouri = "mongodb://" + userpass + "@"
 	slashsplits := strings.Split(atsplits[1], "/")
+	if len(slashsplits) < 2 {
+		return srvuri
+	}
 	domain := slashsplits[0]
-	dbname := slashsplits[1]
+	path := slashsplits[1]
+	dbname := path
+	params := ""
+	if strings.Contains(path, "?") {
+		psplits := strings.Split(path, "?")
+		dbname = psplits[0]
+		params = psplits[1]
+	}
+
 	//"mongodb://john:PASSWORD@gdelt-shard-00-00.n1mbb.mongodb.net:27017,gdelt-shard-00-01.n1mbb.mongodb.net:27017,gdelt-shard-00-02.n1mbb.mongodb.net:27017/DATABASE?ssl=true&authSource=admin&replicaSet=atlas-7o9d3y-shard-0"
 	r := &net.Resolver{
 		PreferGo: true,
@@ -70,7 +88,7 @@ func SRVLookup(srvuri string) (mongouri string) {
 	}
 	_, srvs, err := r.LookupSRV(context.Background(), "mongodb", "tcp", domain)
 	if err != nil {
-		panic(err)
+		return srvuri
 	}
 	var srvlist string
 	for _, srv := range srvs {
@@ -82,6 +100,9 @@ func SRVLookup(srvuri string) (mongouri string) {
 	for _, txt := range txtrecords {
 		txtlist += txt
 	}
-	mongouri = mongouri + strings.TrimSuffix(srvlist, ",") + "/" + dbname + "?ssl=true&" + txtlist
+	if params != "" {
+		params = params + "&"
+	}
+	mongouri = mongouri + strings.TrimSuffix(srvlist, ",") + "/" + dbname + "?ssl=true&" + params + txtlist
 	return
 }

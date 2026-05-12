@@ -4,12 +4,15 @@ import (
 	"gocroot/helper"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/joho/godotenv"
 )
+
+var _ = godotenv.Load()
 
 var IPPort, Net = helper.GetAddress()
 
 var Iteung = fiber.Config{
-	Prefork:       true,
+	Prefork:       false,
 	CaseSensitive: true,
 	StrictRouting: true,
 	ServerHeader:  "GoCroot",

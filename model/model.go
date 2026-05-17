@@ -15,10 +15,10 @@ type UsersLogin struct {
 }
 
 type Destinations struct {
-	Nama        string `json:"nama,omitempty" bson:"nama,omitempty"`
-	Description string `json:"description,omitempty" bson:"description,omitempty"`
-	Price       int    `json:"price,omitempty" bson:"price,omitempty"`
-	Category    string `json:"category,omitempty" bson:"category,omitempty"`
+	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	Nama      string             `bson:"nama" json:"nama"`
+	Deskripsi string             `bson:"deskripsi" json:"deskripsi"`
+	Kategori  string             `bson:"kategori" json:"kategori"`
 }
 
 type Booking struct {

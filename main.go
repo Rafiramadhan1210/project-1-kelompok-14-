@@ -15,6 +15,7 @@ import (
 func main() {
 	site := fiber.New(config.Iteung)
 	site.Use(cors.New(config.Cors))
+	site.Static("/", "./view")
 	url.Web(site)
 	log.Fatal(site.Listen(config.IPPort))
 }

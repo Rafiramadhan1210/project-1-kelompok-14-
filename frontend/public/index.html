@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoTrip - Tiket Parawisata Lokal Terbaik</title>
+    <link rel="stylesheet" href="./output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-blue-50">
+
+    <!-- Header dengan Navigasi Lengkap -->
+    <nav class="bg-white shadow-md sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-3">
+            <div class="flex items-center justify-between">
+                <!-- Logo & Brand -->
+                <div class="flex items-center gap-2">
+                    <div class="flex items-center gap-2 text-blue-600 font-black text-2xl hover:text-blue-700 cursor-pointer">
+                        <i class="fa-solid fa-plane"></i>
+                        <span>GoTrip</span>
+                    </div>
+                </div>
+
+                <!-- Menu Navigasi Utama -->
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="#destinasi" class="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition" data-menu="destinasi">
+                        <i class="fa-solid fa-map-location-dot mr-2"></i>Destinasi
+                    </a>
+                    <a href="#kategori" class="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition" data-menu="kategori">
+                        <i class="fa-solid fa-list mr-2"></i>Kategori
+                    </a>
+                    <a href="#promo" class="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition" data-menu="promo">
+                        <i class="fa-solid fa-tag mr-2"></i>Promo
+                    </a>
+                    <a href="tentang.html" class="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition" data-menu="tentang">
+                        <i class="fa-solid fa-info-circle mr-2"></i>Tentang
+                    </a>
+                </div>
+
+                <!-- Bagian Kanan: Search, Notifikasi, Profile -->
+                <div class="flex items-center gap-4">
+                    <!-- Search Mini -->
+                    <div class="hidden lg:block relative">
+                        <input type="text" placeholder="Cari destinasi..."
+                            class="px-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 w-48">
+                        <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-gray-400"></i>
+                    </div>
+
+                    <!-- Notifikasi -->
+                    <button class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition" id="notification-btn">
+                        <i class="fa-solid fa-bell text-xl"></i>
+                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                    </button>
+
+                    <!-- Wishlist -->
+                    <button class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition" id="wishlist-btn">
+                        <i class="fa-solid fa-heart text-xl"></i>
+                        <span class="absolute top-1 right-1 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">3</span>
+                    </button>
+
+                    <!-- Profile Dropdown -->
+                    <div class="relative">
+                        <button class="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition" id="profile-toggle">
+                            <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+                                <i class="fa-solid fa-user text-sm"></i>
+                            </div>
+                            <span class="hidden sm:inline text-gray-700 font-medium text-sm">Akun</span>
+                            <i class="fa-solid fa-chevron-down text-xs text-gray-600"></i>
+                        </button>
+
+                        <!-- Dropdown Menu -->
+                        <div id="profile-dropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 hidden">
+                            <div class="px-4 py-3 border-b border-gray-100">
+                                <p class="font-semibold text-gray-800">Nama Pengguna</p>
+                                <p class="text-sm text-gray-500">pengguna@email.com</p>
+                            </div>
+                            <div class="py-2">
+                                <a href="#profile" class="px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition">
+                                    <i class="fa-solid fa-user text-blue-600 w-5"></i>Profil Saya
+                                </a>
+                                <a href="#bookings" class="px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition">
+                                    <i class="fa-solid fa-ticket text-green-600 w-5"></i>Booking Saya
+                                </a>
+                                <a href="#payments" class="px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition">
+                                    <i class="fa-solid fa-credit-card text-purple-600 w-5"></i>Pembayaran
+                                </a>
+                                <a href="#history" class="px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition">
+                                    <i class="fa-solid fa-history text-orange-600 w-5"></i>Riwayat
+                                </a>
+                            </div>
+                            <div class="border-t border-gray-100 py-2">
+                                <a href="#settings" class="px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition">
+                                    <i class="fa-solid fa-gear text-gray-600 w-5"></i>Pengaturan
+                                </a>
+                                <a href="#support" class="px-4 py-2 text-gray-700 hover:bg-gray-50 flex items-center gap-3 transition">
+                                    <i class="fa-solid fa-headset text-blue-600 w-5"></i>Bantuan & Dukungan
+                                </a>
+                            </div>
+                            <div class="border-t border-gray-100 py-2">
+                                <button id="logout-btn" class="w-full px-4 py-2 text-red-600 hover:bg-red-50 flex items-center gap-3 transition font-medium">
+                                    <i class="fa-solid fa-sign-out-alt w-5"></i>Keluar
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Menu Mobile -->
+                    <button class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition" id="mobile-menu-toggle">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Mobile Menu -->
+            <div id="mobile-menu" class="hidden md:hidden mt-4 pb-4 border-t border-gray-100">
+                <div class="space-y-2">
+                    <a href="#destinasi" class="block px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition">
+                        <i class="fa-solid fa-map-location-dot mr-2"></i>Destinasi
+                    </a>
+                    <a href="#kategori" class="block px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition">
+                        <i class="fa-solid fa-list mr-2"></i>Kategori
+                    </a>
+                    <a href="#promo" class="block px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition">
+                        <i class="fa-solid fa-tag mr-2"></i>Promo
+                    </a>
+                    <a href="tentang.html" class="block px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition">
+                        <i class="fa-solid fa-info-circle mr-2"></i>Tentang
+                    </a>
+                </div>
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <div class="px-4 py-2 mb-3">
+                        <input type="text" placeholder="Cari destinasi..."
+                            class="w-full px-4 py-2 bg-gray-100 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Banner Pencarian & Tagline -->
+    <section class="bg-gradient-to-r from-blue-600 to-blue-700 py-12 px-6">
+        <div class="container mx-auto text-center">
+            <h1 class="text-4xl font-bold text-white mb-2">Jelajahi Destinasi Wisata Lokal Terbaik</h1>
+            <p class="text-blue-100 mb-6 text-lg">Temukan pengalaman wisata yang tak terlupakan di berbagai daerah</p>
+            <div class="bg-white p-4 rounded-xl shadow-lg max-w-2xl mx-auto flex gap-2">
+                <input type="text" placeholder="Cari destinasi wisata lokal..."
+                    class="flex-1 px-4 py-2 focus:outline-none font-medium">
+                <button
+                    class="bg-yellow-400 text-blue-900 px-6 py-2 rounded-lg font-bold hover:bg-yellow-500">Cari</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filter & Kategori -->
+    <section class="bg-white border-b border-gray-200 sticky top-20 z-40">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex items-center gap-2 overflow-x-auto pb-2">
+                <button class="px-4 py-2 bg-blue-600 text-white rounded-full font-semibold whitespace-nowrap hover:bg-blue-700 transition" data-filter="semua">
+                    <i class="fa-solid fa-sparkles mr-2"></i>Semua
+                </button>
+                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full font-semibold whitespace-nowrap hover:bg-gray-200 transition" data-filter="pantai">
+                    <i class="fa-solid fa-water mr-2"></i>Pantai
+                </button>
+                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full font-semibold whitespace-nowrap hover:bg-gray-200 transition" data-filter="gunung">
+                    <i class="fa-solid fa-mountain mr-2"></i>Gunung
+                </button>
+                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full font-semibold whitespace-nowrap hover:bg-gray-200 transition" data-filter="budaya">
+                    <i class="fa-solid fa-gopuram mr-2"></i>Budaya
+                </button>
+                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full font-semibold whitespace-nowrap hover:bg-gray-200 transition" data-filter="taman">
+                    <i class="fa-solid fa-leaf mr-2"></i>Taman
+                </button>
+                <button class="px-4 py-2 bg-gray-100 text-gray-700 rounded-full font-semibold whitespace-nowrap hover:bg-gray-200 transition" data-filter="petualangan">
+                    <i class="fa-solid fa-hiking mr-2"></i>Petualangan
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Daftar Destinasi -->
+    <main class="container mx-auto px-6 py-10">
+        <div id="destinasi-list" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- Data dari database Go muncul di sini -->
+        </div>
+    </main>
+
+    <script src="./app.js" defer></script>
+</body>
+
+</html>

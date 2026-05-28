@@ -1,0 +1,30 @@
+{
+  "name": "project-1-kelompok-14-",
+  "version": "1.0.0",
+  "description": "This is a simple Golang template using Go Fibre as the base framework, and mongodb.com as database host. It is compatible with alwaysdata.com CI/CD deployment.\r Inside the folder .github/workflows, you might choose your cloud provider and remove the .template extension :\r 1. fly.io: fly.yml\r 2. alwaysdata.com: alwaysdata.yml",
+  "main": "index.js",
+  "scripts": {
+    "build:css": "tailwindcss -i ./public/input.css -o ./public/output.css --minify",
+    "build:js": "node -e \"require('fs').copyFileSync('./src/app.js', './public/app.js')\"",
+    "build": "npm run build:css && npm run build:js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rafiramadhan1210/project-1-kelompok-14-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Rafiramadhan1210/project-1-kelompok-14-/issues"
+  },
+  "homepage": "https://github.com/Rafiramadhan1210/project-1-kelompok-14-#readme",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "autoprefixer": "^10.5.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^3.4.4"
+  }
+}

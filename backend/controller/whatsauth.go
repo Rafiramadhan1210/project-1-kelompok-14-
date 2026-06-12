@@ -23,9 +23,9 @@ func WhatsAuthReceiver(c *fiber.Ctx) error {
 		if err != nil {
 			return err
 		}
-		if IsLoginRequest(msg, config.WAKeyword) { 
+		if IsLoginRequest(msg, config.WAKeyword) {
 			resp = HandlerQRLogin(msg, config.WAKeyword)
-		} else { 
+		} else {
 			resp = HandlerIncomingMessage(msg)
 		}
 	} else {
@@ -47,7 +47,7 @@ func RefreshWAToken(c *fiber.Ctx) error {
 		Phonenumber: resp.PhoneNumber,
 		Token:       resp.Token,
 	}
-	res, err := helper.ReplaceOneDoc(config.Mongoconn, "profile", bson.M{"phonenumber": resp.PhoneNumber}, profile)
+	res, err := helper.ReplaceOneDoc(config.Mongoconn, "profile", bson.M{"phonenumber": profile.Phonenumber}, profile)
 	if err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": err.Error(), "result": res})
 	}
@@ -88,6 +88,7 @@ func HandlerIncomingMessage(msg model.IteungMessage) (resp model.Response) {
 }
 
 func GetRandomReplyFromMongo(msg model.IteungMessage) string {
+	// Menggunakan config.Mongoconn biasa tanpa .Client()
 	rply, _ := helper.GetRandomDoc[model.Reply](config.Mongoconn, "reply", 1)
 	replymsg := strings.ReplaceAll(rply[0].Message, "#BOTNAME#", msg.Alias_name)
 	replymsg = strings.ReplaceAll(replymsg, "\\n", "\n")
@@ -96,6 +97,7 @@ func GetRandomReplyFromMongo(msg model.IteungMessage) string {
 
 func WAAPIToken(phonenumber string) string {
 	filter := bson.M{"phonenumber": phonenumber}
+	// Menggunakan config.Mongoconn biasa tanpa .Client()
 	apitoken, _ := helper.GetOneDoc[model.Profile](config.Mongoconn, "profile", filter)
 	return apitoken.Token
 }

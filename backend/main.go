@@ -20,6 +20,8 @@ func main() {
 		log.Fatal(err)
 	}
 
+	config.InitDB()
+
 	publicPath := filepath.Join(cwd, "frontend", "public")
 	if _, err := os.Stat(publicPath); os.IsNotExist(err) {
 		publicPath = filepath.Join(cwd, "..", "frontend", "public")

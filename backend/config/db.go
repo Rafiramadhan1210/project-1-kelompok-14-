@@ -1,18 +1,30 @@
 package config
+
 import (
+	"fmt"
 	"gocroot/helper"
 	"gocroot/model"
 	"os"
+
 	"github.com/joho/godotenv"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-var _ = godotenv.Load()
+var Mongoconn *mongo.Database
+var mongoinfo model.DBInfo
 
-var MongoString string = os.Getenv("MONGOSTRING")
+func InitDB() {
+	_ = godotenv.Load()
 
-var mongoinfo = model.DBInfo{
-	DBString: helper.SRVLookup(MongoString),
-	DBName:os.Getenv("DBNAME"),
+	MongoString := os.Getenv("MONGOSTRING")
+	mongoinfo = model.DBInfo{
+		DBString: helper.SRVLookup(MongoString),
+		DBName:   os.Getenv("DBNAME"),
+	}
+
+	var err error
+	Mongoconn, err = helper.MongoConnect(mongoinfo)
+	if err != nil {
+		panic(fmt.Sprintf("Gagal koneksi ke MongoDB: %v", err))
+	}
 }
-
-var Mongoconn, _ = helper.MongoConnect(mongoinfo)

@@ -27,7 +27,6 @@ const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', () => {
         alert('Logging out...');
-        // Implementasi logout ke backend
     });
 }
 
@@ -47,8 +46,8 @@ if (wishlistBtn) {
     });
 }
 
-// Filter Kategori
-let currentFilter = 'semua';
+// Filter Kategori Klik Handler
+let currentFilter = 'Semua';
 document.querySelectorAll('[data-filter]').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('[data-filter]').forEach(b => {
@@ -57,6 +56,7 @@ document.querySelectorAll('[data-filter]').forEach(btn => {
         });
         btn.classList.remove('bg-gray-100', 'text-gray-700');
         btn.classList.add('bg-blue-600', 'text-white');
+
         currentFilter = btn.dataset.filter;
         console.log('Filter dipilih:', currentFilter);
         filterDestinasi(currentFilter);
@@ -67,19 +67,26 @@ document.querySelectorAll('[data-filter]').forEach(btn => {
 document.querySelectorAll('[data-menu]').forEach(link => {
     link.addEventListener('click', (e) => {
         if (link.dataset.menu === 'tentang') {
-            return; // biarkan browser buka tentang.html
+            return; // Biarkan browser membuka tentang.html secara langsung
         }
-
-        e.preventDefault();
+        // Menangani scroll halus ke section id jika menggunakan # href
+        if (link.getAttribute('href').startsWith('#')) {
+            e.preventDefault();
+            const targetId = link.getAttribute('href').substring(1);
+            const targetSection = document.getElementById(targetId);
+            if (targetSection) {
+                targetSection.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
         console.log('Menu clicked:', link.dataset.menu);
     });
 });
 
-// Filter Destinasi Function
+// Filter Destinasi Function (Sembunyikan / Tampilkan Card di Halaman)
 function filterDestinasi(filter) {
     const items = document.querySelectorAll('[data-kategori]');
     items.forEach(item => {
-        if (filter === 'semua' || item.dataset.kategori === filter) {
+        if (filter === 'Semua' || item.dataset.kategori === filter) {
             item.classList.remove('hidden');
         } else {
             item.classList.add('hidden');
@@ -87,17 +94,22 @@ function filterDestinasi(filter) {
     });
 }
 
-// Load Destinasi dari API
+// Load Destinasi dari API Backend
 fetch('/button')
     .then(res => res.json())
     .then(result => {
         const list = document.getElementById('destinasi-list');
+        list.innerHTML = ''; // Kosongkan penampung data awal
+
         result.data.forEach(item => {
-            const kategori = item.kategori?.toLowerCase() || 'semua';
+            // Menggunakan huruf kecil sesuai struktur database MongoDB Atlas
+            const kategori = item.kategori || 'Semua';
+
             list.innerHTML += `
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition hover:-translate-y-1" data-kategori="${kategori}">
-                    <div class="relative h-48 bg-gradient-to-br from-blue-400 to-blue-600 flex items-end justify-start p-4">
-                        <span class="text-xs font-bold text-white bg-black/30 backdrop-blur px-3 py-1 rounded-full">${item.kategori || 'Wisata'}</span>
+                    <div class="relative h-48 overflow-hidden">
+                        <img src="${item.gambar || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'}" alt="${item.nama}" class="w-full h-full object-cover">
+                        <span class="absolute bottom-4 left-4 text-xs font-bold text-white bg-black/50 backdrop-blur px-3 py-1 rounded-full">${item.kategori || 'Wisata'}</span>
                     </div>
                     <div class="p-5">
                         <h3 class="text-xl font-bold text-gray-800">${item.nama}</h3>

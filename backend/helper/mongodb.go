@@ -59,3 +59,13 @@ func ReplaceOneDoc(db *mongo.Database, collection string, filter bson.M, doc int
 	}
 	return
 }
+
+func GetManyDoc[T any](db *mongo.Database, collection string, filter bson.M) (result []T, err error) {
+	cursor, err := db.Collection(collection).Find(context.TODO(), filter)
+	if err != nil {
+		return
+	}
+	defer cursor.Close(context.TODO())
+	err = cursor.All(context.TODO(), &result)
+	return
+}

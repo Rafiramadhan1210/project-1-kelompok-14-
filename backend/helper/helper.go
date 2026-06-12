@@ -34,17 +34,13 @@ func GetAddress() (ipport string, network string) {
 }
 
 func GetIPaddress() string {
-
 	resp, err := http.Get("https://icanhazip.com/")
-
 	if err != nil {
 		log.Fatal(err)
 	}
-
 	defer resp.Body.Close()
 
 	body, err := io.ReadAll(resp.Body)
-
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -76,7 +72,6 @@ func SRVLookup(srvuri string) (mongouri string) {
 		params = psplits[1]
 	}
 
-	//"mongodb://john:PASSWORD@gdelt-shard-00-00.n1mbb.mongodb.net:27017,gdelt-shard-00-01.n1mbb.mongodb.net:27017,gdelt-shard-00-02.n1mbb.mongodb.net:27017/DATABASE?ssl=true&authSource=admin&replicaSet=atlas-7o9d3y-shard-0"
 	r := &net.Resolver{
 		PreferGo: true,
 		Dial: func(ctx context.Context, network, address string) (net.Conn, error) {

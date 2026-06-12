@@ -16,4 +16,6 @@ func Web(page *fiber.App) {
 	page.Post("/register", controller.RegisterUser)
 	page.Post("/Login", controller.LoginUser)
 	page.Get("/button", controller.GetButton)
+
+	page.Get("/destinasi", controller.GetAllDestinasi)
 }

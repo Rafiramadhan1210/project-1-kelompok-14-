@@ -19,6 +19,10 @@ type Destinations struct {
 	Nama      string             `bson:"nama" json:"nama"`
 	Deskripsi string             `bson:"deskripsi" json:"deskripsi"`
 	Kategori  string             `bson:"kategori" json:"kategori"`
+	Harga     int                `bson:"harga" json:"harga"`
+	Gambar    string             `bson:"gambar" json:"gambar"`
+	Rating    float64            `bson:"rating" json:"rating"`
+	Lokasi    string             `bson:"lokasi" json:"lokasi"`
 }
 
 type Booking struct {

@@ -248,3 +248,20 @@ async function loadKategori() {
     `).join('');
 }
 
+async function hapusAkun() {
+    if (!confirm("Apakah Anda yakin? Tindakan ini tidak dapat dibatalkan!")) {
+        return;
+    }
+
+    const response = await fetch('/api/user/delete', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' }
+    });
+
+    if (response.ok) {
+        alert("Akun berhasil dihapus.");
+        window.location.href = '/login.html'; // Redirect ke halaman login
+    } else {
+        alert("Gagal menghapus akun.");
+    }
+}

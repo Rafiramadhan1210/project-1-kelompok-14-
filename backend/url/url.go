@@ -25,4 +25,9 @@ func Web(page *fiber.App) {
 	page.Get("/destinasi/:id", controller.GetOneDestinasi)
 	page.Post("/api/booking/update-status", controller.UpdateBookingStatus)
 	page.Delete("/api/my-bookings/:id", controller.CancelMyBooking)
+	page.Put("/api/user/profile", controller.UpdateProfile)
+	// User Settings Routes
+	page.Put("/api/user/profile", controller.UpdateUserProfile)
+	page.Put("/api/user/password", controller.ChangeUserPassword)
+	page.Delete("/api/user", controller.DeleteUserAccount)
 }

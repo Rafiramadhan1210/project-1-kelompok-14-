@@ -40,8 +40,10 @@ type User struct {
 	WebHook     WebHook `bson:"webhook" json:"webhook"`
 	Mongostring string  `bson:"mongostring" json:"mongostring"`
 	Token       string  `bson:"token" json:"token"`
+	Nama        string  `bson:"nama" json:"nama"`
+	Email       string  `bson:"email" json:"email"`
+	Telepon     string  `bson:"phone" json:"telepon"`
 }
-
 type Reply struct {
 	Message string `bson:"messsage"`
 }

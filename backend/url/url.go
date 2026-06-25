@@ -13,9 +13,16 @@ func Web(page *fiber.App) {
 	page.Post("/whatsauth/webhook", controller.WhatsAuthReceiver)
 	page.Post("/booking", controller.InsertBooking)
 	page.Get("/booking", controller.GetAllBooking)
+	page.Get("/api/my-bookings", controller.GetMyBookings)
 	page.Post("/register", controller.RegisterUser)
 	page.Post("/Login", controller.LoginUser)
+	page.Post("/logout", controller.LogoutUser)
+	page.Get("/api/me", controller.GetCurrentUser)
 	page.Get("/button", controller.GetButton)
-
+	page.Post("/api/wishlist/toggle", controller.ToggleWishlist)
+	page.Get("/api/my-wishlist", controller.GetMyWishlist)
 	page.Get("/destinasi", controller.GetAllDestinasi)
+	page.Get("/destinasi/:id", controller.GetOneDestinasi)
+	page.Post("/api/booking/update-status", controller.UpdateBookingStatus)
+	page.Delete("/api/my-bookings/:id", controller.CancelMyBooking)
 }

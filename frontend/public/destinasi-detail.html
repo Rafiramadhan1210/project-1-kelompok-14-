@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoTrip - Detail Destinasi</title>
+    <link rel="stylesheet" href="./output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <header class="bg-white border-b border-gray-100 sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 text-blue-600 font-black text-2xl">
+                <i class="fa-solid fa-plane"></i>
+                <span>GoTrip</span>
+            </a>
+            <a href="index.html" class="text-gray-500 hover:text-gray-700 font-medium flex items-center gap-2">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span class="hidden sm:inline">Kembali ke Beranda</span>
+            </a>
+        </div>
+    </header>
+
+    <div id="loading-state" class="text-center py-24 text-gray-400">
+        <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i>
+        <p>Memuat destinasi...</p>
+    </div>
+
+    <div id="not-found-state" class="hidden text-center py-24">
+        <i class="fa-solid fa-map-location-dot text-4xl text-gray-300 mb-3"></i>
+        <p class="text-gray-600 font-medium">Destinasi tidak ditemukan</p>
+        <a href="index.html" class="inline-block mt-4 bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition">Kembali ke Beranda</a>
+    </div>
+
+    <main id="detail-content" class="hidden">
+        <div class="relative h-80 md:h-96 overflow-hidden">
+            <img id="d-gambar" src="" alt="" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+            <button id="wishlist-detail-btn" class="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition">
+                <i class="fa-regular fa-heart text-gray-600 text-lg"></i>
+            </button>
+            <div class="absolute bottom-6 left-6 right-6">
+                <span id="d-kategori" class="inline-block text-xs font-bold text-white bg-blue-600 px-3 py-1 rounded-full mb-2"></span>
+                <h1 id="d-nama" class="text-3xl md:text-4xl font-bold text-white"></h1>
+            </div>
+        </div>
+
+        <div class="container mx-auto px-6 py-8 grid md:grid-cols-3 gap-8 max-w-5xl">
+            <div class="md:col-span-2 space-y-6">
+                <div class="flex items-center gap-6 text-gray-600">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-location-dot text-red-500"></i>
+                        <span id="d-lokasi"></span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-star text-yellow-400"></i>
+                        <span id="d-rating"></span>
+                    </div>
+                </div>
+
+                <div>
+                    <h2 class="font-bold text-gray-800 mb-2">Tentang Destinasi</h2>
+                    <p id="d-deskripsi" class="text-gray-600 leading-relaxed"></p>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-100 p-6">
+                    <h2 class="font-bold text-gray-800 mb-4">Yang Perlu Disiapkan</h2>
+                    <div class="grid grid-cols-2 gap-4 text-sm">
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-id-card text-blue-600 mt-0.5"></i>
+                            <span class="text-gray-600">Identitas (KTP/SIM) untuk peserta dewasa</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-shirt text-blue-600 mt-0.5"></i>
+                            <span class="text-gray-600">Pakaian dan alas kaki yang nyaman</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-camera text-blue-600 mt-0.5"></i>
+                            <span class="text-gray-600">Kamera untuk dokumentasi perjalanan</span>
+                        </div>
+                        <div class="flex items-start gap-3">
+                            <i class="fa-solid fa-tint text-blue-600 mt-0.5"></i>
+                            <span class="text-gray-600">Air minum &amp; perlengkapan pribadi</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-blue-50 rounded-2xl border border-blue-100 p-6">
+                    <h2 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-circle-info text-blue-600"></i>
+                        Kebijakan Pemesanan
+                    </h2>
+                    <ul class="space-y-2 text-sm text-gray-600">
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-blue-600 mt-1 text-xs"></i>
+                            <span>Pembayaran dikonfirmasi manual dalam 1x24 jam setelah bukti transfer diunggah</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-blue-600 mt-1 text-xs"></i>
+                            <span>Pembatalan dapat dilakukan maksimal 2 hari sebelum tanggal kunjungan</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <i class="fa-solid fa-check text-blue-600 mt-1 text-xs"></i>
+                            <span>Status booking dapat dipantau melalui menu "Booking Saya"</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl border border-gray-100 p-6 h-fit sticky top-24">
+                <p class="text-sm text-gray-500 mb-1">Harga per tiket</p>
+                <p id="d-harga" class="text-2xl font-bold text-orange-500 mb-5"></p>
+
+                <form id="booking-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
+                        <input type="text" id="f-nama" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Sesuai identitas">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">No. HP/WhatsApp</label>
+                        <input type="tel" id="f-hp" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="08xxxxxxxxxx">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kunjungan</label>
+                        <input type="date" id="f-tanggal" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Peserta</label>
+                        <div class="flex items-center gap-3">
+                            <button type="button" id="qty-minus" class="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 font-bold text-gray-600 transition">-</button>
+                            <input type="number" id="f-qty" value="1" min="1" class="w-16 text-center border border-gray-200 rounded-lg py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <button type="button" id="qty-plus" class="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 font-bold text-gray-600 transition">+</button>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center border-t border-gray-100 pt-4">
+                        <span class="text-gray-600 font-medium text-sm">Total</span>
+                        <span id="d-total" class="text-xl font-bold text-gray-800"></span>
+                    </div>
+
+                    <div class="border-t border-gray-100 pt-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Bukti Transfer</label>
+                        <p class="text-xs text-gray-400 mb-2">Transfer ke <span class="font-semibold text-gray-600">BCA 1234567890 a.n. GoTrip Indonesia</span>, lalu unggah buktinya di sini.</p>
+                        <input type="file" id="f-bukti" accept="image/*,.pdf" required class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 file:mr-3 file:px-3 file:py-1 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-600 file:text-sm file:font-medium">
+                    </div>
+
+                    <label class="flex items-start gap-2 text-sm text-gray-600">
+                        <input type="checkbox" id="f-setuju" required class="mt-1">
+                        <span>Saya telah membaca dan menyetujui syarat &amp; ketentuan serta kebijakan pembatalan/refund</span>
+                    </label>
+
+                    <button type="submit" id="booking-btn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-ticket"></i>
+                        <span>Lanjutkan Booking</span>
+                    </button>
+
+                    <div id="booking-message" class="hidden mt-1 text-center text-sm font-medium"></div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const destinasiId = params.get('id');
+
+        const loadingState = document.getElementById('loading-state');
+        const notFoundState = document.getElementById('not-found-state');
+        const detailContent = document.getElementById('detail-content');
+
+        let currentDestinasi = null;
+        let isWishlisted = false;
+
+        function formatRupiah(angka) {
+            return 'Rp ' + (angka || 0).toLocaleString('id-ID');
+        }
+
+        function updateTotal() {
+            const qty = parseInt(document.getElementById('f-qty').value) || 1;
+            const total = qty * (currentDestinasi.harga || 0);
+            document.getElementById('d-total').textContent = formatRupiah(total);
+        }
+
+        async function loadDetail() {
+            if (!destinasiId) {
+                loadingState.classList.add('hidden');
+                notFoundState.classList.remove('hidden');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/destinasi/${destinasiId}`);
+                if (!res.ok) throw new Error('Tidak ditemukan');
+                const result = await res.json();
+                currentDestinasi = result.data;
+
+                document.getElementById('d-gambar').src = currentDestinasi.gambar || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e';
+                document.getElementById('d-gambar').alt = currentDestinasi.nama;
+                document.getElementById('d-kategori').textContent = currentDestinasi.kategori || 'Wisata';
+                document.getElementById('d-nama').textContent = currentDestinasi.nama;
+                document.getElementById('d-lokasi').textContent = currentDestinasi.lokasi || 'Lokasi tidak tersedia';
+                document.getElementById('d-rating').textContent = (currentDestinasi.rating || 0).toFixed(1);
+                document.getElementById('d-deskripsi').textContent = currentDestinasi.deskripsi || 'Belum ada deskripsi.';
+                document.getElementById('d-harga').textContent = formatRupiah(currentDestinasi.harga) + ' /tiket';
+
+                const tanggalInput = document.getElementById('f-tanggal');
+                tanggalInput.min = new Date().toISOString().split('T')[0];
+
+                updateTotal();
+
+                loadingState.classList.add('hidden');
+                detailContent.classList.remove('hidden');
+
+                checkWishlistStatus();
+            } catch (err) {
+                loadingState.classList.add('hidden');
+                notFoundState.classList.remove('hidden');
+            }
+        }
+
+        async function checkWishlistStatus() {
+            try {
+                const res = await fetch('/api/my-wishlist', { credentials: 'include' });
+                if (!res.ok) return;
+                const result = await res.json();
+                const ids = (result.data || []).map(d => d._id);
+                isWishlisted = ids.includes(destinasiId);
+                renderWishlistIcon();
+            } catch (err) {
+                // diam, biarkan default
+            }
+        }
+
+        function renderWishlistIcon() {
+            const icon = document.querySelector('#wishlist-detail-btn i');
+            if (isWishlisted) {
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid', 'text-red-500');
+            } else {
+                icon.classList.remove('fa-solid', 'text-red-500');
+                icon.classList.add('fa-regular', 'text-gray-600');
+            }
+        }
+
+        document.getElementById('wishlist-detail-btn').addEventListener('click', async () => {
+            try {
+                const res = await fetch('/api/wishlist/toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ destination_id: destinasiId })
+                });
+
+                if (res.status === 401) {
+                    alert('Silakan login dulu untuk menyimpan wishlist.');
+                    return;
+                }
+
+                const result = await res.json();
+                isWishlisted = result.wishlisted;
+                renderWishlistIcon();
+            } catch (err) {
+                console.error('Gagal update wishlist:', err);
+            }
+        });
+
+        document.getElementById('qty-minus').addEventListener('click', () => {
+            const input = document.getElementById('f-qty');
+            input.value = Math.max(1, (parseInt(input.value) || 1) - 1);
+            updateTotal();
+        });
+
+        document.getElementById('qty-plus').addEventListener('click', () => {
+            const input = document.getElementById('f-qty');
+            input.value = (parseInt(input.value) || 1) + 1;
+            updateTotal();
+        });
+
+        document.getElementById('f-qty').addEventListener('input', updateTotal);
+
+        document.getElementById('booking-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const btn = document.getElementById('booking-btn');
+            const messageBox = document.getElementById('booking-message');
+            const qty = parseInt(document.getElementById('f-qty').value) || 1;
+            const total = qty * (currentDestinasi.harga || 0);
+            const buktiFile = document.getElementById('f-bukti').files[0];
+
+            if (!buktiFile) {
+                messageBox.classList.remove('hidden');
+                messageBox.className = 'mt-1 text-center text-sm font-medium text-red-600';
+                messageBox.textContent = 'Bukti transfer wajib diunggah.';
+                return;
+            }
+
+            btn.disabled = true;
+            btn.querySelector('span').textContent = 'Memproses...';
+
+            const formData = new FormData();
+            formData.append('nama_user', document.getElementById('f-nama').value.trim());
+            formData.append('no_hp', document.getElementById('f-hp').value.trim());
+            formData.append('tanggal_kunjungan', document.getElementById('f-tanggal').value);
+            formData.append('destination', currentDestinasi.nama);
+            formData.append('total_tiket', qty);
+            formData.append('total_bayar', total);
+            formData.append('setuju_syarat', document.getElementById('f-setuju').checked ? 'true' : 'false');
+            formData.append('bukti_bayar', buktiFile);
+
+            try {
+                const res = await fetch('/booking', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+
+                const result = await res.json();
+                messageBox.classList.remove('hidden');
+
+                if (res.status === 401) {
+                    messageBox.className = 'mt-1 text-center text-sm font-medium text-red-600';
+                    messageBox.textContent = 'Silakan login dulu untuk booking.';
+                } else if (res.ok) {
+                    messageBox.className = 'mt-1 text-center text-sm font-medium text-green-600';
+                    messageBox.textContent = 'Booking berhasil dikirim! Menunggu konfirmasi pembayaran.';
+                    document.getElementById('booking-form').reset();
+                    updateTotal();
+                } else {
+                    messageBox.className = 'mt-1 text-center text-sm font-medium text-red-600';
+                    messageBox.textContent = result.message || result.error || 'Booking gagal, coba lagi.';
+                }
+            } catch (err) {
+                messageBox.classList.remove('hidden');
+                messageBox.className = 'mt-1 text-center text-sm font-medium text-red-600';
+                messageBox.textContent = 'Tidak dapat terhubung ke server.';
+            } finally {
+                btn.disabled = false;
+                btn.querySelector('span').textContent = 'Lanjutkan Booking';
+            }
+        });
+
+        loadDetail();
+    </script>
+</body>
+
+</html>

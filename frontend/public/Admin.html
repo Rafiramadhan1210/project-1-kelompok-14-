@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoTrip - Admin Panel</title>
+    <link rel="stylesheet" href="./output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <header class="bg-blue-700 text-white sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-plane text-xl"></i>
+                <div>
+                    <span class="font-black text-lg">GoTrip</span>
+                    <span class="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full font-medium">Admin Panel</span>
+                </div>
+            </div>
+            <a href="index.html" class="text-white/70 hover:text-white text-sm flex items-center gap-2 transition">
+                <i class="fa-solid fa-arrow-left"></i> Ke Beranda
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 max-w-5xl">
+
+        <!-- Stats -->
+        <div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"></div>
+
+        <!-- Filter & Search -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6 flex flex-wrap gap-3 items-center">
+            <span class="text-sm font-medium text-gray-600">Filter:</span>
+            <button onclick="filterStatus('')" id="btn-all" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-600 text-white transition">Semua</button>
+            <button onclick="filterStatus('Pending')" id="btn-Pending" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Pending</button>
+            <button onclick="filterStatus('Dibayar')" id="btn-Dibayar" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Dibayar</button>
+            <button onclick="filterStatus('Selesai')" id="btn-Selesai" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Selesai</button>
+            <button onclick="filterStatus('Dibatalkan')" id="btn-Dibatalkan" class="filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Dibatalkan</button>
+            <div class="ml-auto">
+                <input type="text" id="search-input" placeholder="Cari nama / destinasi..." oninput="renderTable()"
+                    class="border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-52">
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading-state" class="text-center py-16 text-gray-400">
+            <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i>
+            <p>Memuat data booking...</p>
+        </div>
+
+        <!-- Table -->
+        <div id="table-wrapper" class="hidden bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead class="bg-gray-50 border-b border-gray-100">
+                        <tr>
+                            <th class="text-left px-5 py-3 text-gray-500 font-semibold">Pemesan</th>
+                            <th class="text-left px-5 py-3 text-gray-500 font-semibold">Destinasi</th>
+                            <th class="text-left px-5 py-3 text-gray-500 font-semibold">Kunjungan</th>
+                            <th class="text-left px-5 py-3 text-gray-500 font-semibold">Tiket</th>
+                            <th class="text-left px-5 py-3 text-gray-500 font-semibold">Total</th>
+                            <th class="text-left px-5 py-3 text-gray-500 font-semibold">Bukti</th>
+                            <th class="text-left px-5 py-3 text-gray-500 font-semibold">Status</th>
+                            <th class="text-left px-5 py-3 text-gray-500 font-semibold">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="booking-tbody"></tbody>
+                </table>
+            </div>
+            <div id="empty-filter" class="hidden text-center py-12 text-gray-400">
+                <i class="fa-solid fa-inbox text-3xl mb-2"></i>
+                <p>Tidak ada booking dengan filter ini.</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal konfirmasi aksi -->
+    <div id="action-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full">
+            <div class="text-center mb-5">
+                <div id="modal-icon-wrap" class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3"></div>
+                <h3 id="modal-title" class="font-bold text-gray-800 text-lg"></h3>
+                <p id="modal-desc" class="text-gray-500 text-sm mt-1"></p>
+            </div>
+            <div class="flex gap-3">
+                <button id="modal-cancel" class="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold hover:bg-gray-50 transition">Batal</button>
+                <button id="modal-confirm" class="flex-1 py-2.5 rounded-xl text-white font-semibold transition"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STATUS_BADGE = {
+            'Pending':    'bg-yellow-100 text-yellow-700',
+            'Dibayar':    'bg-blue-100 text-blue-700',
+            'Selesai':    'bg-green-100 text-green-700',
+            'Dibatalkan': 'bg-red-100 text-red-700',
+        };
+
+        let allBookings = [];
+        let activeFilter = '';
+
+        function formatTanggalKunjungan(str) {
+            if (!str) return '-';
+            const [y, m, d] = str.split('-');
+            if (!y || !m || !d) return str;
+            const months = ['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Agu','Sep','Okt','Nov','Des'];
+            return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+        }
+
+        function filterStatus(status) {
+            activeFilter = status;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-gray-600');
+            });
+            const activeBtn = document.getElementById(status ? `btn-${status}` : 'btn-all');
+            if (activeBtn) {
+                activeBtn.classList.remove('bg-gray-100', 'text-gray-600');
+                activeBtn.classList.add('bg-blue-600', 'text-white');
+            }
+            renderTable();
+        }
+
+        function renderTable() {
+            const tbody = document.getElementById('booking-tbody');
+            const emptyFilter = document.getElementById('empty-filter');
+            const search = document.getElementById('search-input').value.toLowerCase();
+
+            const filtered = allBookings.filter(item => {
+                const matchStatus = !activeFilter || item.status === activeFilter;
+                const matchSearch = !search ||
+                    (item.nama_user || '').toLowerCase().includes(search) ||
+                    (item.destination || '').toLowerCase().includes(search) ||
+                    (item.email || '').toLowerCase().includes(search);
+                return matchStatus && matchSearch;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = '';
+                emptyFilter.classList.remove('hidden');
+                return;
+            }
+
+            emptyFilter.classList.add('hidden');
+
+            tbody.innerHTML = filtered.map(item => {
+                const id = item.id || item._id || '';
+                const badge = STATUS_BADGE[item.status] || 'bg-gray-100 text-gray-700';
+
+                const buktiHTML = item.bukti_bayar
+                    ? `<a href="${item.bukti_bayar}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                           <i class="fa-solid fa-file-image"></i> Lihat
+                       </a>`
+                    : '<span class="text-gray-300">-</span>';
+
+                // Tentukan aksi yang tersedia berdasarkan status
+                let aksiHTML = '';
+                if (item.status === 'Pending') {
+                    aksiHTML = `
+                        <button onclick="doAction('${id}','Dibayar','Konfirmasi pembayaran booking ini?','Konfirmasi','bg-blue-600 hover:bg-blue-700')"
+                            class="text-xs px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 font-semibold hover:bg-blue-100 transition mr-1">
+                            <i class="fa-solid fa-check"></i> Konfirmasi
+                        </button>
+                        <button onclick="doAction('${id}','Dibatalkan','Batalkan booking ini?','Batalkan','bg-red-500 hover:bg-red-600')"
+                            class="text-xs px-2.5 py-1 rounded-lg bg-red-50 text-red-500 font-semibold hover:bg-red-100 transition">
+                            <i class="fa-solid fa-xmark"></i> Tolak
+                        </button>`;
+                } else if (item.status === 'Dibayar') {
+                    aksiHTML = `
+                        <button onclick="doAction('${id}','Selesai','Tandai booking ini sebagai Selesai?','Selesaikan','bg-green-600 hover:bg-green-700')"
+                            class="text-xs px-2.5 py-1 rounded-lg bg-green-50 text-green-600 font-semibold hover:bg-green-100 transition mr-1">
+                            <i class="fa-solid fa-flag-checkered"></i> Selesai
+                        </button>
+                        <button onclick="doAction('${id}','Dibatalkan','Batalkan booking yang sudah dibayar ini?','Batalkan','bg-red-500 hover:bg-red-600')"
+                            class="text-xs px-2.5 py-1 rounded-lg bg-red-50 text-red-500 font-semibold hover:bg-red-100 transition">
+                            <i class="fa-solid fa-xmark"></i> Batalkan
+                        </button>`;
+                } else {
+                    aksiHTML = '<span class="text-gray-300 text-xs">-</span>';
+                }
+
+                return `
+                    <tr id="row-${id}" class="border-b border-gray-50 hover:bg-gray-50/50 transition">
+                        <td class="px-5 py-3">
+                            <p class="font-semibold text-gray-800">${item.nama_user || '-'}</p>
+                            <p class="text-xs text-gray-400">${item.email || ''}</p>
+                            <p class="text-xs text-gray-400">${item.no_hp || ''}</p>
+                        </td>
+                        <td class="px-5 py-3 text-gray-700">${item.destination || '-'}</td>
+                        <td class="px-5 py-3 text-gray-600">${formatTanggalKunjungan(item.tanggal_kunjungan)}</td>
+                        <td class="px-5 py-3 text-gray-600">${item.total_tiket || 0} orang</td>
+                        <td class="px-5 py-3 font-semibold text-gray-800">Rp ${(item.total_bayar || 0).toLocaleString('id-ID')}</td>
+                        <td class="px-5 py-3">${buktiHTML}</td>
+                        <td class="px-5 py-3">
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${badge}">${item.status}</span>
+                        </td>
+                        <td class="px-5 py-3 whitespace-nowrap">${aksiHTML}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function renderStats() {
+            const counts = { Pending: 0, Dibayar: 0, Selesai: 0, Dibatalkan: 0 };
+            allBookings.forEach(b => { if (counts[b.status] !== undefined) counts[b.status]++; });
+            const totalRevenue = allBookings
+                .filter(b => b.status === 'Dibayar' || b.status === 'Selesai')
+                .reduce((sum, b) => sum + (b.total_bayar || 0), 0);
+
+            document.getElementById('stats').innerHTML = `
+                <div class="bg-white rounded-2xl border border-gray-100 p-4">
+                    <p class="text-xs text-gray-400 mb-1">Pending</p>
+                    <p class="text-2xl font-bold text-yellow-500">${counts.Pending}</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-4">
+                    <p class="text-xs text-gray-400 mb-1">Dikonfirmasi</p>
+                    <p class="text-2xl font-bold text-blue-600">${counts.Dibayar}</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-4">
+                    <p class="text-xs text-gray-400 mb-1">Selesai</p>
+                    <p class="text-2xl font-bold text-green-600">${counts.Selesai}</p>
+                </div>
+                <div class="bg-white rounded-2xl border border-gray-100 p-4">
+                    <p class="text-xs text-gray-400 mb-1">Total Pendapatan</p>
+                    <p class="text-xl font-bold text-gray-800">Rp ${totalRevenue.toLocaleString('id-ID')}</p>
+                </div>
+            `;
+        }
+
+        // Modal aksi
+        let pendingAction = null;
+
+        function doAction(id, newStatus, desc, confirmLabel, btnClass) {
+            pendingAction = { id, newStatus };
+
+            const iconMap = {
+                'Dibayar':    { icon: 'fa-check', bg: 'bg-blue-100', color: 'text-blue-600' },
+                'Selesai':    { icon: 'fa-flag-checkered', bg: 'bg-green-100', color: 'text-green-600' },
+                'Dibatalkan': { icon: 'fa-xmark', bg: 'bg-red-100', color: 'text-red-500' },
+            };
+            const ico = iconMap[newStatus] || { icon: 'fa-circle', bg: 'bg-gray-100', color: 'text-gray-600' };
+
+            document.getElementById('modal-icon-wrap').className = `w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 ${ico.bg}`;
+            document.getElementById('modal-icon-wrap').innerHTML = `<i class="fa-solid ${ico.icon} text-2xl ${ico.color}"></i>`;
+            document.getElementById('modal-title').textContent = confirmLabel + ' Booking?';
+            document.getElementById('modal-desc').textContent = desc;
+            document.getElementById('modal-confirm').textContent = confirmLabel;
+            document.getElementById('modal-confirm').className = `flex-1 py-2.5 rounded-xl text-white font-semibold transition ${btnClass}`;
+            document.getElementById('action-modal').classList.remove('hidden');
+        }
+
+        document.getElementById('modal-cancel').addEventListener('click', () => {
+            document.getElementById('action-modal').classList.add('hidden');
+            pendingAction = null;
+        });
+
+        document.getElementById('modal-confirm').addEventListener('click', async () => {
+            if (!pendingAction) return;
+            const { id, newStatus } = pendingAction;
+            document.getElementById('action-modal').classList.add('hidden');
+            pendingAction = null;
+
+            try {
+                const res = await fetch('/api/booking/update-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ booking_id: id, status: newStatus }),
+                });
+                const result = await res.json();
+                if (res.ok) {
+                    // Update data lokal & re-render
+                    const booking = allBookings.find(b => (b.id || b._id) === id);
+                    if (booking) booking.status = newStatus;
+                    renderStats();
+                    renderTable();
+                } else {
+                    alert(result.message || 'Gagal mengubah status.');
+                }
+            } catch (err) {
+                alert('Tidak dapat terhubung ke server.');
+            }
+        });
+
+        async function loadBookings() {
+            try {
+                const res = await fetch('/booking', { credentials: 'include' });
+                if (!res.ok) throw new Error();
+                allBookings = await res.json();
+                // /booking endpoint return array langsung
+                if (!Array.isArray(allBookings)) allBookings = allBookings.data || [];
+
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('table-wrapper').classList.remove('hidden');
+
+                renderStats();
+                renderTable();
+            } catch (err) {
+                document.getElementById('loading-state').innerHTML = `
+                    <div class="text-center py-16">
+                        <i class="fa-solid fa-triangle-exclamation text-3xl text-red-300 mb-3"></i>
+                        <p class="text-red-500">Gagal memuat data. Pastikan kamu sudah login.</p>
+                    </div>`;
+            }
+        }
+
+        loadBookings();
+    </script>
+</body>
+</html>

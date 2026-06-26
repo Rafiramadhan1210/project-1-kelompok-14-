@@ -44,6 +44,17 @@ async function checkLoginStatus() {
             if (profileName) profileName.textContent = user.nama || 'Akun';
             if (profileDropdownName) profileDropdownName.textContent = user.nama || 'Pengguna';
             if (profileDropdownEmail) profileDropdownEmail.textContent = user.email || '';
+
+            // Tampilkan foto profil di navbar
+            const navbarAvatarImg  = document.getElementById('navbar-avatar-img');
+            const navbarAvatarIcon = document.getElementById('navbar-avatar-icon');
+            if (navbarAvatarImg && user.foto) {
+                navbarAvatarImg.src = user.foto;
+                navbarAvatarImg.style.display = 'block';
+                navbarAvatarImg.classList.remove('hidden');
+                if (navbarAvatarIcon) navbarAvatarIcon.style.display = 'none';
+            }
+
             profileMenu.classList.remove('hidden');
             loginLink.classList.add('hidden');
         } else {
@@ -186,13 +197,15 @@ fetch('/button')
         const list = document.getElementById('destinasi-list');
         list.innerHTML = ''; // Kosongkan penampung data awal
 
+        let cardIndex = 0;
         result.data.forEach(item => {
+            cardIndex++;
             // Menggunakan huruf kecil sesuai struktur database MongoDB Atlas
             const kategori = item.kategori || 'Semua';
 
            list.innerHTML += `
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition hover:-translate-y-1" data-kategori="${kategori}" data-nama="${(item.nama || '').toLowerCase()}" data-id="${item._id}">
-        <div class="relative h-48 overflow-hidden">
+    <div class="destination-card bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden" style="animation-delay: ${cardIndex * 0.08}s" data-kategori="${kategori}" data-nama="${(item.nama || '').toLowerCase()}" data-id="${item._id}">
+        <div class="card-img-wrapper relative h-48">
             <img src="${item.gambar || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'}" alt="${item.nama}" class="w-full h-full object-cover">
             <span class="absolute bottom-4 left-4 text-xs font-bold text-white bg-black/50 backdrop-blur px-3 py-1 rounded-full">${item.kategori || 'Wisata'}</span>
             <button class="wishlist-btn absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition" data-id="${item._id}">
@@ -213,7 +226,7 @@ fetch('/button')
                     </span>
                     <p class="text-xs text-gray-400">/per tiket</p>
                 </div>
-                <button class="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center gap-2">
+                <button class="booking-btn bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center gap-2">
                     <i class="fa-solid fa-ticket"></i>Booking
                 </button>
             </div>
@@ -448,4 +461,31 @@ async function loadKategori() {
             ${k.nama}
         </button>
     `).join('');
+}
+// ============ SCROLL REVEAL untuk cards ============
+const observeCards = () => {
+    const cards = document.querySelectorAll('.destination-card');
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.animationPlayState = 'running';
+                observer.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.1 });
+
+    cards.forEach(card => {
+        card.style.animationPlayState = 'paused';
+        observer.observe(card);
+    });
+};
+
+// Re-observe setiap kali cards di-render ulang
+const originalInnerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+const destinasiList = document.getElementById('destinasi-list');
+if (destinasiList) {
+    const mutationObserver = new MutationObserver(() => {
+        setTimeout(observeCards, 50);
+    });
+    mutationObserver.observe(destinasiList, { childList: true });
 }

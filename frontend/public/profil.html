@@ -1,439 +1,628 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoTrip - Profil Saya</title>
+    <title>GoTrip – Profil Saya</title>
     <link rel="stylesheet" href="./output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --blue:        #2563eb;
+            --blue-light:  #eff6ff;
+            --blue-dark:   #1d4ed8;
+            --red:         #ef4444;
+            --red-light:   #fef2f2;
+            --orange:      #f97316;
+            --surface:     #ffffff;
+            --bg:          #f1f5f9;
+            --border:      #e2e8f0;
+            --text:        #0f172a;
+            --text-muted:  #64748b;
+            --radius:      16px;
+            --radius-sm:   10px;
+            --shadow:      0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.06);
+            --shadow-lg:   0 8px 32px rgba(37,99,235,.12);
+        }
+
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
         }
 
+        /* ── NAVBAR ── */
+        .navbar {
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(255,255,255,.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid var(--border);
+            animation: slideDown .5s cubic-bezier(.22,1,.36,1) both;
+        }
+        .navbar-inner {
+            max-width: 780px; margin: 0 auto;
+            padding: 0 24px;
+            height: 60px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .logo {
+            display: flex; align-items: center; gap: 8px;
+            font-weight: 800; font-size: 20px; color: var(--blue);
+            text-decoration: none; letter-spacing: -.3px;
+        }
+        .logo i { font-size: 18px; }
+        .back-btn {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 14px; font-weight: 600; color: var(--text-muted);
+            text-decoration: none;
+            padding: 6px 14px; border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            transition: all .2s;
+        }
+        .back-btn:hover { color: var(--blue); border-color: var(--blue); background: var(--blue-light); }
+
+        /* ── LAYOUT ── */
+        .page-wrap { max-width: 780px; margin: 0 auto; padding: 32px 24px 64px; }
+
+        /* ── PAGE HEADER ── */
+        .page-header { margin-bottom: 28px; animation: fadeUp .5s .1s ease both; }
+        .page-header h1 { font-size: 26px; font-weight: 800; letter-spacing: -.4px; }
+        .page-header p  { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+
+        /* ── CARD ── */
         .card {
-            transition: box-shadow .2s ease, transform .2s ease;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: box-shadow .25s, transform .25s;
+        }
+        .card:hover { box-shadow: var(--shadow-lg); }
+
+        /* ── HERO CARD (avatar + stats) ── */
+        .hero-card {
+            padding: 28px;
+            display: flex; flex-wrap: wrap; gap: 24px; align-items: center;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 60%, #eff6ff 100%);
+            position: relative; overflow: hidden;
+            animation: fadeUp .5s .2s ease both;
+        }
+        .hero-card::before {
+            content: '';
+            position: absolute; top: -40px; right: -40px;
+            width: 200px; height: 200px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(37,99,235,.07) 0%, transparent 70%);
+            pointer-events: none;
         }
 
-        .card:hover {
-            box-shadow: 0 8px 24px -8px rgba(37, 99, 235, 0.12);
+        /* avatar */
+        .avatar-wrap { position: relative; flex-shrink: 0; }
+        .avatar-ring {
+            width: 96px; height: 96px; border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            display: flex; align-items: center; justify-content: center;
+            border: 3px solid #fff;
+            box-shadow: 0 0 0 3px var(--blue), 0 6px 20px rgba(37,99,235,.35);
+            overflow: hidden; position: relative;
+            transition: box-shadow .3s;
         }
-
-        .input-field {
-            transition: border-color .15s ease, box-shadow .15s ease;
+        .avatar-ring:hover { box-shadow: 0 0 0 4px var(--blue), 0 8px 28px rgba(37,99,235,.45); }
+        .avatar-ring span { color: #fff; font-size: 34px; font-weight: 800; }
+        .avatar-ring img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .avatar-cam {
+            position: absolute; bottom: -2px; right: -2px;
+            width: 30px; height: 30px; border-radius: 50%;
+            background: var(--surface); border: 2px solid #fff;
+            box-shadow: 0 2px 8px rgba(0,0,0,.15);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; color: var(--blue); font-size: 11px;
+            transition: transform .2s, background .2s;
         }
+        .avatar-cam:hover { transform: scale(1.12); background: var(--blue-light); }
 
+        /* user info */
+        .user-info { flex: 1; min-width: 160px; }
+        .user-info h2 { font-size: 20px; font-weight: 800; letter-spacing: -.3px; }
+        .user-info .email { font-size: 13px; color: var(--text-muted); margin-top: 2px; }
+        .user-info .phone {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 13px; color: var(--text-muted); margin-top: 8px;
+        }
+        .photo-status { font-size: 12px; margin-top: 6px; font-weight: 600; }
+
+        /* stats */
+        .stats-row {
+            display: flex; gap: 1px;
+            background: var(--border); border-radius: var(--radius-sm);
+            overflow: hidden; flex-shrink: 0;
+            border: 1px solid var(--border);
+        }
+        .stat-box {
+            background: var(--surface); padding: 14px 24px;
+            text-align: center; min-width: 90px;
+        }
+        .stat-box .num { font-size: 24px; font-weight: 800; letter-spacing: -.5px; }
+        .stat-box .lbl { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
+        .stat-box.blue .num { color: var(--blue); }
+        .stat-box.red  .num { color: var(--red); }
+
+        /* ── SECTION CARD ── */
+        .section-card { padding: 28px; margin-bottom: 20px; animation: fadeUp .5s .3s ease both; }
+        .section-card:last-child { animation-delay: .4s; }
+
+        .section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 6px; }
+        .section-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0;
+        }
+        .section-icon.blue { background: var(--blue-light); color: var(--blue); }
+        .section-icon.red  { background: var(--red-light);  color: var(--red); }
+        .section-head h3 { font-size: 16px; font-weight: 700; }
+        .section-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 22px; margin-left: 48px; }
+
+        /* ── FORM ── */
+        .form-group { margin-bottom: 16px; }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 6px; }
+        .form-input {
+            width: 100%; padding: 11px 14px;
+            border: 1.5px solid var(--border); border-radius: var(--radius-sm);
+            font-family: inherit; font-size: 14px; color: var(--text);
+            background: var(--surface);
+            outline: none; transition: border-color .2s, box-shadow .2s;
+        }
+        .form-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+        }
+        .form-input:disabled {
+            background: #f8fafc; color: var(--text-muted); cursor: not-allowed;
+        }
+        .form-input::placeholder { color: #94a3b8; }
+
+        .alert {
+            display: flex; align-items: center; gap: 8px;
+            padding: 11px 14px; border-radius: var(--radius-sm);
+            font-size: 13px; font-weight: 600; margin-bottom: 16px;
+        }
+        .alert.success { background: #f0fdf4; color: #15803d; border: 1px solid #bbf7d0; }
+        .alert.error   { background: var(--red-light); color: #dc2626; border: 1px solid #fecaca; }
+        .alert.hidden  { display: none !important; }
+
+        /* ── BUTTONS ── */
+        .btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 11px 22px; border-radius: var(--radius-sm);
+            font-family: inherit; font-size: 14px; font-weight: 700;
+            cursor: pointer; border: none; outline: none;
+            transition: transform .15s, box-shadow .15s, background .15s;
+        }
         .btn-primary {
-            transition: background-color .15s ease, transform .1s ease, box-shadow .15s ease;
-            box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.35);
+            background: var(--blue); color: #fff;
+            box-shadow: 0 4px 14px rgba(37,99,235,.35);
+        }
+        .btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(37,99,235,.45); }
+        .btn-primary:active { transform: translateY(0); }
+        .btn-primary:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+
+        /* ── WISHLIST GRID ── */
+        .wishlist-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        @media (max-width: 480px) { .wishlist-grid { grid-template-columns: 1fr; } }
+
+        .w-card {
+            display: flex; gap: 12px; align-items: center;
+            padding: 12px; border: 1.5px solid var(--border); border-radius: 12px;
+            background: #fafafa;
+            transition: border-color .2s, box-shadow .2s, transform .2s;
+            animation: fadeUp .4s ease both;
+        }
+        .w-card:hover { border-color: #bfdbfe; box-shadow: 0 4px 14px rgba(37,99,235,.08); transform: translateY(-2px); }
+        .w-card img {
+            width: 60px; height: 60px; border-radius: 10px;
+            object-fit: cover; flex-shrink: 0;
+        }
+        .w-info { flex: 1; min-width: 0; }
+        .w-info .name { font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .w-info .loc  { font-size: 12px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .w-info .price{ font-size: 13px; font-weight: 700; color: var(--orange); margin-top: 5px; }
+        .w-remove {
+            width: 34px; height: 34px; border-radius: 50%; border: none;
+            background: var(--red-light); color: var(--red);
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; flex-shrink: 0; font-size: 13px;
+            transition: transform .2s cubic-bezier(.34,1.56,.64,1), background .2s;
+        }
+        .w-remove:hover { background: #fecaca; transform: scale(1.18); }
+        .w-remove:active { transform: scale(.9); }
+        .w-remove:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+        /* ── EMPTY / LOADING ── */
+        .empty-box { text-align: center; padding: 40px 20px; color: var(--text-muted); }
+        .empty-box i { font-size: 32px; color: #cbd5e1; display: block; margin-bottom: 10px; }
+        .empty-box p { font-size: 14px; font-weight: 600; color: #94a3b8; }
+        .empty-box a { display: inline-block; margin-top: 10px; font-size: 13px; font-weight: 700; color: var(--blue); text-decoration: none; }
+        .empty-box a:hover { text-decoration: underline; }
+
+        .spin { animation: spin 1s linear infinite; }
+
+        /* ── ANIMATIONS ── */
+        @keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: none; opacity: 1; } }
+        @keyframes fadeUp    { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: none; } }
+        @keyframes spin      { to { transform: rotate(360deg); } }
+        @keyframes pop       { 0% { transform: scale(.5); opacity: 0; } 70% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation: none !important; transition: none !important; }
         }
 
-        .btn-primary:hover {
-            transform: translateY(-1px);
-            box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.45);
+        /* ── LOGIN REQUIRED ── */
+        .login-box {
+            text-align: center; padding: 60px 24px;
+            animation: fadeUp .5s ease both;
         }
+        .login-box i { font-size: 40px; color: #cbd5e1; margin-bottom: 12px; display: block; }
+        .login-box h2 { font-size: 18px; font-weight: 700; }
+        .login-box p  { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+        .login-box a  {
+            display: inline-flex; align-items: center; gap: 8px;
+            margin-top: 20px; padding: 12px 28px;
+            background: var(--blue); color: #fff;
+            border-radius: var(--radius-sm); font-weight: 700; font-size: 14px;
+            text-decoration: none;
+            box-shadow: 0 4px 14px rgba(37,99,235,.35);
+            transition: background .2s, transform .15s;
+        }
+        .login-box a:hover { background: var(--blue-dark); transform: translateY(-1px); }
 
-        .btn-primary:active {
-            transform: translateY(0);
-        }
+        /* divider between form rows */
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+        @media (max-width: 500px) { .form-row { grid-template-columns: 1fr; } }
 
-        #change-photo-btn {
-            transition: transform .15s ease, background-color .15s ease;
-        }
-
-        #change-photo-btn:hover {
-            transform: scale(1.08);
-            background-color: #eff6ff;
-        }
-
-        .wishlist-card {
-            transition: box-shadow .2s ease, border-color .2s ease;
-        }
-
-        .wishlist-card:hover {
-            box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.08);
-            border-color: #dbeafe;
-        }
-
-        .remove-wishlist-btn {
-            transition: background-color .15s ease, transform .15s ease;
-        }
-
-        .remove-wishlist-btn:hover {
-            transform: scale(1.08);
-        }
-
-        .section-title-icon {
-            width: 34px;
-            height: 34px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        /* input icon wrapper */
+        .input-wrap { position: relative; }
+        .input-wrap .input-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 13px; pointer-events: none; }
+        .input-wrap .form-input { padding-left: 36px; }
     </style>
 </head>
+<body>
 
-<body class="bg-gray-50 min-h-screen">
+<!-- NAVBAR -->
+<header class="navbar">
+    <div class="navbar-inner">
+        <a href="index.html" class="logo">
+            <i class="fa-solid fa-plane"></i>
+            GoTrip
+        </a>
+        <a href="index.html" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i>
+            <span>Beranda</span>
+        </a>
+    </div>
+</header>
 
-    <header class="bg-white border-b border-gray-100 sticky top-0 z-50 backdrop-blur-sm">
-        <div class="container mx-auto px-6 py-4 flex items-center justify-between max-w-3xl">
-            <a href="index.html" class="flex items-center gap-2 text-blue-600 font-black text-2xl tracking-tight">
-                <i class="fa-solid fa-plane"></i>
-                <span>GoTrip</span>
-            </a>
-            <a href="index.html" class="text-gray-500 hover:text-blue-600 font-medium flex items-center gap-2 transition-colors">
-                <i class="fa-solid fa-arrow-left"></i>
-                <span class="hidden sm:inline">Kembali ke Beranda</span>
-            </a>
-        </div>
-    </header>
+<main class="page-wrap">
 
-    <main class="container mx-auto px-6 py-10 max-w-3xl">
-        <div class="mb-8">
-            <h1 class="text-2xl font-bold text-gray-800">Profil Saya</h1>
-            <p class="text-gray-500 mt-1">Kelola informasi akun dan wishlist kamu di sini.</p>
-        </div>
+    <!-- Page header -->
+    <div class="page-header">
+        <h1>Profil Saya</h1>
+        <p>Kelola informasi akun dan wishlist kamu di sini.</p>
+    </div>
 
-        <!-- Loading -->
-        <div id="loading-state" class="text-center py-16 text-gray-400">
-            <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i>
-            <p>Memuat profil kamu...</p>
-        </div>
+    <!-- Loading state -->
+    <div id="loading-state" class="card empty-box" style="margin-bottom:20px;">
+        <i class="fa-solid fa-circle-notch spin"></i>
+        <p>Memuat profil kamu...</p>
+    </div>
 
-        <!-- Belum login -->
-        <div id="login-required" class="hidden text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-sm">
-            <i class="fa-solid fa-lock text-3xl text-gray-300 mb-3"></i>
-            <p class="text-gray-600 font-medium">Kamu belum login</p>
-            <p class="text-gray-400 text-sm mt-1">Masuk dulu untuk melihat dan mengubah profil kamu.</p>
-            <a href="login.html" class="inline-block mt-4 bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition btn-primary">Masuk</a>
-        </div>
+    <!-- Login required -->
+    <div id="login-required" class="card login-box hidden" style="margin-bottom:20px;">
+        <i class="fa-solid fa-lock"></i>
+        <h2>Kamu belum masuk</h2>
+        <p>Login dulu untuk melihat dan mengubah profil kamu.</p>
+        <a href="login.html"><i class="fa-solid fa-right-to-bracket"></i> Masuk sekarang</a>
+    </div>
 
-        <!-- Konten profil -->
-        <div id="profile-content" class="hidden space-y-6">
+    <!-- Profile content -->
+    <div id="profile-content" class="hidden">
 
-            <!-- Kartu identitas + foto profil + statistik -->
-            <div class="card bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col sm:flex-row items-center sm:items-start gap-5">
-                <div class="relative flex-shrink-0" style="width:96px;height:96px;">
-                    <div id="avatar-wrapper"
-                        style="width:96px;height:96px;border-radius:50%;overflow:hidden;border:3px solid #2563eb;background:linear-gradient(135deg,#3b82f6,#2563eb);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px -4px rgba(37,99,235,0.45);">
-                        <span id="avatar-initial" style="color:#ffffff;font-size:32px;font-weight:700;">A</span>
-                        <img id="avatar-img" src="" alt="Foto profil" class="hidden"
-                            style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
-                    </div>
-                    <button id="change-photo-btn" type="button"
-                        style="position:absolute;bottom:-2px;right:-2px;width:30px;height:30px;border-radius:50%;background:#ffffff;border:1px solid #e5e7eb;box-shadow:0 2px 6px rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-                        <i class="fa-solid fa-camera" style="font-size:11px;color:#2563eb;"></i>
-                    </button>
-                    <input type="file" id="photo-input" accept="image/*" class="hidden">
+        <!-- Hero card: avatar + info + stats -->
+        <div class="card hero-card">
+            <!-- Avatar -->
+            <div class="avatar-wrap">
+                <div class="avatar-ring" id="avatar-wrapper">
+                    <span id="avatar-initial">A</span>
+                    <img id="avatar-img" src="" alt="Foto profil" class="hidden">
                 </div>
-                <div class="flex-1 text-center sm:text-left">
-                    <h2 class="text-xl font-bold text-gray-800" id="display-nama">Nama Pengguna</h2>
-                    <p class="text-gray-500 text-sm" id="display-email">pengguna@email.com</p>
-                    <p class="text-gray-500 text-sm mt-1.5 flex items-center justify-center sm:justify-start gap-1.5">
-                        <i class="fa-solid fa-phone text-gray-400"></i>
-                        <span id="display-phone-text">Belum ada nomor HP</span>
-                    </p>
-                    <p id="photo-status" class="hidden text-xs mt-2 font-medium"></p>
-                </div>
-                <div class="flex gap-4 sm:gap-6 border-t sm:border-t-0 sm:border-l border-gray-100 pt-4 sm:pt-0 sm:pl-6 w-full sm:w-auto justify-center">
-                    <div class="text-center">
-                        <p class="text-2xl font-bold text-blue-600" id="stat-booking">0</p>
-                        <p class="text-xs text-gray-500">Booking</p>
-                    </div>
-                    <div class="text-center">
-                        <p class="text-2xl font-bold text-red-500" id="stat-wishlist">0</p>
-                        <p class="text-xs text-gray-500">Wishlist</p>
-                    </div>
-                </div>
+                <button class="avatar-cam" id="change-photo-btn" type="button" title="Ganti foto">
+                    <i class="fa-solid fa-camera"></i>
+                </button>
+                <input type="file" id="photo-input" accept="image/*" class="hidden">
             </div>
 
-            <!-- Form edit profil -->
-            <div class="card bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2">
-                    <span class="section-title-icon bg-blue-50">
-                        <i class="fa-solid fa-user-pen text-blue-600"></i>
-                    </span>
-                    Edit Informasi Profil
-                </h3>
-                <p class="text-gray-400 text-sm mb-5 mt-2">Email tidak dapat diubah karena digunakan sebagai akun login.</p>
-
-                <form id="profile-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Lengkap</label>
-                        <input type="text" id="f-nama" required
-                            class="input-field w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="Nama lengkap">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
-                        <input type="email" id="f-email" disabled
-                            class="input-field w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-100 text-gray-500 cursor-not-allowed">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nomor HP</label>
-                        <input type="tel" id="f-phone"
-                            class="input-field w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                            placeholder="08xxxxxxxxxx">
-                    </div>
-
-                    <p id="profile-success" class="hidden text-green-600 text-sm font-medium bg-green-50 px-3 py-2 rounded-lg">
-                        <i class="fa-solid fa-circle-check mr-1"></i>Profil berhasil diperbarui!
-                    </p>
-                    <p id="profile-error" class="hidden text-red-500 text-sm font-medium bg-red-50 px-3 py-2 rounded-lg"></p>
-
-                    <button type="submit" id="profile-submit-btn"
-                        class="btn-primary w-full sm:w-auto bg-blue-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-blue-700">
-                        Simpan Perubahan
-                    </button>
-                </form>
+            <!-- User info -->
+            <div class="user-info">
+                <h2 id="display-nama">Nama Pengguna</h2>
+                <p class="email" id="display-email">pengguna@email.com</p>
+                <p class="phone">
+                    <i class="fa-solid fa-phone" style="font-size:11px;"></i>
+                    <span id="display-phone-text">Belum ada nomor HP</span>
+                </p>
+                <p id="photo-status" class="photo-status hidden"></p>
             </div>
 
-            <!-- Wishlist Saya -->
-            <div class="card bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-                <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2">
-                    <span class="section-title-icon bg-red-50">
-                        <i class="fa-solid fa-heart text-red-500"></i>
-                    </span>
-                    Wishlist Saya
-                </h3>
-                <p class="text-gray-400 text-sm mb-5 mt-2">Destinasi yang sudah kamu simpan. Klik hati untuk menghapus dari wishlist.</p>
-
-                <div id="wishlist-loading" class="text-center py-8 text-gray-400">
-                    <i class="fa-solid fa-circle-notch fa-spin mb-2"></i>
-                    <p class="text-sm">Memuat wishlist...</p>
+            <!-- Stats -->
+            <div class="stats-row">
+                <div class="stat-box blue">
+                    <div class="num" id="stat-booking">0</div>
+                    <div class="lbl">Booking</div>
                 </div>
-
-                <div id="wishlist-empty" class="hidden text-center py-10">
-                    <i class="fa-solid fa-heart-crack text-3xl text-gray-300 mb-2"></i>
-                    <p class="text-gray-500 text-sm font-medium">Wishlist kamu masih kosong</p>
-                    <a href="index.html" class="inline-block mt-3 text-blue-600 text-sm font-semibold hover:underline">Jelajahi destinasi</a>
+                <div class="stat-box red">
+                    <div class="num" id="stat-wishlist">0</div>
+                    <div class="lbl">Wishlist</div>
                 </div>
-
-                <div id="wishlist-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
             </div>
-
         </div>
-    </main>
 
-    <script>
-        const loadingState = document.getElementById('loading-state');
-        const loginRequired = document.getElementById('login-required');
-        const profileContent = document.getElementById('profile-content');
+        <!-- Edit profil -->
+        <div class="card section-card">
+            <div class="section-head">
+                <span class="section-icon blue"><i class="fa-solid fa-user-pen"></i></span>
+                <h3>Edit Informasi</h3>
+            </div>
+            <p class="section-sub">Email tidak bisa diubah karena digunakan sebagai akun login.</p>
 
-        function applyUserToUI(user) {
-            document.getElementById('display-nama').textContent = user.nama || '-';
-            document.getElementById('display-email').textContent = user.email || '-';
-            document.getElementById('display-phone-text').textContent = user.phone || 'Belum ada nomor HP';
-            document.getElementById('stat-booking').textContent = user.total_booking || 0;
-            document.getElementById('stat-wishlist').textContent = user.total_wishlist || 0;
+            <p id="profile-success" class="alert success hidden"><i class="fa-solid fa-circle-check"></i> Profil berhasil diperbarui!</p>
+            <p id="profile-error"   class="alert error   hidden"><i class="fa-solid fa-circle-xmark"></i> <span id="profile-error-msg"></span></p>
 
-            const avatarImg = document.getElementById('avatar-img');
-            const avatarInitial = document.getElementById('avatar-initial');
-            if (user.foto) {
-                avatarImg.src = user.foto;
-                avatarImg.classList.remove('hidden');
-                avatarInitial.classList.add('hidden');
-            } else {
-                avatarImg.classList.add('hidden');
-                avatarInitial.classList.remove('hidden');
-                avatarInitial.textContent = (user.nama || 'A').trim().charAt(0).toUpperCase();
-            }
+            <form id="profile-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="f-nama">Nama Lengkap</label>
+                        <div class="input-wrap">
+                            <i class="input-icon fa-solid fa-user"></i>
+                            <input type="text" id="f-nama" class="form-input" placeholder="Nama lengkap" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="f-phone">Nomor HP</label>
+                        <div class="input-wrap">
+                            <i class="input-icon fa-solid fa-phone"></i>
+                            <input type="tel" id="f-phone" class="form-input" placeholder="08xxxxxxxxxx">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="f-email">Email</label>
+                    <div class="input-wrap">
+                        <i class="input-icon fa-solid fa-envelope"></i>
+                        <input type="email" id="f-email" class="form-input" disabled>
+                    </div>
+                </div>
+                <button type="submit" id="profile-submit-btn" class="btn btn-primary">
+                    <i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan
+                </button>
+            </form>
+        </div>
 
-            document.getElementById('f-nama').value = user.nama || '';
-            document.getElementById('f-email').value = user.email || '';
-            document.getElementById('f-phone').value = user.phone || '';
-        }
+        <!-- Wishlist -->
+        <div class="card section-card">
+            <div class="section-head">
+                <span class="section-icon red"><i class="fa-solid fa-heart"></i></span>
+                <h3>Wishlist Saya</h3>
+            </div>
+            <p class="section-sub">Destinasi yang sudah kamu simpan. Klik ❤ untuk menghapus.</p>
 
-        async function loadProfile() {
-            try {
-                const res = await fetch('/api/me', { credentials: 'include' });
-                loadingState.classList.add('hidden');
+            <div id="wishlist-loading" class="empty-box">
+                <i class="fa-solid fa-circle-notch spin"></i>
+                <p>Memuat wishlist...</p>
+            </div>
+            <div id="wishlist-empty" class="empty-box hidden">
+                <i class="fa-solid fa-heart-crack"></i>
+                <p>Wishlist kamu masih kosong</p>
+                <a href="index.html">Jelajahi destinasi →</a>
+            </div>
+            <div id="wishlist-grid" class="wishlist-grid"></div>
+        </div>
 
-                if (!res.ok) {
-                    loginRequired.classList.remove('hidden');
-                    return;
-                }
+    </div><!-- /profile-content -->
+</main>
 
-                const result = await res.json();
-                applyUserToUI(result.user || {});
-                profileContent.classList.remove('hidden');
-                loadWishlist();
-            } catch (err) {
-                loadingState.classList.add('hidden');
-                loginRequired.classList.remove('hidden');
-            }
-        }
-        loadProfile();
+<script>
+    const loadingState   = document.getElementById('loading-state');
+    const loginRequired  = document.getElementById('login-required');
+    const profileContent = document.getElementById('profile-content');
 
-        // Submit form edit profil
-        const profileForm = document.getElementById('profile-form');
-        const profileSuccess = document.getElementById('profile-success');
-        const profileError = document.getElementById('profile-error');
-        const profileSubmitBtn = document.getElementById('profile-submit-btn');
+    function applyUserToUI(user) {
+        document.getElementById('display-nama').textContent       = user.nama  || '-';
+        document.getElementById('display-email').textContent      = user.email || '-';
+        document.getElementById('display-phone-text').textContent = user.phone || 'Belum ada nomor HP';
+        document.getElementById('stat-booking').textContent       = user.total_booking  || 0;
+        document.getElementById('stat-wishlist').textContent      = user.total_wishlist || 0;
 
-        profileForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            profileSuccess.classList.add('hidden');
-            profileError.classList.add('hidden');
-            profileSubmitBtn.disabled = true;
-            profileSubmitBtn.textContent = 'Menyimpan...';
-
-            try {
-                const res = await fetch('/api/profile/update', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({
-                        nama: document.getElementById('f-nama').value,
-                        phone: document.getElementById('f-phone').value
-                    })
-                });
-                const result = await res.json();
-
-                if (!res.ok) {
-                    profileError.textContent = result.message || 'Gagal memperbarui profil';
-                    profileError.classList.remove('hidden');
-                    return;
-                }
-
-                profileSuccess.classList.remove('hidden');
-                loadProfile();
-            } catch (err) {
-                profileError.textContent = 'Terjadi kesalahan, coba lagi.';
-                profileError.classList.remove('hidden');
-            } finally {
-                profileSubmitBtn.disabled = false;
-                profileSubmitBtn.textContent = 'Simpan Perubahan';
-            }
-        });
-
-        // Ganti foto profil
-        const changePhotoBtn = document.getElementById('change-photo-btn');
-        const photoInput = document.getElementById('photo-input');
-        const photoStatus = document.getElementById('photo-status');
-
-        changePhotoBtn.addEventListener('click', () => photoInput.click());
-
-        photoInput.addEventListener('change', async () => {
-            const file = photoInput.files[0];
-            if (!file) return;
-
-            photoStatus.textContent = 'Mengunggah foto...';
-            photoStatus.className = 'text-xs mt-2 font-medium text-gray-500';
-            photoStatus.classList.remove('hidden');
-
-            // Preview langsung sebelum upload selesai
-            const avatarImg = document.getElementById('avatar-img');
-            const avatarInitial = document.getElementById('avatar-initial');
-            const previewUrl = URL.createObjectURL(file);
-            avatarImg.src = previewUrl;
+        const avatarImg     = document.getElementById('avatar-img');
+        const avatarInitial = document.getElementById('avatar-initial');
+        if (user.foto) {
+            avatarImg.src = user.foto;
             avatarImg.classList.remove('hidden');
             avatarInitial.classList.add('hidden');
-
-            try {
-                const formData = new FormData();
-                formData.append('foto', file);
-
-                const res = await fetch('/api/profile/photo', {
-                    method: 'POST',
-                    credentials: 'include',
-                    body: formData
-                });
-                const result = await res.json();
-
-                if (!res.ok) {
-                    photoStatus.textContent = result.message || 'Gagal mengunggah foto';
-                    photoStatus.className = 'text-xs mt-2 font-medium text-red-500';
-                    return;
-                }
-
-                avatarImg.src = result.foto;
-                photoStatus.textContent = 'Foto profil berhasil diperbarui!';
-                photoStatus.className = 'text-xs mt-2 font-medium text-green-600';
-            } catch (err) {
-                photoStatus.textContent = 'Terjadi kesalahan, coba lagi.';
-                photoStatus.className = 'text-xs mt-2 font-medium text-red-500';
-            }
-        });
-
-        // Wishlist Saya
-        const wishlistLoading = document.getElementById('wishlist-loading');
-        const wishlistEmpty = document.getElementById('wishlist-empty');
-        const wishlistGrid = document.getElementById('wishlist-grid');
-
-        async function loadWishlist() {
-            wishlistLoading.classList.remove('hidden');
-            wishlistEmpty.classList.add('hidden');
-            wishlistGrid.innerHTML = '';
-
-            try {
-                const res = await fetch('/api/my-wishlist', { credentials: 'include' });
-                const result = await res.json();
-                const data = result.data || [];
-
-                wishlistLoading.classList.add('hidden');
-
-                if (data.length === 0) {
-                    wishlistEmpty.classList.remove('hidden');
-                    return;
-                }
-
-                data.forEach(item => {
-                    wishlistGrid.innerHTML += `
-                        <div class="wishlist-card flex gap-3 border border-gray-100 rounded-xl p-3 items-center" data-wishlist-id="${item._id}">
-                            <img src="${item.gambar || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'}" alt="${item.nama}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <p class="font-semibold text-gray-800 text-sm truncate">${item.nama}</p>
-                                <p class="text-gray-400 text-xs truncate"><i class="fa-solid fa-location-dot mr-1"></i>${item.lokasi || '-'}</p>
-                                <p class="text-orange-500 font-bold text-sm mt-1">Rp ${item.harga ? item.harga.toLocaleString('id-ID') : '0'}</p>
-                            </div>
-                            <button class="remove-wishlist-btn w-9 h-9 rounded-full bg-red-50 flex items-center justify-center hover:bg-red-100 flex-shrink-0" data-id="${item._id}" title="Hapus dari wishlist">
-                                <i class="fa-solid fa-heart text-red-500"></i>
-                            </button>
-                        </div>
-                    `;
-                });
-            } catch (err) {
-                wishlistLoading.classList.add('hidden');
-                wishlistEmpty.classList.remove('hidden');
-            }
+        } else {
+            avatarImg.classList.add('hidden');
+            avatarInitial.classList.remove('hidden');
+            avatarInitial.textContent = (user.nama || 'A').trim().charAt(0).toUpperCase();
         }
 
-        wishlistGrid.addEventListener('click', async (e) => {
-            const btn = e.target.closest('.remove-wishlist-btn');
-            if (!btn) return;
+        document.getElementById('f-nama').value  = user.nama  || '';
+        document.getElementById('f-email').value = user.email || '';
+        document.getElementById('f-phone').value = user.phone || '';
+    }
 
-            const destinationId = btn.dataset.id;
-            btn.disabled = true;
+    async function loadProfile() {
+        try {
+            const res = await fetch('/api/me', { credentials: 'include' });
+            loadingState.classList.add('hidden');
+            if (!res.ok) { loginRequired.classList.remove('hidden'); return; }
+            const result = await res.json();
+            applyUserToUI(result.user || {});
+            profileContent.classList.remove('hidden');
+            loadWishlist();
+        } catch {
+            loadingState.classList.add('hidden');
+            loginRequired.classList.remove('hidden');
+        }
+    }
+    loadProfile();
 
-            try {
-                const res = await fetch('/api/wishlist/toggle', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include',
-                    body: JSON.stringify({ destination_id: destinationId })
-                });
+    // ── Edit profil ──
+    const profileForm      = document.getElementById('profile-form');
+    const profileSuccess   = document.getElementById('profile-success');
+    const profileError     = document.getElementById('profile-error');
+    const profileErrorMsg  = document.getElementById('profile-error-msg');
+    const profileSubmitBtn = document.getElementById('profile-submit-btn');
 
-                if (res.ok) {
-                    const card = document.querySelector(`[data-wishlist-id="${destinationId}"]`);
-                    if (card) card.remove();
+    profileForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        profileSuccess.classList.add('hidden');
+        profileError.classList.add('hidden');
+        profileSubmitBtn.disabled = true;
+        profileSubmitBtn.innerHTML = '<i class="fa-solid fa-circle-notch spin"></i> Menyimpan...';
 
-                    const statWishlist = document.getElementById('stat-wishlist');
-                    statWishlist.textContent = Math.max(0, parseInt(statWishlist.textContent || '0') - 1);
-
-                    if (wishlistGrid.children.length === 0) {
-                        wishlistEmpty.classList.remove('hidden');
-                    }
-                }
-            } catch (err) {
-                console.error('Gagal menghapus wishlist:', err);
-            } finally {
-                btn.disabled = false;
+        try {
+            const res = await fetch('/api/profile/update', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    nama:  document.getElementById('f-nama').value,
+                    phone: document.getElementById('f-phone').value
+                })
+            });
+            const result = await res.json();
+            if (!res.ok) {
+                profileErrorMsg.textContent = result.message || 'Gagal memperbarui profil';
+                profileError.classList.remove('hidden');
+            } else {
+                profileSuccess.classList.remove('hidden');
+                loadProfile();
+                setTimeout(() => profileSuccess.classList.add('hidden'), 4000);
             }
-        });
-    </script>
-</body>
+        } catch {
+            profileErrorMsg.textContent = 'Terjadi kesalahan, coba lagi.';
+            profileError.classList.remove('hidden');
+        } finally {
+            profileSubmitBtn.disabled = false;
+            profileSubmitBtn.innerHTML = '<i class="fa-solid fa-floppy-disk"></i> Simpan Perubahan';
+        }
+    });
 
+    // ── Ganti foto ──
+    const changePhotoBtn = document.getElementById('change-photo-btn');
+    const photoInput     = document.getElementById('photo-input');
+    const photoStatus    = document.getElementById('photo-status');
+
+    changePhotoBtn.addEventListener('click', () => photoInput.click());
+
+    photoInput.addEventListener('change', async () => {
+        const file = photoInput.files[0];
+        if (!file) return;
+
+        photoStatus.textContent = 'Mengunggah foto...';
+        photoStatus.className   = 'photo-status';
+        photoStatus.style.color = '#64748b';
+        photoStatus.classList.remove('hidden');
+
+        const avatarImg     = document.getElementById('avatar-img');
+        const avatarInitial = document.getElementById('avatar-initial');
+        avatarImg.src = URL.createObjectURL(file);
+        avatarImg.classList.remove('hidden');
+        avatarInitial.classList.add('hidden');
+
+        try {
+            const formData = new FormData();
+            formData.append('foto', file);
+            const res    = await fetch('/api/profile/photo', { method: 'POST', credentials: 'include', body: formData });
+            const result = await res.json();
+            if (!res.ok) {
+                photoStatus.textContent = result.message || 'Gagal mengunggah foto';
+                photoStatus.style.color = '#ef4444';
+            } else {
+                avatarImg.src           = result.foto;
+                photoStatus.textContent = 'Foto berhasil diperbarui!';
+                photoStatus.style.color = '#16a34a';
+                setTimeout(() => photoStatus.classList.add('hidden'), 3000);
+            }
+        } catch {
+            photoStatus.textContent = 'Terjadi kesalahan, coba lagi.';
+            photoStatus.style.color = '#ef4444';
+        }
+    });
+
+    // ── Wishlist ──
+    const wishlistLoading = document.getElementById('wishlist-loading');
+    const wishlistEmpty   = document.getElementById('wishlist-empty');
+    const wishlistGrid    = document.getElementById('wishlist-grid');
+
+    async function loadWishlist() {
+        wishlistLoading.classList.remove('hidden');
+        wishlistEmpty.classList.add('hidden');
+        wishlistGrid.innerHTML = '';
+        try {
+            const res    = await fetch('/api/my-wishlist', { credentials: 'include' });
+            const result = await res.json();
+            const data   = result.data || [];
+            wishlistLoading.classList.add('hidden');
+            if (data.length === 0) { wishlistEmpty.classList.remove('hidden'); return; }
+            data.forEach((item, i) => {
+                wishlistGrid.innerHTML += `
+                <div class="w-card" data-wishlist-id="${item._id}" style="animation-delay:${i*0.06}s">
+                    <img src="${item.gambar || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'}" alt="${item.nama}">
+                    <div class="w-info">
+                        <p class="name">${item.nama}</p>
+                        <p class="loc"><i class="fa-solid fa-location-dot" style="color:#ef4444;margin-right:4px;font-size:10px;"></i>${item.lokasi || '-'}</p>
+                        <p class="price">Rp ${item.harga ? item.harga.toLocaleString('id-ID') : '0'}</p>
+                    </div>
+                    <button class="w-remove" data-id="${item._id}" title="Hapus dari wishlist">
+                        <i class="fa-solid fa-heart"></i>
+                    </button>
+                </div>`;
+            });
+        } catch {
+            wishlistLoading.classList.add('hidden');
+            wishlistEmpty.classList.remove('hidden');
+        }
+    }
+
+    wishlistGrid.addEventListener('click', async (e) => {
+        const btn = e.target.closest('.w-remove');
+        if (!btn) return;
+        btn.disabled = true;
+        try {
+            const res = await fetch('/api/wishlist/toggle', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ destination_id: btn.dataset.id })
+            });
+            if (res.ok) {
+                const card = wishlistGrid.querySelector(`[data-wishlist-id="${btn.dataset.id}"]`);
+                if (card) {
+                    card.style.transition = 'opacity .25s, transform .25s';
+                    card.style.opacity    = '0';
+                    card.style.transform  = 'scale(.9)';
+                    setTimeout(() => { card.remove(); if (!wishlistGrid.children.length) wishlistEmpty.classList.remove('hidden'); }, 260);
+                }
+                const sw = document.getElementById('stat-wishlist');
+                sw.textContent = Math.max(0, parseInt(sw.textContent || '0') - 1);
+            }
+        } catch { /* silent */ } finally { btn.disabled = false; }
+    });
+</script>
+</body>
 </html>

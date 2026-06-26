@@ -1,214 +1,585 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pengaturan</title>
+    <title>GoTrip - Pengaturan Akun</title>
     <link href="./output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #f8faff; }
+
+        /* ---- NAVBAR ---- */
+        .navbar {
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky; top: 0; z-index: 50;
+            box-shadow: 0 1px 12px rgba(0,0,0,0.04);
+        }
+
+        /* ---- PAGE HEADER ---- */
+        .page-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 60%, #6366f1 100%);
+            padding: 36px 0 32px;
+            position: relative; overflow: hidden;
+        }
+        .page-header::before {
+            content: ''; position: absolute; top: -60px; right: -60px;
+            width: 240px; height: 240px;
+            background: rgba(255,255,255,0.06); border-radius: 50%;
+        }
+        .page-header h1 { color: #fff; font-size: 28px; font-weight: 800; }
+        .page-header p { color: rgba(255,255,255,0.75); font-size: 14px; margin-top: 4px; }
+
+        /* ---- SECTION CARD ---- */
+        .section-card {
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
+            animation: cardIn 0.4s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .section-card:nth-child(2) { animation-delay: 60ms; }
+        .section-card:nth-child(3) { animation-delay: 120ms; }
+
+        .card-header {
+            padding: 18px 24px;
+            border-bottom: 1px solid #f1f5f9;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .card-header-icon {
+            width: 38px; height: 38px;
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; flex-shrink: 0;
+        }
+        .card-header-icon.blue { background: linear-gradient(135deg, #dbeafe, #e0e7ff); color: #3b82f6; }
+        .card-header-icon.purple { background: linear-gradient(135deg, #ede9fe, #ddd6fe); color: #7c3aed; }
+        .card-header-icon.red { background: linear-gradient(135deg, #fee2e2, #fecaca); color: #ef4444; }
+
+        .card-header h2 {
+            font-size: 16px; font-weight: 800; color: #1e293b; margin: 0;
+        }
+        .card-header p { font-size: 12px; color: #94a3b8; margin: 2px 0 0; }
+
+        .card-body { padding: 24px; }
+
+        /* ---- FLOATING LABEL INPUTS ---- */
+        .input-group {
+            position: relative;
+            margin-bottom: 18px;
+        }
+        .input-group label {
+            position: absolute;
+            left: 14px; top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px; font-weight: 500; color: #94a3b8;
+            pointer-events: none;
+            transition: all 0.22s cubic-bezier(0.4,0,0.2,1);
+            background: white; padding: 0 4px;
+        }
+        .input-group input:focus ~ label,
+        .input-group input:not(:placeholder-shown) ~ label {
+            top: 0; font-size: 11px; color: #3b82f6; font-weight: 600;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 13px 42px 13px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px; color: #1e293b;
+            background: #fafbff;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            box-sizing: border-box;
+        }
+        .input-group input::placeholder { color: transparent; }
+        .input-group input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+            background: #fff;
+        }
+        .input-group input:focus ~ label { top: 0; font-size: 11px; color: #3b82f6; }
+        .input-icon {
+            position: absolute; right: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: #cbd5e1; font-size: 13px;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+        .input-group input:focus ~ .input-icon { color: #3b82f6; }
+
+        /* Password toggle */
+        .pw-toggle {
+            position: absolute; right: 14px; top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8; font-size: 14px;
+            cursor: pointer; background: none; border: none; padding: 2px;
+            transition: color 0.15s; z-index: 2;
+        }
+        .pw-toggle:hover { color: #3b82f6; }
+
+        /* Strength meter */
+        .strength-meter {
+            display: none;
+            margin-top: 6px;
+        }
+        .strength-meter.show { display: block; }
+        .strength-bar-wrap {
+            height: 4px; background: #e2e8f0;
+            border-radius: 2px; overflow: hidden; margin-bottom: 4px;
+        }
+        .strength-bar {
+            height: 100%; border-radius: 2px;
+            transition: width 0.3s, background 0.3s;
+        }
+        .strength-label { font-size: 11px; font-weight: 600; }
+
+        /* ---- SUBMIT BUTTON ---- */
+        .btn-submit {
+            padding: 13px 24px;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: white; border: none;
+            border-radius: 12px;
+            font-size: 14px; font-weight: 700;
+            cursor: pointer;
+            position: relative; overflow: hidden;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-submit::before {
+            content: '';
+            position: absolute; top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+            transition: left 0.5s ease;
+        }
+        .btn-submit:hover::before { left: 160%; }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(59,130,246,0.4); }
+        .btn-submit:active { transform: translateY(0); }
+        .btn-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+        /* Danger button */
+        .btn-danger {
+            padding: 13px 24px;
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+            color: white; border: none;
+            border-radius: 12px;
+            font-size: 14px; font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 14px rgba(239,68,68,0.3);
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-danger:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(239,68,68,0.35); }
+
+        /* Danger zone */
+        .danger-zone {
+            background: linear-gradient(135deg, #fff5f5, #fff0f0);
+            border: 1.5px solid #fecaca;
+            border-radius: 14px; padding: 16px 18px;
+        }
+        .danger-zone p { font-size: 13px; color: #991b1b; line-height: 1.6; margin-bottom: 14px; }
+
+        /* ---- ALERT ---- */
+        .alert-box {
+            display: none;
+            padding: 14px 18px;
+            border-radius: 12px;
+            font-size: 13px; font-weight: 600;
+            animation: alertIn 0.3s ease;
+            display: flex; align-items: flex-start; gap: 10px;
+        }
+        .alert-box.show { display: flex; }
+        .alert-box.hidden { display: none !important; }
+        @keyframes alertIn {
+            from { opacity: 0; transform: translateY(-8px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .alert-box.success { background: #f0fdf4; border: 1.5px solid #bbf7d0; color: #15803d; }
+        .alert-box.error   { background: #fef2f2; border: 1.5px solid #fecaca; color: #dc2626; }
+        .alert-icon { flex-shrink: 0; font-size: 15px; }
+
+        /* Inline form message */
+        .form-msg {
+            font-size: 12px; font-weight: 600;
+            padding: 8px 12px; border-radius: 8px;
+            margin-top: 10px;
+            display: none;
+        }
+        .form-msg.show { display: block; animation: alertIn 0.2s ease; }
+        .form-msg.success { background: #f0fdf4; color: #15803d; }
+        .form-msg.error   { background: #fef2f2; color: #dc2626; }
+
+        /* ---- DELETE MODAL ---- */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15,23,42,0.55);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex; align-items: center; justify-content: center; padding: 16px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: #fff; border-radius: 24px; padding: 32px 28px;
+            max-width: 360px; width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            transform: scale(0.92) translateY(10px);
+            transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+        }
+        .modal-overlay.show .modal-box { transform: scale(1) translateY(0); }
+        .modal-icon { width: 56px; height: 56px; background: #fef2f2; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; font-size: 24px; color: #ef4444; }
+        .modal-title { font-size: 18px; font-weight: 800; color: #1e293b; text-align: center; margin-bottom: 8px; }
+        .modal-desc { font-size: 13px; color: #64748b; text-align: center; line-height: 1.6; margin-bottom: 22px; }
+        .modal-actions { display: flex; gap: 10px; }
+        .btn-modal-no { flex: 1; padding: 12px; border-radius: 12px; border: 1.5px solid #e2e8f0; background: #fff; font-size: 14px; font-weight: 700; color: #64748b; cursor: pointer; transition: background 0.15s; }
+        .btn-modal-no:hover { background: #f8faff; }
+        .btn-modal-yes { flex: 1; padding: 12px; border-radius: 12px; border: none; background: linear-gradient(135deg, #ef4444, #dc2626); font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; box-shadow: 0 4px 14px rgba(239,68,68,0.35); transition: transform 0.15s; }
+        .btn-modal-yes:hover { transform: translateY(-1px); }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin { animation: spin 0.7s linear infinite; display: inline-block; }
+    </style>
 </head>
 <body>
-    <nav class="bg-white shadow-md sticky top-0 z-50">
-        <div class="container mx-auto px-6 py-3">
-            <div class="flex items-center justify-between">
-                <div class="flex items-center gap-2">
-                    <div class="flex items-center gap-2 text-blue-600 font-black text-2xl hover:text-blue-700 cursor-pointer">
-                        <i class="fa-solid fa-plane"></i>
-                        <span>GoTrip</span>
-                    </div>
-                </div>
-                <div class="flex items-center gap-4">
-                    <a href="index.html" class="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition">
-                        <i class="fa-solid fa-home mr-2"></i>Beranda
-                    </a>
-                </div>
-            </div>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 text-blue-600 font-black text-2xl">
+                <i class="fa-solid fa-plane"></i>
+                <span>GoTrip</span>
+            </a>
+            <a href="index.html" class="text-gray-500 hover:text-gray-700 font-semibold flex items-center gap-2 text-sm transition">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span class="hidden sm:inline">Kembali ke Beranda</span>
+            </a>
         </div>
-    </nav>
+    </header>
 
-    <div class="container mx-auto px-6 py-10">
-        <h1 class="text-4xl font-bold text-gray-800 mb-8">Pengaturan Akun</h1>
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container mx-auto px-6 relative z-10 max-w-2xl">
+            <div class="flex items-center gap-3 mb-1">
+                <div style="width:38px;height:38px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                    <i class="fa-solid fa-gear" style="color:white;font-size:16px;"></i>
+                </div>
+                <h1>Pengaturan Akun</h1>
+            </div>
+            <p>Kelola profil, kata sandi, dan keamanan akun GoTrip kamu</p>
+        </div>
+    </div>
 
-        <!-- Alert Box -->
-        <div id="alert-box" class="hidden mb-6 px-4 py-3 rounded-lg text-sm font-medium animate-fade-in"></div>
+    <main class="container mx-auto px-6 py-8 max-w-2xl">
+
+        <!-- Global Alert -->
+        <div id="alert-box" class="alert-box hidden" style="margin-bottom:20px;">
+            <i class="fa-solid fa-circle-check alert-icon" id="alert-icon"></i>
+            <span id="alert-text"></span>
+        </div>
 
         <!-- Ubah Profil -->
-        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Ubah Profil</h2>
-            <form id="ubah-profil-form">
-                <div class="mb-4">
-                    <label for="nama" class="block text-gray-700 text-sm font-bold mb-2">Nama:</label>
-                    <input type="text" id="nama" name="nama" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Masukkan nama baru">
+        <div class="section-card">
+            <div class="card-header">
+                <div class="card-header-icon blue"><i class="fa-solid fa-user-pen"></i></div>
+                <div>
+                    <h2>Ubah Profil</h2>
+                    <p>Perbarui nama dan nomor HP kamu</p>
                 </div>
-                <div class="mb-4">
-                    <label for="nomor_hp" class="block text-gray-700 text-sm font-bold mb-2">Nomor HP:</label>
-                    <input type="text" id="nomor_hp" name="nomor_hp" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Masukkan nomor HP baru">
-                </div>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Simpan Perubahan</button>
-            </form>
+            </div>
+            <div class="card-body">
+                <form id="ubah-profil-form">
+                    <div class="input-group">
+                        <input type="text" id="nama" name="nama" placeholder="Nama Lengkap" autocomplete="name">
+                        <label for="nama">Nama Lengkap</label>
+                        <i class="fa-solid fa-user input-icon"></i>
+                    </div>
+                    <div class="input-group">
+                        <input type="tel" id="nomor_hp" name="nomor_hp" placeholder="Nomor HP" autocomplete="tel">
+                        <label for="nomor_hp">Nomor HP / WhatsApp</label>
+                        <i class="fa-solid fa-phone input-icon"></i>
+                    </div>
+                    <button type="submit" id="btn-profil" class="btn-submit">
+                        <i class="fa-solid fa-floppy-disk" id="icon-profil"></i>
+                        <span id="text-profil">Simpan Perubahan</span>
+                    </button>
+                    <div id="msg-profil" class="form-msg"></div>
+                </form>
+            </div>
         </div>
 
-        <!-- Ubah Password -->
-        <div class="bg-white shadow-md rounded-lg p-6 mb-6">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Ubah Kata Sandi</h2>
-            <form id="ubah-password-form">
-                <div class="mb-4">
-                    <label for="current_password" class="block text-gray-700 text-sm font-bold mb-2">Kata Sandi Saat Ini:</label>
-                    <input type="password" id="current_password" name="current_password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Kata sandi saat ini">
+        <!-- Ubah Kata Sandi -->
+        <div class="section-card">
+            <div class="card-header">
+                <div class="card-header-icon purple"><i class="fa-solid fa-lock"></i></div>
+                <div>
+                    <h2>Ubah Kata Sandi</h2>
+                    <p>Pastikan kata sandi baru cukup kuat</p>
                 </div>
-                <div class="mb-4">
-                    <label for="new_password" class="block text-gray-700 text-sm font-bold mb-2">Kata Sandi Baru:</label>
-                    <input type="password" id="new_password" name="new_password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Kata sandi baru">
-                </div>
-                <div class="mb-6">
-                    <label for="confirm_password" class="block text-gray-700 text-sm font-bold mb-2">Konfirmasi Kata Sandi Baru:</label>
-                    <input type="password" id="confirm_password" name="confirm_password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="Konfirmasi kata sandi baru">
-                </div>
-                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Ubah Kata Sandi</button>
-            </form>
+            </div>
+            <div class="card-body">
+                <form id="ubah-password-form">
+                    <!-- Current password -->
+                    <div class="input-group" style="position:relative;">
+                        <input type="password" id="current_password" name="current_password" placeholder="Kata Sandi Saat Ini" style="padding-right:46px;">
+                        <label for="current_password">Kata Sandi Saat Ini</label>
+                        <button type="button" class="pw-toggle" onclick="togglePw('current_password', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <!-- New password -->
+                    <div class="input-group" style="position:relative;">
+                        <input type="password" id="new_password" name="new_password" placeholder="Kata Sandi Baru" style="padding-right:46px;" oninput="checkStrength(this.value)">
+                        <label for="new_password">Kata Sandi Baru</label>
+                        <button type="button" class="pw-toggle" onclick="togglePw('new_password', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                        <!-- Strength meter -->
+                        <div class="strength-meter" id="strength-meter">
+                            <div class="strength-bar-wrap">
+                                <div class="strength-bar" id="strength-bar" style="width:0%;background:#ef4444;"></div>
+                            </div>
+                            <span class="strength-label" id="strength-label" style="color:#ef4444;"></span>
+                        </div>
+                    </div>
+                    <!-- Confirm password -->
+                    <div class="input-group" style="position:relative;">
+                        <input type="password" id="confirm_password" name="confirm_password" placeholder="Konfirmasi Kata Sandi Baru" style="padding-right:46px;">
+                        <label for="confirm_password">Konfirmasi Kata Sandi Baru</label>
+                        <button type="button" class="pw-toggle" onclick="togglePw('confirm_password', this)">
+                            <i class="fa-solid fa-eye"></i>
+                        </button>
+                    </div>
+                    <button type="submit" id="btn-pw" class="btn-submit" style="background:linear-gradient(135deg,#7c3aed,#6366f1);box-shadow:0 4px 14px rgba(124,58,237,0.3);">
+                        <i class="fa-solid fa-key" id="icon-pw"></i>
+                        <span id="text-pw">Ubah Kata Sandi</span>
+                    </button>
+                    <div id="msg-pw" class="form-msg"></div>
+                </form>
+            </div>
         </div>
 
         <!-- Hapus Akun -->
-        <div class="bg-white shadow-md rounded-lg p-6">
-            <h2 class="text-2xl font-semibold text-gray-700 mb-4">Hapus Akun</h2>
-            <p class="text-gray-600 mb-4">Menghapus akun akan menghapus semua data Anda secara permanen. Tindakan ini tidak dapat dibatalkan.</p>
-            <button id="hapus-akun-btn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Hapus Akun</button>
-        
+        <div class="section-card">
+            <div class="card-header">
+                <div class="card-header-icon red"><i class="fa-solid fa-trash-can"></i></div>
+                <div>
+                    <h2>Hapus Akun</h2>
+                    <p>Tindakan permanen dan tidak dapat dibatalkan</p>
+                </div>
+            </div>
+            <div class="card-body">
+                <div class="danger-zone">
+                    <p>Menghapus akun akan menghapus <strong>semua data kamu secara permanen</strong>, termasuk profil, booking, dan riwayat perjalanan. Pastikan kamu benar-benar yakin sebelum melanjutkan.</p>
+                    <button id="hapus-akun-btn" class="btn-danger">
+                        <i class="fa-solid fa-trash-can"></i>
+                        Hapus Akun Saya
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Delete Account Modal -->
+    <div id="delete-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-icon"><i class="fa-solid fa-trash-can"></i></div>
+            <h3 class="modal-title">Hapus Akun?</h3>
+            <p class="modal-desc">Semua data kamu akan dihapus secara permanen. Tindakan ini <strong>tidak dapat diurungkan</strong>.</p>
+            <div class="modal-actions">
+                <button id="delete-no" class="btn-modal-no">Batal</button>
+                <button id="delete-yes" class="btn-modal-yes">
+                    <i class="fa-solid fa-trash-can" style="margin-right:6px;"></i>Ya, Hapus
+                </button>
+            </div>
+        </div>
     </div>
+
     <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-            const namaInput = document.getElementById('nama');
-            const nomorHpInput = document.getElementById('nomor_hp');
-            const updateProfileForm = document.querySelector('#ubah-profil-form');
-            const currentPasswordInput = document.getElementById('current_password');
-            const newPasswordInput = document.getElementById('new_password');
-            const confirmPasswordInput = document.getElementById('confirm_password');
-            const changePasswordForm = document.querySelector('#ubah-password-form');
-            const deleteAccountButton = document.getElementById('hapus-akun-btn');
+        // Password toggle
+        function togglePw(id, btn) {
+            const input = document.getElementById(id);
+            const isText = input.type === 'text';
+            input.type = isText ? 'password' : 'text';
+            btn.querySelector('i').className = isText ? 'fa-solid fa-eye' : 'fa-solid fa-eye-slash';
+        }
 
-            const alertBox = document.getElementById('alert-box');
-            
+        // Password strength
+        function checkStrength(val) {
+            const meter = document.getElementById('strength-meter');
+            const bar = document.getElementById('strength-bar');
+            const label = document.getElementById('strength-label');
+            if (!val) { meter.classList.remove('show'); return; }
+            meter.classList.add('show');
 
-        
+            let score = 0;
+            if (val.length >= 8) score++;
+            if (/[A-Z]/.test(val)) score++;
+            if (/[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
 
-            const showMessage = (message, type = 'success') => {
-                alertBox.textContent = message;
-                alertBox.classList.remove('hidden', 'bg-red-50', 'text-red-600', 'bg-green-50', 'text-green-600');
-                if (type === 'error') {
-                    alertBox.classList.add('bg-red-50', 'text-red-600');
+            const levels = [
+                { w: '20%', color: '#ef4444', text: 'Sangat Lemah' },
+                { w: '40%', color: '#f97316', text: 'Lemah' },
+                { w: '65%', color: '#eab308', text: 'Sedang' },
+                { w: '85%', color: '#22c55e', text: 'Kuat' },
+                { w: '100%', color: '#16a34a', text: 'Sangat Kuat' },
+            ];
+            const lvl = levels[Math.min(score, 4)];
+            bar.style.width = lvl.w;
+            bar.style.background = lvl.color;
+            label.textContent = lvl.text;
+            label.style.color = lvl.color;
+        }
+
+        // Alert box
+        function showAlert(msg, type) {
+            const box = document.getElementById('alert-box');
+            const icon = document.getElementById('alert-icon');
+            const text = document.getElementById('alert-text');
+            box.className = 'alert-box show ' + type;
+            icon.className = type === 'success'
+                ? 'fa-solid fa-circle-check alert-icon'
+                : 'fa-solid fa-circle-exclamation alert-icon';
+            text.textContent = msg;
+            box.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            setTimeout(() => { box.className = 'alert-box hidden'; }, 5000);
+        }
+
+        function showFormMsg(id, msg, type) {
+            const el = document.getElementById(id);
+            el.className = 'form-msg show ' + type;
+            el.textContent = msg;
+        }
+
+        function setLoading(btnId, iconId, textId, loading, defaultText, defaultIcon) {
+            const btn = document.getElementById(btnId);
+            const icon = document.getElementById(iconId);
+            const text = document.getElementById(textId);
+            btn.disabled = loading;
+            icon.className = loading ? 'fa-solid fa-circle-notch spin' : defaultIcon;
+            text.textContent = loading ? 'Menyimpan...' : defaultText;
+        }
+
+        // Fetch user data
+        async function fetchUserData() {
+            try {
+                const res = await fetch('/api/me', { credentials: 'include' });
+                const data = await res.json();
+                if (res.ok) {
+                    document.getElementById('nama').value = data.user.nama || '';
+                    document.getElementById('nomor_hp').value = data.user.phone || '';
                 } else {
-                    alertBox.classList.add('bg-green-50', 'text-green-600');
+                    showAlert(`Gagal memuat data: ${data.message}`, 'error');
+                    if (res.status === 401) window.location.href = 'login.html';
                 }
-                alertBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            };
+            } catch (e) {
+                showAlert('Terjadi kesalahan saat memuat data pengguna.', 'error');
+            }
+        }
 
-            const fetchUserData = async () => {
-                try {
-                    const response = await fetch('/api/me', { credentials: 'include' });
-                    const data = await response.json();
-                    if (response.ok) {
-                        namaInput.value = data.user.nama || '';
-                        nomorHpInput.value = data.user.phone || '';
-                    } else {
-                        showMessage(`Gagal memuat data pengguna: ${data.message}`, 'error');
-                        if (response.status === 401) {
-                            window.location.href = 'login.html';
-                        }
-                    }
-                } catch (error) {
-                    console.error('Error fetching user data:', error);
-                    showMessage('Terjadi kesalahan saat memuat data pengguna.', 'error');
+        // Update profile
+        document.getElementById('ubah-profil-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const nama = document.getElementById('nama').value.trim();
+            const phone = document.getElementById('nomor_hp').value.trim();
+            if (!nama) { showFormMsg('msg-profil', 'Nama tidak boleh kosong.', 'error'); return; }
+            setLoading('btn-profil', 'icon-profil', 'text-profil', true, 'Simpan Perubahan', 'fa-solid fa-floppy-disk');
+            try {
+                const res = await fetch('/api/user/profile', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ nama, phone })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showFormMsg('msg-profil', '✓ ' + (data.message || 'Profil berhasil diperbarui.'), 'success');
+                } else {
+                    showFormMsg('msg-profil', '✕ Gagal memperbarui profil: ' + data.message, 'error');
                 }
-            };
-
-            if (updateProfileForm) {
-                updateProfileForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const newNama = namaInput.value.trim();
-                    const newNomorHp = nomorHpInput.value.trim();
-
-                    if (newNama === "") {
-                        showMessage("Nama tidak boleh kosong.", 'error');
-                        return;
-                    }
-
-                    try {
-                        const response = await fetch('/api/user/profile', {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include',
-                            body: JSON.stringify({ nama: newNama, phone: newNomorHp }),
-                        });
-                        const data = await response.json();
-                        if (response.ok) {
-                            showMessage(data.message, 'success');
-                        } else {
-                            showMessage(`Gagal memperbarui profil: ${data.message}`, 'error');
-                        }
-                    } catch (error) {
-                        console.error('Error updating profile:', error);
-                        showMessage('Terjadi kesalahan saat memperbarui profil.', 'error');
-                    }
-                });
+            } catch (err) {
+                showFormMsg('msg-profil', '✕ Terjadi kesalahan, coba lagi.', 'error');
+            } finally {
+                setLoading('btn-profil', 'icon-profil', 'text-profil', false, 'Simpan Perubahan', 'fa-solid fa-floppy-disk');
             }
-
-            if (changePasswordForm) {
-                changePasswordForm.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const currentPassword = currentPasswordInput.value;
-                    const newPassword = newPasswordInput.value;
-                    const confirmPassword = confirmPasswordInput.value;
-
-                    if (newPassword !== confirmPassword) {
-                        showMessage('Kata sandi baru dan konfirmasi kata sandi tidak cocok.', 'error');
-                        return;
-                    }
-
-                    try {
-                        const response = await fetch('/api/user/password', {
-                            method: 'PUT',
-                            headers: { 'Content-Type': 'application/json' },
-                            credentials: 'include',
-                            body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
-                        });
-                        const data = await response.json();
-                        if (response.ok) {
-                            showMessage(data.message, 'success');
-                            changePasswordForm.reset();
-                        } else {
-                            showMessage(`Gagal mengubah kata sandi: ${data.message}`, 'error');
-                        }
-                    } catch (error) {
-                        console.error('Error changing password:', error);
-                        showMessage('Terjadi kesalahan saat mengubah kata sandi.', 'error');
-                    }
-                });
-            }
-
-            if (deleteAccountButton) {
-                deleteAccountButton.addEventListener('click', async () => {
-                    if (confirm('Apakah Anda yakin ingin menghapus akun Anda? Tindakan ini tidak dapat dibatalkan.')) {
-                        try {
-                            const response = await fetch('/api/user', {
-                                method: 'DELETE',
-                                credentials: 'include',
-                            });
-                            const data = await response.json();
-                            if (response.ok) {
-                                showMessage(data.message, 'success');
-                                window.location.href = 'login.html';
-                            } else {
-                                showMessage(`Gagal menghapus akun: ${data.message}`, 'error');
-                            }
-                        } catch (error) {
-                            console.error('Error deleting account:', error);
-                            showMessage('Terjadi kesalahan saat menghapus akun.', 'error');
-                        }
-                    }
-                });
-            }
-
-            fetchUserData();
         });
+
+        // Change password
+        document.getElementById('ubah-password-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const current = document.getElementById('current_password').value;
+            const newPw = document.getElementById('new_password').value;
+            const confirm = document.getElementById('confirm_password').value;
+            if (newPw !== confirm) {
+                showFormMsg('msg-pw', '✕ Kata sandi baru dan konfirmasi tidak cocok.', 'error');
+                return;
+            }
+            if (newPw.length < 6) {
+                showFormMsg('msg-pw', '✕ Kata sandi minimal 6 karakter.', 'error');
+                return;
+            }
+            setLoading('btn-pw', 'icon-pw', 'text-pw', true, 'Ubah Kata Sandi', 'fa-solid fa-key');
+            try {
+                const res = await fetch('/api/user/password', {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ current_password: current, new_password: newPw })
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    showFormMsg('msg-pw', '✓ ' + (data.message || 'Kata sandi berhasil diubah.'), 'success');
+                    document.getElementById('ubah-password-form').reset();
+                    document.getElementById('strength-meter').classList.remove('show');
+                } else {
+                    showFormMsg('msg-pw', '✕ ' + (data.message || 'Gagal mengubah kata sandi.'), 'error');
+                }
+            } catch (err) {
+                showFormMsg('msg-pw', '✕ Terjadi kesalahan, coba lagi.', 'error');
+            } finally {
+                setLoading('btn-pw', 'icon-pw', 'text-pw', false, 'Ubah Kata Sandi', 'fa-solid fa-key');
+            }
+        });
+
+        // Delete account modal
+        document.getElementById('hapus-akun-btn').addEventListener('click', () => {
+            document.getElementById('delete-modal').classList.add('show');
+        });
+        document.getElementById('delete-no').addEventListener('click', () => {
+            document.getElementById('delete-modal').classList.remove('show');
+        });
+        document.getElementById('delete-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) e.currentTarget.classList.remove('show');
+        });
+        document.getElementById('delete-yes').addEventListener('click', async () => {
+            document.getElementById('delete-modal').classList.remove('show');
+            try {
+                const res = await fetch('/api/user', { method: 'DELETE', credentials: 'include' });
+                const data = await res.json();
+                if (res.ok) {
+                    showAlert(data.message || 'Akun berhasil dihapus.', 'success');
+                    setTimeout(() => { window.location.href = 'login.html'; }, 1500);
+                } else {
+                    showAlert('Gagal menghapus akun: ' + data.message, 'error');
+                }
+            } catch (err) {
+                showAlert('Terjadi kesalahan. Coba lagi.', 'error');
+            }
+        });
+
+        fetchUserData();
     </script>
 </body>
 </html>

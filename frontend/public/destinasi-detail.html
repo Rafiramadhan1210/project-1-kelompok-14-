@@ -7,7 +7,10 @@
     <title>GoTrip - Detail Destinasi</title>
     <link rel="stylesheet" href="./output.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+
         #detail-navbar {
             background: rgba(0,0,0,0.4);
             backdrop-filter: blur(8px);
@@ -22,6 +25,425 @@
             margin-top: 0 !important;
             height: 420px;
         }
+
+        /* ===== BOOKING CARD ===== */
+        .booking-card {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 20px 60px -10px rgba(99,102,241,0.12);
+            border: 1px solid rgba(226,232,240,0.8);
+            overflow: hidden;
+            animation: cardSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes cardSlideUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Header harga */
+        .price-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 60%, #6366f1 100%);
+            padding: 20px 24px;
+            position: relative;
+            overflow: hidden;
+        }
+        .price-header::before {
+            content: '';
+            position: absolute;
+            top: -30px; right: -30px;
+            width: 120px; height: 120px;
+            background: rgba(255,255,255,0.07);
+            border-radius: 50%;
+        }
+        .price-header::after {
+            content: '';
+            position: absolute;
+            bottom: -20px; left: 40px;
+            width: 80px; height: 80px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 50%;
+        }
+        .price-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.7);
+            margin-bottom: 4px;
+        }
+        .price-value {
+            font-size: 28px;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.1;
+        }
+        .price-value span {
+            font-size: 14px;
+            font-weight: 500;
+            opacity: 0.75;
+        }
+
+        /* Form body */
+        .form-body { padding: 24px; }
+
+        /* Floating label inputs */
+        .input-group {
+            position: relative;
+            margin-bottom: 18px;
+        }
+        .input-group label {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 13px;
+            font-weight: 500;
+            color: #94a3b8;
+            pointer-events: none;
+            transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+            background: white;
+            padding: 0 4px;
+        }
+        .input-group.date-group label {
+            top: 50%;
+        }
+        .input-group input:focus ~ label,
+        .input-group input:not(:placeholder-shown) ~ label,
+        .input-group input[value]:not([value=""]) ~ label {
+            top: 0;
+            font-size: 11px;
+            color: #3b82f6;
+            font-weight: 600;
+        }
+        .input-group input {
+            width: 100%;
+            padding: 13px 14px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 14px;
+            color: #1e293b;
+            background: #fafbff;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+            box-sizing: border-box;
+        }
+        .input-group input::placeholder { color: transparent; }
+        .input-group input:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+            background: #fff;
+        }
+        .input-group input:focus ~ label {
+            top: 0;
+            font-size: 11px;
+            color: #3b82f6;
+        }
+        .input-group .input-icon {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #cbd5e1;
+            font-size: 13px;
+            pointer-events: none;
+            transition: color 0.2s;
+        }
+        .input-group input:focus ~ .input-icon { color: #3b82f6; }
+
+        /* Date input fix */
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            opacity: 0.5;
+            cursor: pointer;
+        }
+        input[type="date"]:focus::-webkit-calendar-picker-indicator { opacity: 1; }
+
+        /* Quantity stepper */
+        .qty-label {
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 8px;
+        }
+        .qty-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 0;
+            background: #f1f5f9;
+            border-radius: 12px;
+            padding: 4px;
+            border: 1.5px solid #e2e8f0;
+            width: fit-content;
+            transition: border-color 0.2s;
+        }
+        .qty-wrapper:focus-within { border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12); }
+        .qty-btn {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: transparent;
+            font-size: 18px;
+            font-weight: 700;
+            color: #475569;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.15s, color 0.15s, transform 0.1s;
+            line-height: 1;
+        }
+        .qty-btn:hover { background: #ffffff; color: #3b82f6; transform: scale(1.05); }
+        .qty-btn:active { transform: scale(0.95); }
+        .qty-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+        .qty-input {
+            width: 52px;
+            text-align: center;
+            border: none;
+            background: transparent;
+            font-size: 16px;
+            font-weight: 700;
+            color: #1e293b;
+            outline: none;
+        }
+
+        /* Total price */
+        .total-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+            border: 1.5px solid #dbeafe;
+            border-radius: 14px;
+            padding: 14px 16px;
+            margin: 16px 0;
+        }
+        .total-label { font-size: 13px; font-weight: 600; color: #64748b; }
+        .total-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #1d4ed8;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .total-value.bump {
+            transform: scale(1.12);
+            color: #7c3aed;
+        }
+
+        /* Upload area */
+        .upload-section { margin-bottom: 16px; }
+        .upload-label-text {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: #94a3b8;
+            margin-bottom: 6px;
+            display: block;
+        }
+        .bank-info {
+            background: #f8fafc;
+            border: 1.5px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .bank-icon {
+            width: 36px; height: 36px;
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+            border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .bank-icon i { color: white; font-size: 14px; }
+        .bank-text { font-size: 12px; color: #475569; line-height: 1.5; }
+        .bank-text strong { color: #1e293b; }
+
+        .upload-area {
+            position: relative;
+            border: 2px dashed #cbd5e1;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #fafbff;
+        }
+        .upload-area:hover, .upload-area.drag-over {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+        .upload-area input[type="file"] {
+            position: absolute; inset: 0;
+            opacity: 0; cursor: pointer; width: 100%; height: 100%;
+        }
+        .upload-icon {
+            width: 38px; height: 38px;
+            background: linear-gradient(135deg, #dbeafe, #e0e7ff);
+            border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 8px;
+        }
+        .upload-icon i { color: #3b82f6; font-size: 16px; }
+        .upload-text { font-size: 13px; font-weight: 600; color: #475569; }
+        .upload-subtext { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+        .upload-filename {
+            font-size: 12px;
+            color: #3b82f6;
+            font-weight: 600;
+            margin-top: 6px;
+            display: none;
+        }
+
+        /* Checkbox */
+        .agree-row {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+        .custom-checkbox {
+            position: relative;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+        .custom-checkbox input { position: absolute; opacity: 0; width: 0; height: 0; }
+        .checkmark {
+            width: 18px; height: 18px;
+            border: 2px solid #cbd5e1;
+            border-radius: 5px;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+            background: #fff;
+            cursor: pointer;
+        }
+        .custom-checkbox input:checked ~ .checkmark {
+            background: linear-gradient(135deg, #3b82f6, #6366f1);
+            border-color: transparent;
+        }
+        .checkmark i { color: white; font-size: 9px; opacity: 0; transform: scale(0); transition: all 0.15s; }
+        .custom-checkbox input:checked ~ .checkmark i { opacity: 1; transform: scale(1); }
+        .agree-text { font-size: 12px; color: #64748b; line-height: 1.5; cursor: pointer; }
+
+        /* Submit button */
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #2563eb 0%, #4f46e5 100%);
+            color: white;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 15px rgba(59,130,246,0.4);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-submit::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 60%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+            transition: left 0.5s ease;
+        }
+        .btn-submit:hover::before { left: 160%; }
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59,130,246,0.45);
+        }
+        .btn-submit:active { transform: translateY(0); }
+        .btn-submit:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Success / error message */
+        .booking-message {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            margin-top: 10px;
+            animation: msgFadeIn 0.3s ease;
+        }
+        @keyframes msgFadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+        .booking-message.success {
+            background: #f0fdf4;
+            color: #16a34a;
+            border: 1.5px solid #bbf7d0;
+        }
+        .booking-message.error {
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1.5px solid #fecaca;
+        }
+        .booking-message.info {
+            background: #eff6ff;
+            color: #2563eb;
+            border: 1.5px solid #bfdbfe;
+        }
+
+        /* Divider */
+        .form-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 16px 0;
+        }
+
+        /* Section label */
+        .section-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 11px;
+            font-weight: 700;
+            color: #2563eb;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 14px;
+        }
+
+        /* Left column cards */
+        .info-card {
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            padding: 24px;
+            transition: box-shadow 0.2s;
+        }
+        .info-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); }
+        .policy-card {
+            background: linear-gradient(135deg, #eff6ff 0%, #f0f9ff 100%);
+            border-radius: 20px;
+            border: 1px solid #bfdbfe;
+            padding: 24px;
+        }
+
+        /* Spinner loading */
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin { animation: spin 0.8s linear infinite; }
+
+        /* Qty pulse anim */
+        @keyframes qtyPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.18); }
+            100% { transform: scale(1); }
+        }
+        .qty-pulse { animation: qtyPulse 0.2s ease; }
     </style>
 </head>
 
@@ -52,132 +474,209 @@
     </div>
 
     <main id="detail-content" class="hidden">
+        <!-- Hero Image -->
         <div class="relative overflow-hidden">
             <img id="d-gambar" src="" alt="" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-            <button id="wishlist-detail-btn" class="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/90 flex items-center justify-center hover:bg-white transition">
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+            <button id="wishlist-detail-btn" class="absolute top-4 right-4 w-11 h-11 rounded-full bg-white/90 backdrop-blur-sm flex items-center justify-center hover:bg-white transition-all hover:scale-110 shadow-lg">
                 <i class="fa-regular fa-heart text-gray-600 text-lg"></i>
             </button>
             <div class="absolute bottom-6 left-6 right-6">
-                <span id="d-kategori" class="inline-block text-xs font-bold text-white bg-blue-600 px-3 py-1 rounded-full mb-2"></span>
-                <h1 id="d-nama" class="text-3xl md:text-4xl font-bold text-white"></h1>
+                <span id="d-kategori" class="inline-block text-xs font-bold text-white bg-blue-600 px-3 py-1 rounded-full mb-2 backdrop-blur-sm"></span>
+                <h1 id="d-nama" class="text-3xl md:text-4xl font-bold text-white drop-shadow-lg"></h1>
             </div>
         </div>
 
+        <!-- Main Content -->
         <div class="container mx-auto px-6 py-8 grid md:grid-cols-3 gap-8 max-w-5xl">
+
+            <!-- Left Column -->
             <div class="md:col-span-2 space-y-6">
+                <!-- Location & Rating -->
                 <div class="flex items-center gap-6 text-gray-600">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-location-dot text-red-500"></i>
-                        <span id="d-lokasi"></span>
+                        <span id="d-lokasi" class="font-medium"></span>
                     </div>
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-star text-yellow-400"></i>
-                        <span id="d-rating"></span>
+                        <span id="d-rating" class="font-semibold"></span>
                     </div>
                 </div>
 
+                <!-- About -->
                 <div>
-                    <h2 class="font-bold text-gray-800 mb-2">Tentang Destinasi</h2>
+                    <h2 class="font-bold text-gray-800 mb-2 text-lg">Tentang Destinasi</h2>
                     <p id="d-deskripsi" class="text-gray-600 leading-relaxed"></p>
                 </div>
 
-                <div class="bg-white rounded-2xl border border-gray-100 p-6">
-                    <h2 class="font-bold text-gray-800 mb-4">Yang Perlu Disiapkan</h2>
+                <!-- Yang Perlu Disiapkan -->
+                <div class="info-card">
+                    <h2 class="font-bold text-gray-800 mb-4 text-base">Yang Perlu Disiapkan</h2>
                     <div class="grid grid-cols-2 gap-4 text-sm">
-                        <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-id-card text-blue-600 mt-0.5"></i>
-                            <span class="text-gray-600">Identitas (KTP/SIM) untuk peserta dewasa</span>
+                        <div class="flex items-start gap-3 p-3 bg-blue-50 rounded-xl">
+                            <div class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-id-card text-blue-600 text-sm"></i>
+                            </div>
+                            <span class="text-gray-600 leading-snug">Identitas (KTP/SIM) untuk peserta dewasa</span>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-shirt text-blue-600 mt-0.5"></i>
-                            <span class="text-gray-600">Pakaian dan alas kaki yang nyaman</span>
+                        <div class="flex items-start gap-3 p-3 bg-indigo-50 rounded-xl">
+                            <div class="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-shirt text-indigo-600 text-sm"></i>
+                            </div>
+                            <span class="text-gray-600 leading-snug">Pakaian dan alas kaki yang nyaman</span>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-camera text-blue-600 mt-0.5"></i>
-                            <span class="text-gray-600">Kamera untuk dokumentasi perjalanan</span>
+                        <div class="flex items-start gap-3 p-3 bg-purple-50 rounded-xl">
+                            <div class="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-camera text-purple-600 text-sm"></i>
+                            </div>
+                            <span class="text-gray-600 leading-snug">Kamera untuk dokumentasi perjalanan</span>
                         </div>
-                        <div class="flex items-start gap-3">
-                            <i class="fa-solid fa-tint text-blue-600 mt-0.5"></i>
-                            <span class="text-gray-600">Air minum &amp; perlengkapan pribadi</span>
+                        <div class="flex items-start gap-3 p-3 bg-cyan-50 rounded-xl">
+                            <div class="w-8 h-8 bg-cyan-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-droplet text-cyan-600 text-sm"></i>
+                            </div>
+                            <span class="text-gray-600 leading-snug">Air minum &amp; perlengkapan pribadi</span>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-blue-50 rounded-2xl border border-blue-100 p-6">
-                    <h2 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-circle-info text-blue-600"></i>
+                <!-- Kebijakan -->
+                <div class="policy-card">
+                    <h2 class="font-bold text-gray-800 mb-3 flex items-center gap-2 text-base">
+                        <div class="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+                            <i class="fa-solid fa-circle-info text-white text-xs"></i>
+                        </div>
                         Kebijakan Pemesanan
                     </h2>
-                    <ul class="space-y-2 text-sm text-gray-600">
-                        <li class="flex items-start gap-2">
-                            <i class="fa-solid fa-check text-blue-600 mt-1 text-xs"></i>
+                    <ul class="space-y-3 text-sm text-gray-600">
+                        <li class="flex items-start gap-3">
+                            <div class="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-check text-white text-xs" style="font-size:8px"></i>
+                            </div>
                             <span>Pembayaran dikonfirmasi manual dalam 1x24 jam setelah bukti transfer diunggah</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fa-solid fa-check text-blue-600 mt-1 text-xs"></i>
+                        <li class="flex items-start gap-3">
+                            <div class="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-check text-white text-xs" style="font-size:8px"></i>
+                            </div>
                             <span>Pembatalan dapat dilakukan maksimal 2 hari sebelum tanggal kunjungan</span>
                         </li>
-                        <li class="flex items-start gap-2">
-                            <i class="fa-solid fa-check text-blue-600 mt-1 text-xs"></i>
+                        <li class="flex items-start gap-3">
+                            <div class="w-5 h-5 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                                <i class="fa-solid fa-check text-white text-xs" style="font-size:8px"></i>
+                            </div>
                             <span>Status booking dapat dipantau melalui menu "Booking Saya"</span>
                         </li>
                     </ul>
                 </div>
             </div>
 
-            <div class="bg-white rounded-2xl border border-gray-100 p-6 h-fit sticky top-24">
-                <p class="text-sm text-gray-500 mb-1">Harga per tiket</p>
-                <p id="d-harga" class="text-2xl font-bold text-orange-500 mb-5"></p>
-
-                <form id="booking-form" class="space-y-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap</label>
-                        <input type="text" id="f-nama" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Sesuai identitas">
+            <!-- Right Column: Booking Card -->
+            <div class="sticky top-24 h-fit">
+                <div class="booking-card">
+                    <!-- Price Header -->
+                    <div class="price-header">
+                        <p class="price-label">Harga per tiket</p>
+                        <p id="d-harga" class="price-value"></p>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">No. HP/WhatsApp</label>
-                        <input type="tel" id="f-hp" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="08xxxxxxxxxx">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kunjungan</label>
-                        <input type="date" id="f-tanggal" required class="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Jumlah Peserta</label>
-                        <div class="flex items-center gap-3">
-                            <button type="button" id="qty-minus" class="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 font-bold text-gray-600 transition">-</button>
-                            <input type="number" id="f-qty" value="1" min="1" class="w-16 text-center border border-gray-200 rounded-lg py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <button type="button" id="qty-plus" class="w-9 h-9 rounded-lg bg-gray-100 hover:bg-gray-200 font-bold text-gray-600 transition">+</button>
+                    <!-- Form Body -->
+                    <div class="form-body">
+                        <div class="section-badge">
+                            <i class="fa-solid fa-ticket"></i>
+                            Detail Pemesanan
                         </div>
+
+                        <form id="booking-form">
+                            <!-- Nama -->
+                            <div class="input-group">
+                                <input type="text" id="f-nama" required placeholder="Nama Lengkap" autocomplete="name">
+                                <label for="f-nama">Nama Lengkap</label>
+                                <i class="fa-solid fa-user input-icon"></i>
+                            </div>
+
+                            <!-- HP -->
+                            <div class="input-group">
+                                <input type="tel" id="f-hp" required placeholder="No. HP/WhatsApp" autocomplete="tel">
+                                <label for="f-hp">No. HP / WhatsApp</label>
+                                <i class="fa-solid fa-phone input-icon"></i>
+                            </div>
+
+                            <!-- Tanggal -->
+                            <div class="input-group date-group" style="margin-bottom:18px">
+                                <label for="f-tanggal" style="position:static;transform:none;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:#94a3b8;margin-bottom:6px;display:block;padding:0;">Tanggal Kunjungan</label>
+                                <div style="position:relative;">
+                                    <input type="date" id="f-tanggal" required style="padding:13px 14px;border:1.5px solid #e2e8f0;border-radius:12px;font-size:14px;color:#1e293b;background:#fafbff;width:100%;box-sizing:border-box;outline:none;transition:border-color 0.2s,box-shadow 0.2s;">
+                                    <i class="fa-solid fa-calendar" style="position:absolute;right:14px;top:50%;transform:translateY(-50%);color:#cbd5e1;font-size:13px;pointer-events:none;"></i>
+                                </div>
+                            </div>
+
+                            <!-- Jumlah Peserta -->
+                            <div style="margin-bottom:16px;">
+                                <p class="qty-label">Jumlah Peserta</p>
+                                <div class="qty-wrapper">
+                                    <button type="button" id="qty-minus" class="qty-btn" aria-label="Kurangi peserta">
+                                        <i class="fa-solid fa-minus" style="font-size:12px;"></i>
+                                    </button>
+                                    <input type="number" id="f-qty" value="1" min="1" class="qty-input" readonly>
+                                    <button type="button" id="qty-plus" class="qty-btn" aria-label="Tambah peserta">
+                                        <i class="fa-solid fa-plus" style="font-size:12px;"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Total -->
+                            <div class="total-row">
+                                <span class="total-label">
+                                    <i class="fa-solid fa-receipt" style="margin-right:6px;opacity:0.6;"></i>
+                                    Total Bayar
+                                </span>
+                                <span id="d-total" class="total-value">Rp 0</span>
+                            </div>
+
+                            <div class="form-divider"></div>
+
+                            <!-- Upload Bukti -->
+                            <div class="upload-section">
+                                <span class="upload-label-text">Bukti Transfer</span>
+                                <div class="bank-info">
+                                    <div class="bank-icon"><i class="fa-solid fa-building-columns"></i></div>
+                                    <div class="bank-text">
+                                        Transfer ke <strong>BCA 1234567890</strong><br>
+                                        a.n. <strong>GoTrip Indonesia</strong>
+                                    </div>
+                                </div>
+                                <div class="upload-area" id="upload-area">
+                                    <input type="file" id="f-bukti" accept="image/*,.pdf" required>
+                                    <div class="upload-icon"><i class="fa-solid fa-cloud-arrow-up"></i></div>
+                                    <p class="upload-text">Klik atau seret file ke sini</p>
+                                    <p class="upload-subtext">JPG, PNG, atau PDF · Maks. 5 MB</p>
+                                    <p class="upload-filename" id="upload-filename"></p>
+                                </div>
+                            </div>
+
+                            <!-- Agree -->
+                            <label class="agree-row" for="f-setuju">
+                                <div class="custom-checkbox">
+                                    <input type="checkbox" id="f-setuju" required>
+                                    <div class="checkmark">
+                                        <i class="fa-solid fa-check"></i>
+                                    </div>
+                                </div>
+                                <span class="agree-text">Saya telah membaca dan menyetujui syarat &amp; ketentuan serta kebijakan pembatalan/refund</span>
+                            </label>
+
+                            <!-- Submit -->
+                            <button type="submit" id="booking-btn" class="btn-submit">
+                                <i class="fa-solid fa-ticket" id="btn-icon"></i>
+                                <span id="btn-text">Lanjutkan Booking</span>
+                            </button>
+
+                            <div id="booking-message" class="booking-message"></div>
+                        </form>
                     </div>
-
-                    <div class="flex justify-between items-center border-t border-gray-100 pt-4">
-                        <span class="text-gray-600 font-medium text-sm">Total</span>
-                        <span id="d-total" class="text-xl font-bold text-gray-800"></span>
-                    </div>
-
-                    <div class="border-t border-gray-100 pt-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Bukti Transfer</label>
-                        <p class="text-xs text-gray-400 mb-2">Transfer ke <span class="font-semibold text-gray-600">BCA 1234567890 a.n. GoTrip Indonesia</span>, lalu unggah buktinya di sini.</p>
-                        <input type="file" id="f-bukti" accept="image/*,.pdf" required class="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 file:mr-3 file:px-3 file:py-1 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-600 file:text-sm file:font-medium">
-                    </div>
-
-                    <label class="flex items-start gap-2 text-sm text-gray-600">
-                        <input type="checkbox" id="f-setuju" required class="mt-1">
-                        <span>Saya telah membaca dan menyetujui syarat &amp; ketentuan serta kebijakan pembatalan/refund</span>
-                    </label>
-
-                    <button type="submit" id="booking-btn" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-ticket"></i>
-                        <span>Lanjutkan Booking</span>
-                    </button>
-
-                    <div id="booking-message" class="hidden mt-1 text-center text-sm font-medium"></div>
-                </form>
+                </div>
             </div>
         </div>
     </main>
@@ -199,9 +698,61 @@
 
         function updateTotal() {
             const qty = parseInt(document.getElementById('f-qty').value) || 1;
-            const total = qty * (currentDestinasi.harga || 0);
-            document.getElementById('d-total').textContent = formatRupiah(total);
+            const total = qty * (currentDestinasi ? currentDestinasi.harga || 0 : 0);
+            const el = document.getElementById('d-total');
+            el.textContent = formatRupiah(total);
+            el.classList.add('bump');
+            setTimeout(() => el.classList.remove('bump'), 300);
+
+            // Minus btn disabled jika qty = 1
+            document.getElementById('qty-minus').disabled = qty <= 1;
         }
+
+        // Upload file feedback
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('f-bukti');
+        const filenameEl = document.getElementById('upload-filename');
+
+        fileInput.addEventListener('change', () => {
+            const f = fileInput.files[0];
+            if (f) {
+                filenameEl.textContent = '✓ ' + f.name;
+                filenameEl.style.display = 'block';
+                uploadArea.style.borderColor = '#22c55e';
+                uploadArea.style.background = '#f0fdf4';
+            }
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('drag-over');
+        });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('drag-over'));
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('drag-over');
+            const f = e.dataTransfer.files[0];
+            if (f) {
+                const dt = new DataTransfer();
+                dt.items.add(f);
+                fileInput.files = dt.files;
+                filenameEl.textContent = '✓ ' + f.name;
+                filenameEl.style.display = 'block';
+                uploadArea.style.borderColor = '#22c55e';
+                uploadArea.style.background = '#f0fdf4';
+            }
+        });
+
+        // Date input focus style
+        const dateInput = document.getElementById('f-tanggal');
+        dateInput.addEventListener('focus', () => {
+            dateInput.style.borderColor = '#3b82f6';
+            dateInput.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.12)';
+        });
+        dateInput.addEventListener('blur', () => {
+            dateInput.style.borderColor = '#e2e8f0';
+            dateInput.style.boxShadow = 'none';
+        });
 
         async function loadDetail() {
             if (!destinasiId) {
@@ -223,7 +774,7 @@
                 document.getElementById('d-lokasi').textContent = currentDestinasi.lokasi || 'Lokasi tidak tersedia';
                 document.getElementById('d-rating').textContent = (currentDestinasi.rating || 0).toFixed(1);
                 document.getElementById('d-deskripsi').textContent = currentDestinasi.deskripsi || 'Belum ada deskripsi.';
-                document.getElementById('d-harga').textContent = formatRupiah(currentDestinasi.harga) + ' /tiket';
+                document.getElementById('d-harga').innerHTML = formatRupiah(currentDestinasi.harga) + ' <span>/tiket</span>';
 
                 const tanggalInput = document.getElementById('f-tanggal');
                 tanggalInput.min = new Date().toISOString().split('T')[0];
@@ -248,9 +799,7 @@
                 const ids = (result.data || []).map(d => d._id);
                 isWishlisted = ids.includes(destinasiId);
                 renderWishlistIcon();
-            } catch (err) {
-                // diam, biarkan default
-            }
+            } catch (err) {}
         }
 
         function renderWishlistIcon() {
@@ -272,52 +821,57 @@
                     credentials: 'include',
                     body: JSON.stringify({ destination_id: destinasiId })
                 });
-
-                if (res.status === 401) {
-                    alert('Silakan login dulu untuk menyimpan wishlist.');
-                    return;
-                }
-
+                if (res.status === 401) { alert('Silakan login dulu untuk menyimpan wishlist.'); return; }
                 const result = await res.json();
                 isWishlisted = result.wishlisted;
                 renderWishlistIcon();
-            } catch (err) {
-                console.error('Gagal update wishlist:', err);
-            }
+            } catch (err) { console.error(err); }
         });
 
         document.getElementById('qty-minus').addEventListener('click', () => {
             const input = document.getElementById('f-qty');
-            input.value = Math.max(1, (parseInt(input.value) || 1) - 1);
+            const newVal = Math.max(1, (parseInt(input.value) || 1) - 1);
+            input.value = newVal;
+            input.classList.add('qty-pulse');
+            setTimeout(() => input.classList.remove('qty-pulse'), 200);
             updateTotal();
         });
 
         document.getElementById('qty-plus').addEventListener('click', () => {
             const input = document.getElementById('f-qty');
             input.value = (parseInt(input.value) || 1) + 1;
+            input.classList.add('qty-pulse');
+            setTimeout(() => input.classList.remove('qty-pulse'), 200);
             updateTotal();
         });
 
         document.getElementById('f-qty').addEventListener('input', updateTotal);
 
+        function showMessage(type, text) {
+            const box = document.getElementById('booking-message');
+            box.className = 'booking-message ' + type;
+            box.textContent = text;
+            box.style.display = 'block';
+        }
+
         document.getElementById('booking-form').addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const btn = document.getElementById('booking-btn');
-            const messageBox = document.getElementById('booking-message');
+            const btnText = document.getElementById('btn-text');
+            const btnIcon = document.getElementById('btn-icon');
             const qty = parseInt(document.getElementById('f-qty').value) || 1;
             const total = qty * (currentDestinasi.harga || 0);
             const buktiFile = document.getElementById('f-bukti').files[0];
 
             if (!buktiFile) {
-                messageBox.classList.remove('hidden');
-                messageBox.className = 'mt-1 text-center text-sm font-medium text-red-600';
-                messageBox.textContent = 'Bukti transfer wajib diunggah.';
+                showMessage('error', '⚠ Bukti transfer wajib diunggah sebelum melanjutkan.');
                 return;
             }
 
             btn.disabled = true;
-            btn.querySelector('span').textContent = 'Memproses...';
+            btnIcon.className = 'fa-solid fa-circle-notch spin';
+            btnText.textContent = 'Memproses...';
 
             const formData = new FormData();
             formData.append('nama_user', document.getElementById('f-nama').value.trim());
@@ -337,27 +891,25 @@
                 });
 
                 const result = await res.json();
-                messageBox.classList.remove('hidden');
 
                 if (res.status === 401) {
-                    messageBox.className = 'mt-1 text-center text-sm font-medium text-red-600';
-                    messageBox.textContent = 'Silakan login dulu untuk booking.';
+                    showMessage('info', '🔒 Silakan login dulu untuk melakukan booking.');
                 } else if (res.ok) {
-                    messageBox.className = 'mt-1 text-center text-sm font-medium text-green-600';
-                    messageBox.textContent = 'Booking berhasil dikirim! Menunggu konfirmasi pembayaran.';
+                    showMessage('success', '🎉 Booking berhasil! Menunggu konfirmasi pembayaran.');
                     document.getElementById('booking-form').reset();
+                    filenameEl.style.display = 'none';
+                    uploadArea.style.borderColor = '';
+                    uploadArea.style.background = '';
                     updateTotal();
                 } else {
-                    messageBox.className = 'mt-1 text-center text-sm font-medium text-red-600';
-                    messageBox.textContent = result.message || result.error || 'Booking gagal, coba lagi.';
+                    showMessage('error', '✕ ' + (result.message || result.error || 'Booking gagal, coba lagi.'));
                 }
             } catch (err) {
-                messageBox.classList.remove('hidden');
-                messageBox.className = 'mt-1 text-center text-sm font-medium text-red-600';
-                messageBox.textContent = 'Tidak dapat terhubung ke server.';
+                showMessage('error', '✕ Tidak dapat terhubung ke server. Cek koneksi internet.');
             } finally {
                 btn.disabled = false;
-                btn.querySelector('span').textContent = 'Lanjutkan Booking';
+                btnIcon.className = 'fa-solid fa-ticket';
+                btnText.textContent = 'Lanjutkan Booking';
             }
         });
 

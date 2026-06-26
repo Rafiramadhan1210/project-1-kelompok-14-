@@ -49,6 +49,20 @@ type Booking struct {
 	Status        string             `bson:"status" json:"status"`
 	CreatedAt     primitive.DateTime `bson:"created_at" json:"created_at"`
 }
+// Notification merepresentasikan satu notifikasi.
+// Email kosong ("") berarti notifikasi broadcast (promo) untuk semua user.
+// ReadBy menyimpan daftar email yang sudah membaca notifikasi ini.
+type Notification struct {
+	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	Email     string             `bson:"email" json:"email"`
+	Type      string             `bson:"type" json:"type"` // "booking" | "promo"
+	Title     string             `bson:"title" json:"title"`
+	Message   string             `bson:"message" json:"message"`
+	Link      string             `bson:"link,omitempty" json:"link,omitempty"`
+	ReadBy    []string           `bson:"read_by" json:"-"`
+	CreatedAt primitive.DateTime `bson:"created_at" json:"created_at"`
+}
+
 type Kategori struct {
     ID    primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
     Nama  string             `bson:"nama" json:"nama"`

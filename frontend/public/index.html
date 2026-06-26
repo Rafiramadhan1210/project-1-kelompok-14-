@@ -37,20 +37,23 @@
                 </div>
 
                 <div class="flex items-center gap-4">
-                    <div class="hidden lg:block relative">
-                        <input type="text" id="search-input-nav" placeholder="Cari destinasi..." class="px-4 py-2 bg-gray-100 rounded-full text-sm focus:outline-none focus:bg-white focus:ring-2 focus:ring-blue-500 w-48">
-                        <i class="fa-solid fa-magnifying-glass absolute right-3 top-2.5 text-gray-400"></i>
+                    <div class="relative" id="notification-menu">
+                        <button class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition" id="notification-btn">
+                            <i class="fa-solid fa-bell text-xl"></i>
+                            <span id="notification-badge" class="hidden absolute top-1 right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+                        </button>
+
+                        <div id="notification-dropdown" class="hidden absolute right-0 mt-2 bg-white rounded-xl shadow-xl border border-gray-100 z-50"
+                            style="width:360px;max-width:92vw;">
+                            <div class="flex items-center justify-between border-b border-gray-100" style="padding:14px 18px;">
+                                <p class="font-bold text-gray-800" style="font-size:15px;">Notifikasi</p>
+                                <button id="notification-mark-all" class="text-blue-600 font-semibold hover:underline" style="font-size:13px;white-space:nowrap;">Tandai semua dibaca</button>
+                            </div>
+                            <div id="notification-list" style="max-height:420px;overflow-y:auto;">
+                                <p class="text-center text-gray-400 text-sm py-8">Memuat notifikasi...</p>
+                            </div>
+                        </div>
                     </div>
-
-                    <button class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition" id="notification-btn">
-                        
-                        <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-                    </button>
-
-                    <button class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition" id="wishlist-btn">
-                        <i class="fa-solid fa-heart text-xl"></i>
-                        <span class="absolute top-1 right-1 bg-blue-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">3</span>
-                    </button>
 
                     <a href="login.html" id="login-link" class="hidden px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 transition">
                         Masuk

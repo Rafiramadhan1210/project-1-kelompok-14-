@@ -285,6 +285,147 @@ document.addEventListener('click', async (e) => {
 
 loadMyWishlistIds();
 
+// ====== Notifikasi ======
+const notificationBtn = document.getElementById('notification-btn');
+const notificationDropdown = document.getElementById('notification-dropdown');
+const notificationBadge = document.getElementById('notification-badge');
+const notificationList = document.getElementById('notification-list');
+const notificationMarkAll = document.getElementById('notification-mark-all');
+
+function timeAgo(dateString) {
+    const date = new Date(dateString);
+    const diffSec = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (diffSec < 60) return 'Baru saja';
+    const diffMin = Math.floor(diffSec / 60);
+    if (diffMin < 60) return `${diffMin} menit lalu`;
+    const diffHour = Math.floor(diffMin / 60);
+    if (diffHour < 24) return `${diffHour} jam lalu`;
+    const diffDay = Math.floor(diffHour / 24);
+    return `${diffDay} hari lalu`;
+}
+
+function renderNotificationBadge(count) {
+    if (!notificationBadge) return;
+    if (count > 0) {
+        notificationBadge.textContent = count > 9 ? '9+' : count;
+        notificationBadge.classList.remove('hidden');
+    } else {
+        notificationBadge.classList.add('hidden');
+    }
+}
+
+function renderNotificationList(items) {
+    if (!notificationList) return;
+    if (!items || items.length === 0) {
+        notificationList.innerHTML = `
+            <div class="text-center py-10 px-4">
+                <i class="fa-regular fa-bell-slash text-3xl text-gray-300 mb-2"></i>
+                <p class="text-gray-500 text-sm">Belum ada notifikasi</p>
+            </div>`;
+        return;
+    }
+
+    notificationList.innerHTML = items.map(item => {
+        const isPromo = item.type === 'promo';
+        const badgeBg = isPromo ? '#fff7ed' : '#eff6ff';
+        const badgeColor = isPromo ? '#f97316' : '#2563eb';
+        const iconName = isPromo ? 'fa-tag' : 'fa-ticket';
+        return `
+            <div class="notification-item" data-id="${item._id}" data-link="${item.link || ''}"
+                style="display:flex;gap:12px;padding:14px 18px;cursor:pointer;border-bottom:1px solid #f3f4f6;${item.is_read ? '' : 'background:#eff6ff66;'}">
+                <div style="width:38px;height:38px;border-radius:50%;background:${badgeBg};color:${badgeColor};display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                    <i class="fa-solid ${iconName}"></i>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <p style="font-size:14px;font-weight:600;color:#1f2937;margin:0;">${item.title}</p>
+                    <p style="font-size:13px;color:#6b7280;margin:4px 0 0;line-height:1.4;">${item.message}</p>
+                    <p style="font-size:12px;color:#9ca3af;margin:6px 0 0;">${timeAgo(item.created_at)}</p>
+                </div>
+                ${item.is_read ? '' : '<span style="width:8px;height:8px;background:#2563eb;border-radius:50%;flex-shrink:0;margin-top:6px;"></span>'}
+            </div>
+        `;
+    }).join('');
+}
+
+async function loadNotifications() {
+    if (!notificationList) return;
+    try {
+        const res = await fetch('/api/notifications', { credentials: 'include' });
+        if (!res.ok) {
+            renderNotificationList([]);
+            renderNotificationBadge(0);
+            return;
+        }
+        const result = await res.json();
+        renderNotificationList(result.data || []);
+        renderNotificationBadge(result.unread_count || 0);
+    } catch (err) {
+        renderNotificationList([]);
+    }
+}
+
+async function refreshUnreadCount() {
+    if (!notificationBadge) return;
+    try {
+        const res = await fetch('/api/notifications/unread-count', { credentials: 'include' });
+        const result = await res.json();
+        renderNotificationBadge(result.unread_count || 0);
+    } catch (err) {
+        // diamkan, biarkan badge tetap apa adanya kalau gagal fetch
+    }
+}
+
+if (notificationBtn && notificationDropdown) {
+    notificationBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const willOpen = notificationDropdown.classList.contains('hidden');
+        notificationDropdown.classList.toggle('hidden');
+        if (willOpen) loadNotifications();
+    });
+
+    notificationDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+    document.addEventListener('click', () => {
+        notificationDropdown.classList.add('hidden');
+    });
+
+    notificationList.addEventListener('click', async (e) => {
+        const item = e.target.closest('.notification-item');
+        if (!item) return;
+        const notifId = item.dataset.id;
+        const link = item.dataset.link;
+
+        try {
+            await fetch('/api/notifications/read', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({ notification_id: notifId })
+            });
+            refreshUnreadCount();
+        } catch (err) {
+            // tetap lanjut redirect walau gagal menandai dibaca
+        }
+
+        if (link) window.location.href = link;
+    });
+
+    if (notificationMarkAll) {
+        notificationMarkAll.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            try {
+                await fetch('/api/notifications/read-all', { method: 'POST', credentials: 'include' });
+                loadNotifications();
+            } catch (err) {
+                // diamkan
+            }
+        });
+    }
+
+    refreshUnreadCount();
+    setInterval(refreshUnreadCount, 30000); // polling tiap 30 detik
+}
+
 // Klik body kartu (bukan tombol hati/booking) untuk buka halaman detail
 document.addEventListener('click', (e) => {
     if (e.target.closest('.wishlist-btn')) return; // jangan buka detail kalau klik tombol hati

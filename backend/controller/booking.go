@@ -116,6 +116,14 @@ func InsertBooking(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
 
+	_ = CreateNotification(
+		email,
+		"booking",
+		"Booking Berhasil Dibuat",
+		fmt.Sprintf("Booking kamu untuk %s sedang menunggu konfirmasi pembayaran.", destination),
+		"booking-saya.html",
+	)
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"message": "Booking berhasil dibuat! Menunggu konfirmasi pembayaran.",
 		"data":    pesanan,
@@ -197,6 +205,10 @@ func UpdateBookingStatus(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "booking_id tidak valid"})
 	}
 
+	// Ambil data booking dulu sebelum diupdate, untuk keperluan notifikasi
+	var existingBooking model.Booking
+	_ = db.Collection("bookings").FindOne(context.Background(), bson.M{"_id": oid}).Decode(&existingBooking)
+
 	_, err = db.Collection("bookings").UpdateOne(
 		context.Background(),
 		bson.M{"_id": oid},
@@ -204,6 +216,26 @@ func UpdateBookingStatus(c *fiber.Ctx) error {
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+	}
+
+	if existingBooking.Email != "" {
+		statusMessage := map[string]string{
+			"Dibayar":    fmt.Sprintf("Pembayaran booking %s telah dikonfirmasi. Selamat berlibur!", existingBooking.Destination),
+			"Selesai":    fmt.Sprintf("Booking %s telah selesai. Terima kasih telah menggunakan GoTrip!", existingBooking.Destination),
+			"Dibatalkan": fmt.Sprintf("Maaf, booking %s telah dibatalkan oleh admin.", existingBooking.Destination),
+			"Pending":    fmt.Sprintf("Status booking %s diubah menjadi menunggu konfirmasi.", existingBooking.Destination),
+		}
+		message, ok := statusMessage[body.Status]
+		if !ok {
+			message = fmt.Sprintf("Status booking %s diperbarui menjadi %s.", existingBooking.Destination, body.Status)
+		}
+		_ = CreateNotification(
+			existingBooking.Email,
+			"booking",
+			"Status Booking Diperbarui",
+			message,
+			"booking-saya.html",
+		)
 	}
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Status booking diperbarui"})

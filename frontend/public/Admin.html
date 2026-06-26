@@ -31,6 +31,29 @@
         <!-- Stats -->
         <div id="stats" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8"></div>
 
+        <!-- Kirim Notifikasi Promo -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
+            <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-bullhorn text-orange-500"></i>Kirim Notifikasi Promo
+            </h3>
+            <p class="text-gray-400 text-sm mb-4">Notifikasi ini akan dikirim ke semua pengguna yang login.</p>
+            <form id="promo-form" class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <input type="text" id="promo-title" placeholder="Judul promo" required
+                    class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 sm:col-span-1">
+                <input type="text" id="promo-link" placeholder="Link tujuan (opsional, mis. index.html#promo)"
+                    class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 sm:col-span-1">
+                <textarea id="promo-message" placeholder="Isi pesan promo" required rows="2"
+                    class="border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 sm:col-span-2"></textarea>
+                <div class="sm:col-span-2 flex items-center gap-3">
+                    <button type="submit" id="promo-submit-btn"
+                        class="bg-orange-500 text-white px-5 py-2 rounded-lg font-semibold text-sm hover:bg-orange-600 transition">
+                        <i class="fa-solid fa-paper-plane mr-1"></i>Kirim ke Semua Pengguna
+                    </button>
+                    <p id="promo-status" class="hidden text-sm font-medium"></p>
+                </div>
+            </form>
+        </div>
+
         <!-- Filter & Search -->
         <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-6 flex flex-wrap gap-3 items-center">
             <span class="text-sm font-medium text-gray-600">Filter:</span>
@@ -93,6 +116,49 @@
     </div>
 
     <script>
+        // Kirim Notifikasi Promo
+        const promoForm = document.getElementById('promo-form');
+        const promoStatus = document.getElementById('promo-status');
+        const promoSubmitBtn = document.getElementById('promo-submit-btn');
+
+        if (promoForm) {
+            promoForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                promoStatus.classList.add('hidden');
+                promoSubmitBtn.disabled = true;
+                promoSubmitBtn.textContent = 'Mengirim...';
+
+                try {
+                    const res = await fetch('/api/notifications/broadcast', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        credentials: 'include',
+                        body: JSON.stringify({
+                            title: document.getElementById('promo-title').value,
+                            message: document.getElementById('promo-message').value,
+                            link: document.getElementById('promo-link').value
+                        })
+                    });
+                    const result = await res.json();
+
+                    promoStatus.textContent = result.message || (res.ok ? 'Berhasil dikirim!' : 'Gagal mengirim');
+                    promoStatus.className = res.ok
+                        ? 'text-sm font-medium text-green-600'
+                        : 'text-sm font-medium text-red-500';
+                    promoStatus.classList.remove('hidden');
+
+                    if (res.ok) promoForm.reset();
+                } catch (err) {
+                    promoStatus.textContent = 'Terjadi kesalahan, coba lagi.';
+                    promoStatus.className = 'text-sm font-medium text-red-500';
+                    promoStatus.classList.remove('hidden');
+                } finally {
+                    promoSubmitBtn.disabled = false;
+                    promoSubmitBtn.innerHTML = '<i class="fa-solid fa-paper-plane mr-1"></i>Kirim ke Semua Pengguna';
+                }
+            });
+        }
+
         const STATUS_BADGE = {
             'Pending':    'bg-yellow-100 text-yellow-700',
             'Dibayar':    'bg-blue-100 text-blue-700',

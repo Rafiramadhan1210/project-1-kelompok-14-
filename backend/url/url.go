@@ -27,4 +27,9 @@ func Web(page *fiber.App) {
 	page.Get("/destinasi/:id", controller.GetOneDestinasi)
 	page.Post("/api/booking/update-status", controller.UpdateBookingStatus)
 	page.Delete("/api/my-bookings/:id", controller.CancelMyBooking)
+	page.Get("/api/notifications", controller.GetMyNotifications)
+	page.Get("/api/notifications/unread-count", controller.GetUnreadNotificationCount)
+	page.Post("/api/notifications/read", controller.MarkNotificationRead)
+	page.Post("/api/notifications/read-all", controller.MarkAllNotificationsRead)
+	page.Post("/api/notifications/broadcast", controller.BroadcastPromoNotification)
 }

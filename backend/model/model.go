@@ -7,6 +7,7 @@ type Users struct {
 	Email    string `json:"email,omitempty" bson:"email,omitempty"`
 	Phone    string `json:"phone,omitempty" bson:"phone,omitempty"`
 	Password string `json:"password,omitempty" bson:"password,omitempty"`
+	Foto     string `json:"foto,omitempty" bson:"foto,omitempty"`
 	Wishlist []string `json:"wishlist,omitempty" bson:"wishlist,omitempty"`
 }
 

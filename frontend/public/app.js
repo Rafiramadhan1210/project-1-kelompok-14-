@@ -72,6 +72,7 @@ if (logoutBtn) {
 
 // Filter Kategori Klik Handler
 let currentFilter = 'Semua';
+let currentSearch = '';
 document.querySelectorAll('[data-filter]').forEach(btn => {
     btn.addEventListener('click', () => {
         document.querySelectorAll('[data-filter]').forEach(b => {
@@ -82,8 +83,7 @@ document.querySelectorAll('[data-filter]').forEach(btn => {
         btn.classList.add('bg-blue-600', 'text-white');
 
         currentFilter = btn.dataset.filter;
-        console.log('Filter dipilih:', currentFilter);
-        filterDestinasi(currentFilter);
+        applyFilters();
     });
 });
 
@@ -106,15 +106,76 @@ document.querySelectorAll('[data-menu]').forEach(link => {
     });
 });
 
-// Filter Destinasi Function (Sembunyikan / Tampilkan Card di Halaman)
-function filterDestinasi(filter) {
+// Filter + Search Destinasi Function (Sembunyikan / Tampilkan Card di Halaman)
+function applyFilters() {
     const items = document.querySelectorAll('[data-kategori]');
+    const keyword = currentSearch.trim().toLowerCase();
+
     items.forEach(item => {
-        if (filter === 'Semua' || item.dataset.kategori === filter) {
+        const matchKategori = currentFilter === 'Semua' || item.dataset.kategori === currentFilter;
+        const matchSearch = keyword === '' || (item.dataset.nama || '').includes(keyword);
+
+        if (matchKategori && matchSearch) {
             item.classList.remove('hidden');
         } else {
             item.classList.add('hidden');
         }
+    });
+
+    // Pesan kalau tidak ada hasil sama sekali
+    const list = document.getElementById('destinasi-list');
+    if (!list) return;
+    let emptyMsg = document.getElementById('destinasi-empty-msg');
+    const visibleCount = Array.from(items).filter(item => !item.classList.contains('hidden')).length;
+
+    if (visibleCount === 0 && items.length > 0) {
+        if (!emptyMsg) {
+            emptyMsg = document.createElement('p');
+            emptyMsg.id = 'destinasi-empty-msg';
+            emptyMsg.className = 'col-span-full text-center text-gray-500 py-10';
+            list.appendChild(emptyMsg);
+        }
+        emptyMsg.textContent = `Tidak ada destinasi yang cocok dengan "${currentSearch}"`;
+    } else if (emptyMsg) {
+        emptyMsg.remove();
+    }
+}
+
+// Tetap sediakan filterDestinasi untuk kompatibilitas kode lama (mis. loadKategori)
+function filterDestinasi(filter) {
+    currentFilter = filter;
+    applyFilters();
+}
+
+// Hubungkan semua kotak pencarian (navbar desktop, mobile, hero) ke applyFilters
+function setupSearchInput(id) {
+    const input = document.getElementById(id);
+    if (!input) return;
+    input.addEventListener('input', () => {
+        currentSearch = input.value;
+        // Sinkronkan nilai antar kotak pencarian biar konsisten
+        ['search-input-nav', 'search-input-mobile', 'search-input-hero'].forEach(otherId => {
+            if (otherId !== id) {
+                const other = document.getElementById(otherId);
+                if (other) other.value = input.value;
+            }
+        });
+        document.getElementById('destinasi')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        applyFilters();
+    });
+}
+
+setupSearchInput('search-input-nav');
+setupSearchInput('search-input-mobile');
+setupSearchInput('search-input-hero');
+
+const searchBtnHero = document.getElementById('search-btn-hero');
+if (searchBtnHero) {
+    searchBtnHero.addEventListener('click', () => {
+        const heroInput = document.getElementById('search-input-hero');
+        currentSearch = heroInput ? heroInput.value : '';
+        document.getElementById('destinasi')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        applyFilters();
     });
 }
 
@@ -130,7 +191,7 @@ fetch('/button')
             const kategori = item.kategori || 'Semua';
 
            list.innerHTML += `
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition hover:-translate-y-1" data-kategori="${kategori}" data-id="${item._id}">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition hover:-translate-y-1" data-kategori="${kategori}" data-nama="${(item.nama || '').toLowerCase()}" data-id="${item._id}">
         <div class="relative h-48 overflow-hidden">
             <img src="${item.gambar || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'}" alt="${item.nama}" class="w-full h-full object-cover">
             <span class="absolute bottom-4 left-4 text-xs font-bold text-white bg-black/50 backdrop-blur px-3 py-1 rounded-full">${item.kategori || 'Wisata'}</span>
@@ -246,22 +307,4 @@ async function loadKategori() {
             ${k.nama}
         </button>
     `).join('');
-}
-
-async function hapusAkun() {
-    if (!confirm("Apakah Anda yakin? Tindakan ini tidak dapat dibatalkan!")) {
-        return;
-    }
-
-    const response = await fetch('/api/user/delete', {
-        method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' }
-    });
-
-    if (response.ok) {
-        alert("Akun berhasil dihapus.");
-        window.location.href = '/login.html'; // Redirect ke halaman login
-    } else {
-        alert("Gagal menghapus akun.");
-    }
 }

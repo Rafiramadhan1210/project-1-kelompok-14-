@@ -4,7 +4,11 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"fmt"
 	"log"
+	"os"
+	"path/filepath"
+	"strings"
 	"time"
 
 	"gocroot/config"
@@ -49,7 +53,7 @@ func RegisterUser(c *fiber.Ctx) error {
 
 	// Hash password
 	bytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-
+	
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal memproses password"})
 	}
@@ -58,7 +62,7 @@ func RegisterUser(c *fiber.Ctx) error {
 	_, err = db.Collection("users").InsertOne(context.Background(), user)
 	if err != nil {
 		result, err := db.Collection("users").InsertOne(context.Background(), user)
-		log.Printf("DEBUG insert result: %+v, err: %v\n", result, err)
+	log.Printf("DEBUG insert result: %+v, err: %v\n", result, err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Registrasi Berhasil!"})
@@ -126,178 +130,6 @@ func LoginUser(c *fiber.Ctx) error {
 	})
 }
 
-// UpdateUserProfile untuk memperbarui nama dan nomor HP user
-func UpdateUserProfile(c *fiber.Ctx) error {
-	db := config.Mongoconn
-	token := c.Cookies(sessionCookieName)
-	if token == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Belum login"})
-	}
-
-	var session model.Session
-	err := db.Collection("sessions").FindOne(context.Background(), bson.M{"token": token}).Decode(&session)
-	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Session tidak valid"})
-	}
-
-	if session.ExpiresAt.Time().Before(time.Now()) {
-		_, _ = db.Collection("sessions").DeleteOne(context.Background(), bson.M{"token": token})
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Session telah berakhir"})
-	}
-
-	var updatedUser model.Users
-	if err := c.BodyParser(&updatedUser); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
-	}
-
-	// Tambahkan validasi untuk Nama
-	if updatedUser.Nama == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Nama tidak boleh kosong"})
-	}
-
-	// Pastikan hanya nama dan phone yang diupdate
-	updateFields := bson.M{}
-	if updatedUser.Nama != "" {
-		updateFields["nama"] = updatedUser.Nama
-	}
-	if updatedUser.Phone != "" {
-		updateFields["phone"] = updatedUser.Phone
-	}
-
-	if len(updateFields) == 0 {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Tidak ada data yang diperbarui"})
-	}
-
-	_, err = db.Collection("users").UpdateOne(
-		context.Background(),
-		bson.M{"email": session.Email},
-		bson.M{"$set": updateFields},
-	)
-
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal memperbarui profil"})
-	}
-
-	// Update session name if name was updated
-	if updatedUser.Nama != "" {
-		_, err = db.Collection("sessions").UpdateMany(
-			context.Background(),
-			bson.M{"email": session.Email},
-			bson.M{"$set": bson.M{"nama": updatedUser.Nama}},
-		)
-		if err != nil {
-			log.Printf("WARNING: Gagal memperbarui nama di session: %v", err)
-		}
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Profil berhasil diperbarui"})
-}
-
-// ChangeUserPassword untuk mengubah password user
-func ChangeUserPassword(c *fiber.Ctx) error {
-	db := config.Mongoconn
-	token := c.Cookies(sessionCookieName)
-	if token == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Belum login"})
-	}
-
-	var session model.Session
-	err := db.Collection("sessions").FindOne(context.Background(), bson.M{"token": token}).Decode(&session)
-	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Session tidak valid"})
-	}
-
-	if session.ExpiresAt.Time().Before(time.Now()) {
-		_, _ = db.Collection("sessions").DeleteOne(context.Background(), bson.M{"token": token})
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Session telah berakhir"})
-	}
-
-	var req struct {
-		CurrentPassword string `json:"current_password"`
-		NewPassword     string `json:"new_password"`
-	}
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": err.Error()})
-	}
-
-	if req.CurrentPassword == "" || req.NewPassword == "" {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Kata sandi saat ini dan kata sandi baru wajib diisi"})
-	}
-
-	var user model.Users
-	err = db.Collection("users").FindOne(context.Background(), bson.M{"email": session.Email}).Decode(&user)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal mengambil data user"})
-	}
-
-	// Verifikasi kata sandi saat ini
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(req.CurrentPassword)); err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Kata sandi saat ini salah"})
-	}
-
-	// Hash kata sandi baru
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.NewPassword), bcrypt.DefaultCost)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal memproses kata sandi baru"})
-	}
-
-	_, err = db.Collection("users").UpdateOne(
-		context.Background(),
-		bson.M{"email": session.Email},
-		bson.M{"$set": bson.M{"password": string(hashedPassword)}},
-	)
-
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal mengubah kata sandi"})
-	}
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Kata sandi berhasil diubah"})
-}
-
-// DeleteUserAccount untuk menghapus akun user
-func DeleteUserAccount(c *fiber.Ctx) error {
-	db := config.Mongoconn
-	token := c.Cookies(sessionCookieName)
-	if token == "" {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Belum login"})
-	}
-
-	var session model.Session
-	err := db.Collection("sessions").FindOne(context.Background(), bson.M{"token": token}).Decode(&session)
-	if err != nil {
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Session tidak valid"})
-	}
-
-	if session.ExpiresAt.Time().Before(time.Now()) {
-		_, _ = db.Collection("sessions").DeleteOne(context.Background(), bson.M{"token": token})
-		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Session telah berakhir"})
-	}
-
-	// Hapus user dari koleksi users
-	_, err = db.Collection("users").DeleteOne(context.Background(), bson.M{"email": session.Email})
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal menghapus akun user"})
-	}
-
-	// Hapus semua session user
-	_, err = db.Collection("sessions").DeleteMany(context.Background(), bson.M{"email": session.Email})
-	if err != nil {
-		log.Printf("WARNING: Gagal menghapus session user: %v", err)
-	}
-
-	// Hapus cookie di sisi client
-	c.Cookie(&fiber.Cookie{
-		Name:     sessionCookieName,
-		Value:    "",
-		Expires:  time.Now().Add(-time.Hour),
-		HTTPOnly: true,
-		SameSite: "Lax",
-		Path:     "/",
-	})
-
-	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Akun berhasil dihapus"})
-}
-
 // LogoutUser untuk keluar dari sistem
 func LogoutUser(c *fiber.Ctx) error {
 	db := config.Mongoconn
@@ -339,46 +171,127 @@ func GetCurrentUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Session telah berakhir"})
 	}
 
-	var user model.Users
-	err = db.Collection("users").FindOne(context.Background(), bson.M{"email": session.Email}).Decode(&user)
-	if err != nil {
-		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal mengambil data user dari database"})
+	// Ambil data lengkap user dari koleksi users (session cuma simpan nama & email)
+	var dbUser model.Users
+	if err := db.Collection("users").FindOne(context.Background(), bson.M{"email": session.Email}).Decode(&dbUser); err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "User tidak ditemukan"})
 	}
+
+	// Hitung jumlah booking & wishlist untuk ditampilkan di halaman profil
+	totalBooking, _ := db.Collection("bookings").CountDocuments(context.Background(), bson.M{"email": session.Email})
+	totalWishlist := len(dbUser.Wishlist)
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"user": fiber.Map{
-			"nama":  user.Nama,
-			"email": user.Email,
-			"phone": user.Phone,
+			"nama":           dbUser.Nama,
+			"email":          dbUser.Email,
+			"phone":          dbUser.Phone,
+			"foto":           dbUser.Foto,
+			"total_booking":  totalBooking,
+			"total_wishlist": totalWishlist,
 		},
 	})
 }
 
+// UpdateProfile memperbarui nama dan/atau nomor HP user yang sedang login.
+// Body JSON: { "nama": "...", "phone": "..." }
 func UpdateProfile(c *fiber.Ctx) error {
 	db := config.Mongoconn
-	// Contoh sederhana: ambil email dari session (sesuaikan dengan cara kamu simpan session)
-	// Untuk contoh ini, kita asumsi kirim email lewat body/header untuk identifikasi user
-	type RequestUpdate struct {
+
+	email, err := getSessionEmail(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Silakan login dulu"})
+	}
+
+	var body struct {
 		Nama  string `json:"nama"`
 		Phone string `json:"phone"`
 	}
-
-	var req RequestUpdate
-	if err := c.BodyParser(&req); err != nil {
-		return c.Status(400).JSON(fiber.Map{"message": "Format data salah"})
+	if err := c.BodyParser(&body); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Data tidak valid"})
 	}
 
-	// Update ke database
-	// Pastikan filter email sesuai dengan user yang sedang login
-	filter := bson.M{"email": c.Locals("email")} // Asumsi session menyimpan email di Locals
-	update := bson.M{"$set": bson.M{"nama": req.Nama, "phone": req.Phone}}
+	body.Nama = strings.TrimSpace(body.Nama)
+	body.Phone = strings.TrimSpace(body.Phone)
 
-	_, err := db.Collection("users").UpdateOne(context.Background(), filter, update)
+	if body.Nama == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Nama tidak boleh kosong"})
+	}
+
+	_, err = db.Collection("users").UpdateOne(
+		context.Background(),
+		bson.M{"email": email},
+		bson.M{"$set": bson.M{"nama": body.Nama, "phone": body.Phone}},
+	)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"message": "Gagal update database"})
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
 
-	return c.JSON(fiber.Map{"message": "Profil berhasil diperbarui"})
+	// Sinkronkan juga nama di session aktif biar navbar langsung update
+	_, err = db.Collection("sessions").UpdateMany(
+		context.Background(),
+		bson.M{"email": email},
+		bson.M{"$set": bson.M{"nama": body.Nama}},
+	)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Profil berhasil diperbarui",
+		"user": fiber.Map{
+			"nama":  body.Nama,
+			"email": email,
+			"phone": body.Phone,
+		},
+	})
 }
 
+// UploadProfilePhoto mengganti foto profil user yang sedang login.
+// Menerima multipart/form-data dengan field "foto".
+func UploadProfilePhoto(c *fiber.Ctx) error {
+	db := config.Mongoconn
 
+	email, err := getSessionEmail(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Silakan login dulu"})
+	}
+
+	fileHeader, err := c.FormFile("foto")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Foto wajib diupload"})
+	}
+
+	uploadDir := filepath.Join(".", "frontend", "public", "uploads", "foto-profil")
+	if _, statErr := os.Stat(uploadDir); os.IsNotExist(statErr) {
+		// fallback kalau cwd-nya sudah di dalam folder backend
+		uploadDir = filepath.Join("..", "frontend", "public", "uploads", "foto-profil")
+	}
+	if err := os.MkdirAll(uploadDir, 0755); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal menyiapkan folder upload"})
+	}
+
+	ext := filepath.Ext(fileHeader.Filename)
+	uniqueName := fmt.Sprintf("%s-%d%s", strings.ReplaceAll(email, "@", "_"), time.Now().UnixNano(), ext)
+	savePath := filepath.Join(uploadDir, uniqueName)
+
+	if err := c.SaveFile(fileHeader, savePath); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal menyimpan foto"})
+	}
+
+	fotoURL := "/uploads/foto-profil/" + uniqueName
+
+	_, err = db.Collection("users").UpdateOne(
+		context.Background(),
+		bson.M{"email": email},
+		bson.M{"$set": bson.M{"foto": fotoURL}},
+	)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Foto profil berhasil diperbarui",
+		"foto":    fotoURL,
+	})
+}

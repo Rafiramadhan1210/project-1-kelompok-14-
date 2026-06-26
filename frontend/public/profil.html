@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoTrip - Profil Saya</title>
+    <link rel="stylesheet" href="./output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+        }
+
+        .card {
+            transition: box-shadow .2s ease, transform .2s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px -8px rgba(37, 99, 235, 0.12);
+        }
+
+        .input-field {
+            transition: border-color .15s ease, box-shadow .15s ease;
+        }
+
+        .btn-primary {
+            transition: background-color .15s ease, transform .1s ease, box-shadow .15s ease;
+            box-shadow: 0 4px 12px -2px rgba(37, 99, 235, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 16px -2px rgba(37, 99, 235, 0.45);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        #change-photo-btn {
+            transition: transform .15s ease, background-color .15s ease;
+        }
+
+        #change-photo-btn:hover {
+            transform: scale(1.08);
+            background-color: #eff6ff;
+        }
+
+        .wishlist-card {
+            transition: box-shadow .2s ease, border-color .2s ease;
+        }
+
+        .wishlist-card:hover {
+            box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.08);
+            border-color: #dbeafe;
+        }
+
+        .remove-wishlist-btn {
+            transition: background-color .15s ease, transform .15s ease;
+        }
+
+        .remove-wishlist-btn:hover {
+            transform: scale(1.08);
+        }
+
+        .section-title-icon {
+            width: 34px;
+            height: 34px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <header class="bg-white border-b border-gray-100 sticky top-0 z-50 backdrop-blur-sm">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between max-w-3xl">
+            <a href="index.html" class="flex items-center gap-2 text-blue-600 font-black text-2xl tracking-tight">
+                <i class="fa-solid fa-plane"></i>
+                <span>GoTrip</span>
+            </a>
+            <a href="index.html" class="text-gray-500 hover:text-blue-600 font-medium flex items-center gap-2 transition-colors">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span class="hidden sm:inline">Kembali ke Beranda</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-10 max-w-3xl">
+        <div class="mb-8">
+            <h1 class="text-2xl font-bold text-gray-800">Profil Saya</h1>
+            <p class="text-gray-500 mt-1">Kelola informasi akun dan wishlist kamu di sini.</p>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading-state" class="text-center py-16 text-gray-400">
+            <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i>
+            <p>Memuat profil kamu...</p>
+        </div>
+
+        <!-- Belum login -->
+        <div id="login-required" class="hidden text-center py-16 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <i class="fa-solid fa-lock text-3xl text-gray-300 mb-3"></i>
+            <p class="text-gray-600 font-medium">Kamu belum login</p>
+            <p class="text-gray-400 text-sm mt-1">Masuk dulu untuk melihat dan mengubah profil kamu.</p>
+            <a href="login.html" class="inline-block mt-4 bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition btn-primary">Masuk</a>
+        </div>
+
+        <!-- Konten profil -->
+        <div id="profile-content" class="hidden space-y-6">
+
+            <!-- Kartu identitas + foto profil + statistik -->
+            <div class="card bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col sm:flex-row items-center sm:items-start gap-5">
+                <div class="relative flex-shrink-0" style="width:96px;height:96px;">
+                    <div id="avatar-wrapper"
+                        style="width:96px;height:96px;border-radius:50%;overflow:hidden;border:3px solid #2563eb;background:linear-gradient(135deg,#3b82f6,#2563eb);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px -4px rgba(37,99,235,0.45);">
+                        <span id="avatar-initial" style="color:#ffffff;font-size:32px;font-weight:700;">A</span>
+                        <img id="avatar-img" src="" alt="Foto profil" class="hidden"
+                            style="width:100%;height:100%;object-fit:cover;border-radius:50%;">
+                    </div>
+                    <button id="change-photo-btn" type="button"
+                        style="position:absolute;bottom:-2px;right:-2px;width:30px;height:30px;border-radius:50%;background:#ffffff;border:1px solid #e5e7eb;box-shadow:0 2px 6px rgba(0,0,0,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+                        <i class="fa-solid fa-camera" style="font-size:11px;color:#2563eb;"></i>
+                    </button>
+                    <input type="file" id="photo-input" accept="image/*" class="hidden">
+                </div>
+                <div class="flex-1 text-center sm:text-left">
+                    <h2 class="text-xl font-bold text-gray-800" id="display-nama">Nama Pengguna</h2>
+                    <p class="text-gray-500 text-sm" id="display-email">pengguna@email.com</p>
+                    <p class="text-gray-500 text-sm mt-1.5 flex items-center justify-center sm:justify-start gap-1.5">
+                        <i class="fa-solid fa-phone text-gray-400"></i>
+                        <span id="display-phone-text">Belum ada nomor HP</span>
+                    </p>
+                    <p id="photo-status" class="hidden text-xs mt-2 font-medium"></p>
+                </div>
+                <div class="flex gap-4 sm:gap-6 border-t sm:border-t-0 sm:border-l border-gray-100 pt-4 sm:pt-0 sm:pl-6 w-full sm:w-auto justify-center">
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-blue-600" id="stat-booking">0</p>
+                        <p class="text-xs text-gray-500">Booking</p>
+                    </div>
+                    <div class="text-center">
+                        <p class="text-2xl font-bold text-red-500" id="stat-wishlist">0</p>
+                        <p class="text-xs text-gray-500">Wishlist</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form edit profil -->
+            <div class="card bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2">
+                    <span class="section-title-icon bg-blue-50">
+                        <i class="fa-solid fa-user-pen text-blue-600"></i>
+                    </span>
+                    Edit Informasi Profil
+                </h3>
+                <p class="text-gray-400 text-sm mb-5 mt-2">Email tidak dapat diubah karena digunakan sebagai akun login.</p>
+
+                <form id="profile-form" class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nama Lengkap</label>
+                        <input type="text" id="f-nama" required
+                            class="input-field w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="Nama lengkap">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+                        <input type="email" id="f-email" disabled
+                            class="input-field w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-100 text-gray-500 cursor-not-allowed">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1.5">Nomor HP</label>
+                        <input type="tel" id="f-phone"
+                            class="input-field w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            placeholder="08xxxxxxxxxx">
+                    </div>
+
+                    <p id="profile-success" class="hidden text-green-600 text-sm font-medium bg-green-50 px-3 py-2 rounded-lg">
+                        <i class="fa-solid fa-circle-check mr-1"></i>Profil berhasil diperbarui!
+                    </p>
+                    <p id="profile-error" class="hidden text-red-500 text-sm font-medium bg-red-50 px-3 py-2 rounded-lg"></p>
+
+                    <button type="submit" id="profile-submit-btn"
+                        class="btn-primary w-full sm:w-auto bg-blue-600 text-white px-6 py-2.5 rounded-xl font-semibold hover:bg-blue-700">
+                        Simpan Perubahan
+                    </button>
+                </form>
+            </div>
+
+            <!-- Wishlist Saya -->
+            <div class="card bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+                <h3 class="font-bold text-gray-800 mb-1 flex items-center gap-2">
+                    <span class="section-title-icon bg-red-50">
+                        <i class="fa-solid fa-heart text-red-500"></i>
+                    </span>
+                    Wishlist Saya
+                </h3>
+                <p class="text-gray-400 text-sm mb-5 mt-2">Destinasi yang sudah kamu simpan. Klik hati untuk menghapus dari wishlist.</p>
+
+                <div id="wishlist-loading" class="text-center py-8 text-gray-400">
+                    <i class="fa-solid fa-circle-notch fa-spin mb-2"></i>
+                    <p class="text-sm">Memuat wishlist...</p>
+                </div>
+
+                <div id="wishlist-empty" class="hidden text-center py-10">
+                    <i class="fa-solid fa-heart-crack text-3xl text-gray-300 mb-2"></i>
+                    <p class="text-gray-500 text-sm font-medium">Wishlist kamu masih kosong</p>
+                    <a href="index.html" class="inline-block mt-3 text-blue-600 text-sm font-semibold hover:underline">Jelajahi destinasi</a>
+                </div>
+
+                <div id="wishlist-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        const loadingState = document.getElementById('loading-state');
+        const loginRequired = document.getElementById('login-required');
+        const profileContent = document.getElementById('profile-content');
+
+        function applyUserToUI(user) {
+            document.getElementById('display-nama').textContent = user.nama || '-';
+            document.getElementById('display-email').textContent = user.email || '-';
+            document.getElementById('display-phone-text').textContent = user.phone || 'Belum ada nomor HP';
+            document.getElementById('stat-booking').textContent = user.total_booking || 0;
+            document.getElementById('stat-wishlist').textContent = user.total_wishlist || 0;
+
+            const avatarImg = document.getElementById('avatar-img');
+            const avatarInitial = document.getElementById('avatar-initial');
+            if (user.foto) {
+                avatarImg.src = user.foto;
+                avatarImg.classList.remove('hidden');
+                avatarInitial.classList.add('hidden');
+            } else {
+                avatarImg.classList.add('hidden');
+                avatarInitial.classList.remove('hidden');
+                avatarInitial.textContent = (user.nama || 'A').trim().charAt(0).toUpperCase();
+            }
+
+            document.getElementById('f-nama').value = user.nama || '';
+            document.getElementById('f-email').value = user.email || '';
+            document.getElementById('f-phone').value = user.phone || '';
+        }
+
+        async function loadProfile() {
+            try {
+                const res = await fetch('/api/me', { credentials: 'include' });
+                loadingState.classList.add('hidden');
+
+                if (!res.ok) {
+                    loginRequired.classList.remove('hidden');
+                    return;
+                }
+
+                const result = await res.json();
+                applyUserToUI(result.user || {});
+                profileContent.classList.remove('hidden');
+                loadWishlist();
+            } catch (err) {
+                loadingState.classList.add('hidden');
+                loginRequired.classList.remove('hidden');
+            }
+        }
+        loadProfile();
+
+        // Submit form edit profil
+        const profileForm = document.getElementById('profile-form');
+        const profileSuccess = document.getElementById('profile-success');
+        const profileError = document.getElementById('profile-error');
+        const profileSubmitBtn = document.getElementById('profile-submit-btn');
+
+        profileForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            profileSuccess.classList.add('hidden');
+            profileError.classList.add('hidden');
+            profileSubmitBtn.disabled = true;
+            profileSubmitBtn.textContent = 'Menyimpan...';
+
+            try {
+                const res = await fetch('/api/profile/update', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        nama: document.getElementById('f-nama').value,
+                        phone: document.getElementById('f-phone').value
+                    })
+                });
+                const result = await res.json();
+
+                if (!res.ok) {
+                    profileError.textContent = result.message || 'Gagal memperbarui profil';
+                    profileError.classList.remove('hidden');
+                    return;
+                }
+
+                profileSuccess.classList.remove('hidden');
+                loadProfile();
+            } catch (err) {
+                profileError.textContent = 'Terjadi kesalahan, coba lagi.';
+                profileError.classList.remove('hidden');
+            } finally {
+                profileSubmitBtn.disabled = false;
+                profileSubmitBtn.textContent = 'Simpan Perubahan';
+            }
+        });
+
+        // Ganti foto profil
+        const changePhotoBtn = document.getElementById('change-photo-btn');
+        const photoInput = document.getElementById('photo-input');
+        const photoStatus = document.getElementById('photo-status');
+
+        changePhotoBtn.addEventListener('click', () => photoInput.click());
+
+        photoInput.addEventListener('change', async () => {
+            const file = photoInput.files[0];
+            if (!file) return;
+
+            photoStatus.textContent = 'Mengunggah foto...';
+            photoStatus.className = 'text-xs mt-2 font-medium text-gray-500';
+            photoStatus.classList.remove('hidden');
+
+            // Preview langsung sebelum upload selesai
+            const avatarImg = document.getElementById('avatar-img');
+            const avatarInitial = document.getElementById('avatar-initial');
+            const previewUrl = URL.createObjectURL(file);
+            avatarImg.src = previewUrl;
+            avatarImg.classList.remove('hidden');
+            avatarInitial.classList.add('hidden');
+
+            try {
+                const formData = new FormData();
+                formData.append('foto', file);
+
+                const res = await fetch('/api/profile/photo', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+                const result = await res.json();
+
+                if (!res.ok) {
+                    photoStatus.textContent = result.message || 'Gagal mengunggah foto';
+                    photoStatus.className = 'text-xs mt-2 font-medium text-red-500';
+                    return;
+                }
+
+                avatarImg.src = result.foto;
+                photoStatus.textContent = 'Foto profil berhasil diperbarui!';
+                photoStatus.className = 'text-xs mt-2 font-medium text-green-600';
+            } catch (err) {
+                photoStatus.textContent = 'Terjadi kesalahan, coba lagi.';
+                photoStatus.className = 'text-xs mt-2 font-medium text-red-500';
+            }
+        });
+
+        // Wishlist Saya
+        const wishlistLoading = document.getElementById('wishlist-loading');
+        const wishlistEmpty = document.getElementById('wishlist-empty');
+        const wishlistGrid = document.getElementById('wishlist-grid');
+
+        async function loadWishlist() {
+            wishlistLoading.classList.remove('hidden');
+            wishlistEmpty.classList.add('hidden');
+            wishlistGrid.innerHTML = '';
+
+            try {
+                const res = await fetch('/api/my-wishlist', { credentials: 'include' });
+                const result = await res.json();
+                const data = result.data || [];
+
+                wishlistLoading.classList.add('hidden');
+
+                if (data.length === 0) {
+                    wishlistEmpty.classList.remove('hidden');
+                    return;
+                }
+
+                data.forEach(item => {
+                    wishlistGrid.innerHTML += `
+                        <div class="wishlist-card flex gap-3 border border-gray-100 rounded-xl p-3 items-center" data-wishlist-id="${item._id}">
+                            <img src="${item.gambar || 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e'}" alt="${item.nama}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <p class="font-semibold text-gray-800 text-sm truncate">${item.nama}</p>
+                                <p class="text-gray-400 text-xs truncate"><i class="fa-solid fa-location-dot mr-1"></i>${item.lokasi || '-'}</p>
+                                <p class="text-orange-500 font-bold text-sm mt-1">Rp ${item.harga ? item.harga.toLocaleString('id-ID') : '0'}</p>
+                            </div>
+                            <button class="remove-wishlist-btn w-9 h-9 rounded-full bg-red-50 flex items-center justify-center hover:bg-red-100 flex-shrink-0" data-id="${item._id}" title="Hapus dari wishlist">
+                                <i class="fa-solid fa-heart text-red-500"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+            } catch (err) {
+                wishlistLoading.classList.add('hidden');
+                wishlistEmpty.classList.remove('hidden');
+            }
+        }
+
+        wishlistGrid.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.remove-wishlist-btn');
+            if (!btn) return;
+
+            const destinationId = btn.dataset.id;
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/wishlist/toggle', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ destination_id: destinationId })
+                });
+
+                if (res.ok) {
+                    const card = document.querySelector(`[data-wishlist-id="${destinationId}"]`);
+                    if (card) card.remove();
+
+                    const statWishlist = document.getElementById('stat-wishlist');
+                    statWishlist.textContent = Math.max(0, parseInt(statWishlist.textContent || '0') - 1);
+
+                    if (wishlistGrid.children.length === 0) {
+                        wishlistEmpty.classList.remove('hidden');
+                    }
+                }
+            } catch (err) {
+                console.error('Gagal menghapus wishlist:', err);
+            } finally {
+                btn.disabled = false;
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -18,6 +18,8 @@ func Web(page *fiber.App) {
 	page.Post("/Login", controller.LoginUser)
 	page.Post("/logout", controller.LogoutUser)
 	page.Get("/api/me", controller.GetCurrentUser)
+	page.Post("/api/profile/update", controller.UpdateProfile)
+	page.Post("/api/profile/photo", controller.UploadProfilePhoto)
 	page.Get("/button", controller.GetButton)
 	page.Post("/api/wishlist/toggle", controller.ToggleWishlist)
 	page.Get("/api/my-wishlist", controller.GetMyWishlist)
@@ -25,9 +27,4 @@ func Web(page *fiber.App) {
 	page.Get("/destinasi/:id", controller.GetOneDestinasi)
 	page.Post("/api/booking/update-status", controller.UpdateBookingStatus)
 	page.Delete("/api/my-bookings/:id", controller.CancelMyBooking)
-	page.Put("/api/user/profile", controller.UpdateProfile)
-	// User Settings Routes
-	page.Put("/api/user/profile", controller.UpdateUserProfile)
-	page.Put("/api/user/password", controller.ChangeUserPassword)
-	page.Delete("/api/user", controller.DeleteUserAccount)
 }

@@ -11,35 +11,35 @@
 
 <body class="bg-blue-50">
 
-    <nav class="bg-white shadow-md sticky top-0 z-50">
+    <nav class="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-md shadow-sm" id="main-navbar">
         <div class="container mx-auto px-6 py-3">
             <div class="flex items-center justify-between">
                 <div class="flex items-center gap-2">
-                    <div class="flex items-center gap-2 text-blue-600 font-black text-2xl hover:text-blue-700 cursor-pointer">
+                    <div class="flex items-center gap-2 text-white font-black text-2xl hover:text-blue-200 cursor-pointer" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);">
                         <i class="fa-solid fa-plane"></i>
                         <span>GoTrip</span>
                     </div>
                 </div>
 
                 <div class="hidden md:flex items-center gap-1">
-                    <a href="#destinasi" class="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition" data-menu="destinasi">
+                    <a href="#destinasi" class="px-4 py-2 text-white font-medium hover:bg-white/15 rounded-lg transition" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);" data-menu="destinasi">
                         <i class="fa-solid fa-map-location-dot mr-2"></i>Destinasi
                     </a>
-                    <a href="#kategori" class="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition" data-menu="kategori">
+                    <a href="#kategori" class="px-4 py-2 text-white font-medium hover:bg-white/15 rounded-lg transition" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);" data-menu="kategori">
                         <i class="fa-solid fa-list mr-2"></i>Kategori
                     </a>
-                    <a href="#promo" class="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition" data-menu="promo">
+                    <a href="#promo" class="px-4 py-2 text-white font-medium hover:bg-white/15 rounded-lg transition" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);" data-menu="promo">
                         <i class="fa-solid fa-tag mr-2"></i>Promo
                     </a>
-                    <a href="tentang.html" class="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition" data-menu="tentang">
+                    <a href="tentang.html" class="px-4 py-2 text-white font-medium hover:bg-white/15 rounded-lg transition" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);" data-menu="tentang">
                         <i class="fa-solid fa-info-circle mr-2"></i>Tentang
                     </a>
                 </div>
 
                 <div class="flex items-center gap-4">
                     <div class="relative" id="notification-menu">
-                        <button class="relative p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition" id="notification-btn">
-                            <i class="fa-solid fa-bell text-xl"></i>
+                        <button class="relative p-2 text-white hover:bg-white/15 rounded-lg transition" id="notification-btn">
+                            <i class="fa-solid fa-bell text-xl" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);"></i>
                             <span id="notification-badge" class="hidden absolute top-1 right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
                         </button>
 
@@ -55,17 +55,17 @@
                         </div>
                     </div>
 
-                    <a href="login.html" id="login-link" class="hidden px-4 py-2 bg-blue-600 text-white rounded-lg font-medium text-sm hover:bg-blue-700 transition">
+                    <a href="login.html" id="login-link" class="hidden px-4 py-2 bg-white text-blue-600 rounded-lg font-medium text-sm hover:bg-blue-50 transition shadow-sm">
                         Masuk
                     </a>
 
                     <div class="relative hidden" id="profile-menu">
-                        <button class="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg transition" id="profile-toggle">
+                        <button class="flex items-center gap-2 px-3 py-2 hover:bg-white/15 rounded-lg transition" id="profile-toggle">
                             <div class="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">
                                 <i class="fa-solid fa-user text-sm"></i>
                             </div>
-                            <span class="hidden sm:inline text-gray-700 font-medium text-sm" id="profile-name">Akun</span>
-                            <i class="fa-solid fa-chevron-down text-xs text-gray-600"></i>
+                            <span class="hidden sm:inline text-white font-medium text-sm" id="profile-name" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);">Akun</span>
+                            <i class="fa-solid fa-chevron-down text-xs text-white" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);"></i>
                         </button>
 
                         <div id="profile-dropdown" class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-100 hidden">
@@ -103,8 +103,8 @@
                         </div>
                     </div>
 
-                    <button class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition" id="mobile-menu-toggle">
-                        <i class="fa-solid fa-bars text-xl"></i>
+                    <button class="md:hidden p-2 text-white hover:bg-white/15 rounded-lg transition" id="mobile-menu-toggle">
+                        <i class="fa-solid fa-bars text-xl" style="text-shadow: 0 1px 4px rgba(0,0,0,0.5);"></i>
                     </button>
                 </div>
             </div>
@@ -133,7 +133,7 @@
         </div>
     </nav>
 
-    <section class="relative py-12 px-6 bg-cover bg-center" style="background-image: url('https://images5.alphacoders.com/349/349417.jpg');">
+    <section class="relative py-12 px-6 pt-36 bg-cover bg-center" style="background-image: url('https://images5.alphacoders.com/349/349417.jpg');">
         <div class="absolute inset-0 bg-gradient-to-r from-blue-900/40 to-blue-800/30"></div>
         <div class="relative container mx-auto text-center" style="text-shadow: 0 2px 10px rgba(0,0,0,0.5);">
             <h1 class="text-4xl font-bold text-white mb-2">Jelajahi Destinasi Wisata Lokal Terbaik</h1>

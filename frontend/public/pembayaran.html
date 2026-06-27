@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoTrip - Pembayaran</title>
+    <link rel="stylesheet" href="./output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #f8faff; }
+
+        /* ---- NAVBAR ---- */
+        .navbar {
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky; top: 0; z-index: 50;
+            box-shadow: 0 1px 12px rgba(0,0,0,0.04);
+        }
+
+        /* ---- PAGE HEADER ---- */
+        .page-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 60%, #6366f1 100%);
+            padding: 36px 0 32px;
+            position: relative;
+            overflow: hidden;
+        }
+        .page-header::before {
+            content: '';
+            position: absolute; top: -60px; right: -60px;
+            width: 240px; height: 240px;
+            background: rgba(255,255,255,0.06);
+            border-radius: 50%;
+        }
+        .page-header::after {
+            content: '';
+            position: absolute; bottom: -40px; left: 80px;
+            width: 160px; height: 160px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 50%;
+        }
+        .page-header h1 { color: #fff; font-size: 28px; font-weight: 800; }
+        .page-header p { color: rgba(255,255,255,0.75); font-size: 14px; margin-top: 4px; }
+
+        /* ---- PAYMENT METHOD BOX ---- */
+        .method-box {
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            padding: 22px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            margin-bottom: 24px;
+        }
+        .method-box h2 {
+            font-size: 15px; font-weight: 800; color: #1e293b;
+            display: flex; align-items: center; gap: 8px;
+            margin-bottom: 14px;
+        }
+        .method-item {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 12px;
+            padding: 12px 14px;
+            background: #f8faff;
+            border-radius: 12px;
+            margin-bottom: 8px;
+        }
+        .method-item:last-child { margin-bottom: 0; }
+        .method-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+        .method-icon {
+            width: 38px; height: 38px; border-radius: 10px;
+            display: flex; align-items: center; justify-content: center;
+            background: #dbeafe; color: #2563eb; flex-shrink: 0; font-size: 15px;
+        }
+        .method-name { font-size: 12px; color: #94a3b8; font-weight: 600; }
+        .method-number { font-size: 14px; color: #1e293b; font-weight: 700; }
+        .copy-btn {
+            border: none; background: #fff; border: 1.5px solid #e2e8f0;
+            border-radius: 8px; padding: 6px 12px; font-size: 12px; font-weight: 700;
+            color: #2563eb; cursor: pointer; transition: background 0.15s; flex-shrink: 0;
+        }
+        .copy-btn:hover { background: #eff6ff; }
+
+        /* ---- STATE CARDS ---- */
+        .state-card {
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            padding: 48px 24px;
+            text-align: center;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+        }
+        .state-icon-wrap {
+            width: 64px; height: 64px;
+            border-radius: 20px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 26px;
+        }
+        .state-card h3 { font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 6px; }
+        .state-card p { font-size: 13px; color: #94a3b8; line-height: 1.6; }
+        .state-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            margin-top: 20px;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: white;
+            padding: 10px 22px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+        }
+        .state-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59,130,246,0.4); }
+
+        /* ---- PAYMENT CARD ---- */
+        .payment-card {
+            background: #fff;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+            transition: box-shadow 0.2s, transform 0.2s;
+            animation: cardIn 0.4s cubic-bezier(0.16,1,0.3,1) both;
+        }
+        .payment-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.08); transform: translateY(-2px); }
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-accent { height: 4px; background: linear-gradient(90deg, #94a3b8, #cbd5e1); }
+        .card-accent.pending { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+        .card-accent.dibayar { background: linear-gradient(90deg, #22c55e, #16a34a); }
+        .card-accent.selesai { background: linear-gradient(90deg, #3b82f6, #6366f1); }
+        .card-accent.dibatalkan { background: linear-gradient(90deg, #ef4444, #f87171); }
+
+        .card-body { padding: 20px; }
+
+        .status-badge {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 4px 11px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+        .badge-pending    { background: #fef3c7; color: #b45309; }
+        .badge-dibayar    { background: #dcfce7; color: #15803d; }
+        .badge-selesai    { background: #dbeafe; color: #1d4ed8; }
+        .badge-dibatalkan { background: #fee2e2; color: #b91c1c; }
+        .badge-default    { background: #f1f5f9; color: #64748b; }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin: 14px 0;
+        }
+        .info-item {
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 10px;
+            background: #f8faff;
+            border-radius: 10px;
+            font-size: 12px;
+            color: #475569;
+        }
+        .info-item i { color: #3b82f6; width: 14px; text-align: center; font-size: 12px; }
+        .info-item strong { color: #1e293b; font-weight: 600; }
+
+        .note-box {
+            border-radius: 12px;
+            padding: 10px 14px;
+            display: flex; align-items: flex-start; gap: 10px;
+            font-size: 12px;
+            margin-top: 12px;
+        }
+        .note-pending { background: linear-gradient(135deg, #fffbeb, #fef9c3); border: 1px solid #fde68a; color: #92400e; }
+        .note-rejected { background: linear-gradient(135deg, #fef2f2, #fee2e2); border: 1px solid #fecaca; color: #991b1b; }
+        .note-paid { background: linear-gradient(135deg, #f0fdf4, #dcfce7); border: 1px solid #bbf7d0; color: #166534; }
+        .note-box i { margin-top: 1px; flex-shrink: 0; }
+
+        .bukti-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 12px;
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+            padding: 5px 10px;
+            background: #eff6ff;
+            border-radius: 8px;
+            transition: background 0.15s;
+        }
+        .bukti-link:hover { background: #dbeafe; }
+
+        .price-tag { font-size: 20px; font-weight: 800; color: #f97316; }
+        .price-sub { font-size: 11px; color: #94a3b8; margin-top: 2px; }
+
+        .btn-reupload {
+            width: 100%; margin-top: 14px;
+            padding: 10px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            transition: transform 0.15s, box-shadow 0.15s;
+            box-shadow: 0 4px 14px rgba(59,130,246,0.3);
+        }
+        .btn-reupload:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(59,130,246,0.4); }
+
+        /* ---- MODAL ---- */
+        .modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(15,23,42,0.55);
+            backdrop-filter: blur(4px);
+            z-index: 100;
+            display: flex; align-items: center; justify-content: center;
+            padding: 16px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .modal-overlay.show { opacity: 1; pointer-events: all; }
+        .modal-box {
+            background: #fff;
+            border-radius: 24px;
+            padding: 28px 26px;
+            max-width: 380px; width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            transform: scale(0.92) translateY(10px);
+            transition: transform 0.25s cubic-bezier(0.16,1,0.3,1);
+        }
+        .modal-overlay.show .modal-box { transform: scale(1) translateY(0); }
+        .modal-icon-wrap {
+            width: 56px; height: 56px;
+            background: #eff6ff;
+            border-radius: 16px;
+            display: flex; align-items: center; justify-content: center;
+            margin: 0 auto 16px;
+            font-size: 24px; color: #2563eb;
+        }
+        .modal-title { font-size: 18px; font-weight: 800; color: #1e293b; text-align: center; margin-bottom: 6px; }
+        .modal-desc { font-size: 13px; color: #64748b; text-align: center; line-height: 1.6; margin-bottom: 18px; }
+        .modal-file-input {
+            width: 100%;
+            padding: 12px;
+            border: 1.5px dashed #cbd5e1;
+            border-radius: 12px;
+            font-size: 13px;
+            color: #475569;
+            margin-bottom: 16px;
+            cursor: pointer;
+            background: #f8faff;
+        }
+        .modal-actions { display: flex; gap: 10px; }
+        .btn-modal-no {
+            flex: 1; padding: 12px;
+            border-radius: 12px;
+            border: 1.5px solid #e2e8f0;
+            background: #fff;
+            font-size: 14px; font-weight: 700; color: #64748b;
+            cursor: pointer;
+            transition: background 0.15s;
+        }
+        .btn-modal-no:hover { background: #f8faff; }
+        .btn-modal-yes {
+            flex: 1; padding: 12px;
+            border-radius: 12px;
+            border: none;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            font-size: 14px; font-weight: 700; color: #fff;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .btn-modal-yes:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(59,130,246,0.4); }
+        .btn-modal-yes:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .spin { animation: spin 0.7s linear infinite; display: inline-block; }
+
+        .modal-error {
+            display: none;
+            background: #fef2f2; color: #dc2626;
+            font-size: 12px; font-weight: 600;
+            padding: 8px 12px; border-radius: 8px;
+            margin-bottom: 12px;
+        }
+        .modal-error.show { display: block; }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 text-blue-600 font-black text-2xl">
+                <i class="fa-solid fa-plane"></i>
+                <span>GoTrip</span>
+            </a>
+            <a href="index.html" class="text-gray-500 hover:text-gray-700 font-semibold flex items-center gap-2 text-sm transition">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span class="hidden sm:inline">Kembali ke Beranda</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="flex items-center gap-3 mb-1">
+                <div style="width:38px;height:38px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                    <i class="fa-solid fa-credit-card" style="color:white;font-size:16px;"></i>
+                </div>
+                <h1>Pembayaran</h1>
+            </div>
+            <p>Status pembayaran booking kamu & cara melakukan transfer</p>
+        </div>
+    </div>
+
+    <main class="container mx-auto px-6 py-8 max-w-3xl">
+
+        <!-- Payment method info -->
+        <div class="method-box">
+            <h2><i class="fa-solid fa-wallet" style="color:#2563eb;"></i> Metode Pembayaran</h2>
+            <div class="method-item">
+                <div class="method-left">
+                    <div class="method-icon"><i class="fa-solid fa-building-columns"></i></div>
+                    <div>
+                        <div class="method-name">Transfer Bank BCA</div>
+                        <div class="method-number">1234567890 a.n. GoTrip Indonesia</div>
+                    </div>
+                </div>
+                <button class="copy-btn" onclick="copyText('1234567890', this)">Salin</button>
+            </div>
+            <div class="method-item">
+                <div class="method-left">
+                    <div class="method-icon"><i class="fa-solid fa-qrcode"></i></div>
+                    <div>
+                        <div class="method-name">QRIS</div>
+                        <div class="method-number">Scan via e-wallet / m-banking apa saja</div>
+                    </div>
+                </div>
+            </div>
+            <p style="font-size:11px;color:#94a3b8;margin-top:10px;line-height:1.6;">
+                Setelah transfer, lampirkan bukti bayar pada form booking. Verifikasi dilakukan oleh admin maksimal 1x24 jam.
+            </p>
+        </div>
+
+        <!-- Loading -->
+        <div id="loading-state" class="text-center py-16 text-gray-400">
+            <i class="fa-solid fa-circle-notch spin text-3xl mb-3 text-blue-400"></i>
+            <p class="font-medium">Memuat status pembayaran...</p>
+        </div>
+
+        <!-- Login required -->
+        <div id="login-required" class="hidden state-card">
+            <div class="state-icon-wrap" style="background:#eff6ff;">
+                <i class="fa-solid fa-lock" style="color:#3b82f6;"></i>
+            </div>
+            <h3>Kamu belum login</h3>
+            <p>Masuk terlebih dahulu untuk melihat status pembayaran kamu.</p>
+            <a href="login.html?redirect=pembayaran.html" class="state-btn">
+                <i class="fa-solid fa-right-to-bracket"></i> Masuk Sekarang
+            </a>
+        </div>
+
+        <!-- Empty -->
+        <div id="empty-state" class="hidden state-card">
+            <div class="state-icon-wrap" style="background:#fff7ed;">
+                <i class="fa-solid fa-receipt" style="color:#f97316;"></i>
+            </div>
+            <h3>Belum ada riwayat pembayaran</h3>
+            <p>Lakukan booking pertamamu untuk melihat status pembayaran di sini.</p>
+            <a href="index.html" class="state-btn">
+                <i class="fa-solid fa-compass"></i> Cari Destinasi
+            </a>
+        </div>
+
+        <!-- Payment list -->
+        <div id="payment-list" class="space-y-4"></div>
+
+        <!-- Error -->
+        <div id="error-state" class="hidden state-card">
+            <div class="state-icon-wrap" style="background:#fef2f2;">
+                <i class="fa-solid fa-triangle-exclamation" style="color:#ef4444;"></i>
+            </div>
+            <h3>Gagal memuat data</h3>
+            <p>Tidak dapat terhubung ke server. Coba refresh halaman.</p>
+        </div>
+    </main>
+
+    <!-- Reupload Modal -->
+    <div id="reupload-modal" class="modal-overlay">
+        <div class="modal-box">
+            <div class="modal-icon-wrap">
+                <i class="fa-solid fa-arrow-up-from-bracket"></i>
+            </div>
+            <h3 class="modal-title">Upload Ulang Bukti Bayar</h3>
+            <p class="modal-desc">Pilih file bukti transfer yang baru (JPG/PNG/PDF), lalu booking akan diverifikasi ulang oleh admin.</p>
+            <div class="modal-error" id="reupload-error"></div>
+            <input type="file" id="reupload-file" class="modal-file-input" accept=".jpg,.jpeg,.png,.pdf">
+            <div class="modal-actions">
+                <button id="reupload-cancel" class="btn-modal-no">Batal</button>
+                <button id="reupload-submit" class="btn-modal-yes">
+                    <span id="reupload-submit-label">Kirim</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const STATUS_BADGE = { 'Pending': 'badge-pending', 'Dibayar': 'badge-dibayar', 'Selesai': 'badge-selesai', 'Dibatalkan': 'badge-dibatalkan' };
+        const STATUS_ICON  = { 'Pending': 'fa-clock', 'Dibayar': 'fa-circle-check', 'Selesai': 'fa-flag-checkered', 'Dibatalkan': 'fa-circle-xmark' };
+        const ACCENT_CLASS = { 'Pending': 'pending', 'Dibayar': 'dibayar', 'Selesai': 'selesai', 'Dibatalkan': 'dibatalkan' };
+
+        function formatTanggal(isoString) {
+            if (!isoString) return '-';
+            return new Date(isoString).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function formatRupiah(n) {
+            return 'Rp ' + (n || 0).toLocaleString('id-ID');
+        }
+
+        function copyText(text, btn) {
+            navigator.clipboard.writeText(text).then(() => {
+                const original = btn.textContent;
+                btn.textContent = 'Tersalin!';
+                setTimeout(() => { btn.textContent = original; }, 1500);
+            });
+        }
+
+        function renderNote(item) {
+            if (item.status === 'Pending') {
+                return `<div class="note-box note-pending">
+                            <i class="fa-solid fa-clock"></i>
+                            <span>Menunggu konfirmasi pembayaran. Verifikasi maksimal 1×24 jam.</span>
+                        </div>`;
+            }
+            if (item.status === 'Dibatalkan') {
+                const alasan = item.keterangan_tolak
+                    ? `Alasan: ${item.keterangan_tolak}`
+                    : 'Bukti bayar tidak dapat diverifikasi.';
+                return `<div class="note-box note-rejected">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>${alasan} Silakan upload ulang bukti bayar yang valid.</span>
+                        </div>`;
+            }
+            if (item.status === 'Dibayar' || item.status === 'Selesai') {
+                return `<div class="note-box note-paid">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Pembayaran sudah dikonfirmasi. Terima kasih!</span>
+                        </div>`;
+            }
+            return '';
+        }
+
+        function renderPayment(item, index) {
+            const badgeClass = STATUS_BADGE[item.status] || 'badge-default';
+            const icon = STATUS_ICON[item.status] || 'fa-circle';
+            const accentClass = ACCENT_CLASS[item.status] || '';
+            const bookingId = item.id || item._id || '';
+
+            const buktiBayarHTML = item.bukti_bayar
+                ? `<a href="${item.bukti_bayar}" target="_blank" class="bukti-link">
+                       <i class="fa-solid fa-file-image"></i> Lihat Bukti Bayar
+                   </a>`
+                : `<span style="font-size:12px;color:#94a3b8;font-style:italic;">Belum ada bukti bayar</span>`;
+
+            const reuploadBtn = item.status === 'Dibatalkan'
+                ? `<button onclick="openReupload('${bookingId}')" class="btn-reupload">
+                       <i class="fa-solid fa-arrow-up-from-bracket"></i> Upload Ulang Bukti Bayar
+                   </button>` : '';
+
+            const delay = index * 80;
+
+            return `
+            <div id="payment-card-${bookingId}" class="payment-card" style="animation-delay:${delay}ms">
+                <div class="card-accent ${accentClass}"></div>
+                <div class="card-body">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+                        <div style="flex:1;min-width:0;">
+                            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">
+                                <h3 style="font-size:16px;font-weight:800;color:#1e293b;margin:0;">${item.destination || 'Destinasi'}</h3>
+                                <span class="status-badge ${badgeClass}">
+                                    <i class="fa-solid ${icon}" style="font-size:9px;"></i> ${item.status}
+                                </span>
+                            </div>
+                            <div class="info-grid">
+                                <div class="info-item">
+                                    <i class="fa-solid fa-hashtag"></i>
+                                    <span>ID: <strong>${bookingId.slice(-8) || '-'}</strong></span>
+                                </div>
+                                <div class="info-item">
+                                    <i class="fa-solid fa-clock"></i>
+                                    <span>Dipesan ${formatTanggal(item.created_at)}</span>
+                                </div>
+                            </div>
+                            ${buktiBayarHTML}
+                        </div>
+                        <div style="text-align:right;flex-shrink:0;">
+                            <div class="price-tag">${formatRupiah(item.total_bayar)}</div>
+                            <div class="price-sub">Total bayar</div>
+                        </div>
+                    </div>
+                    ${renderNote(item)}
+                    ${reuploadBtn}
+                </div>
+            </div>`;
+        }
+
+        let activeReuploadId = null;
+
+        function openReupload(id) {
+            activeReuploadId = id;
+            document.getElementById('reupload-file').value = '';
+            document.getElementById('reupload-error').classList.remove('show');
+            document.getElementById('reupload-modal').classList.add('show');
+        }
+
+        document.getElementById('reupload-cancel').addEventListener('click', () => {
+            document.getElementById('reupload-modal').classList.remove('show');
+            activeReuploadId = null;
+        });
+
+        document.getElementById('reupload-modal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                e.currentTarget.classList.remove('show');
+                activeReuploadId = null;
+            }
+        });
+
+        document.getElementById('reupload-submit').addEventListener('click', async () => {
+            const errorBox = document.getElementById('reupload-error');
+            const fileInput = document.getElementById('reupload-file');
+            const submitBtn = document.getElementById('reupload-submit');
+            const submitLabel = document.getElementById('reupload-submit-label');
+
+            if (!activeReuploadId) return;
+            if (!fileInput.files || !fileInput.files[0]) {
+                errorBox.textContent = 'Pilih file bukti bayar terlebih dahulu.';
+                errorBox.classList.add('show');
+                return;
+            }
+
+            errorBox.classList.remove('show');
+            submitBtn.disabled = true;
+            submitLabel.innerHTML = '<i class="fa-solid fa-circle-notch spin"></i> Mengirim...';
+
+            try {
+                const formData = new FormData();
+                formData.append('bukti_bayar', fileInput.files[0]);
+
+                const res = await fetch(`/api/my-bookings/${activeReuploadId}/bukti-bayar`, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: formData
+                });
+                const result = await res.json();
+
+                if (res.ok) {
+                    document.getElementById('reupload-modal').classList.remove('show');
+                    loadPayments();
+                } else {
+                    errorBox.textContent = result.message || 'Gagal mengupload bukti bayar.';
+                    errorBox.classList.add('show');
+                }
+            } catch (err) {
+                errorBox.textContent = 'Tidak dapat terhubung ke server.';
+                errorBox.classList.add('show');
+            } finally {
+                submitBtn.disabled = false;
+                submitLabel.textContent = 'Kirim';
+            }
+        });
+
+        async function loadPayments() {
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('empty-state').classList.add('hidden');
+            document.getElementById('error-state').classList.add('hidden');
+            document.getElementById('login-required').classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/my-bookings?status=Pending,Dibayar,Selesai,Dibatalkan', { credentials: 'include' });
+                if (res.status === 401) {
+                    document.getElementById('loading-state').classList.add('hidden');
+                    document.getElementById('login-required').classList.remove('hidden');
+                    return;
+                }
+                if (!res.ok) throw new Error();
+                const result = await res.json();
+                const payments = (result.data || []).sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+                document.getElementById('loading-state').classList.add('hidden');
+                if (!payments.length) {
+                    document.getElementById('empty-state').classList.remove('hidden');
+                    document.getElementById('payment-list').innerHTML = '';
+                    return;
+                }
+                document.getElementById('payment-list').innerHTML = payments.map((p, i) => renderPayment(p, i)).join('');
+            } catch (err) {
+                document.getElementById('loading-state').classList.add('hidden');
+                document.getElementById('error-state').classList.remove('hidden');
+            }
+        }
+
+        loadPayments();
+    </script>
+</body>
+</html>

@@ -90,7 +90,7 @@ if (logoutBtn) {
         } catch (err) {
             // tetap arahkan ke login walau request gagal
         }
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
     });
 }
 

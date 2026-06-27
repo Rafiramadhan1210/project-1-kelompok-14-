@@ -4,8 +4,11 @@ import (
 	"context"
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"io"
 	"log"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
@@ -66,6 +69,125 @@ func RegisterUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Registrasi Berhasil!"})
+}
+
+// googleTokenInfo merepresentasikan response dari endpoint tokeninfo Google
+type googleTokenInfo struct {
+	Aud           string `json:"aud"`
+	Email         string `json:"email"`
+	EmailVerified string `json:"email_verified"`
+	Name          string `json:"name"`
+	Sub           string `json:"sub"`
+}
+
+// verifyGoogleIDToken memvalidasi id_token langsung ke server Google
+// (https://oauth2.googleapis.com/tokeninfo) tanpa perlu library JWT tambahan.
+func verifyGoogleIDToken(idToken string) (*googleTokenInfo, error) {
+	resp, err := http.Get("https://oauth2.googleapis.com/tokeninfo?id_token=" + idToken)
+	if err != nil {
+		return nil, fmt.Errorf("gagal menghubungi server Google: %v", err)
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, fmt.Errorf("gagal membaca response Google: %v", err)
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("token Google tidak valid")
+	}
+
+	var info googleTokenInfo
+	if err := json.Unmarshal(body, &info); err != nil {
+		return nil, fmt.Errorf("gagal memproses response Google: %v", err)
+	}
+
+	// Cocokkan audience dengan Client ID milik aplikasi (kalau sudah diset di .env)
+	expectedClientID := os.Getenv("GOOGLE_CLIENT_ID")
+	if expectedClientID != "" && info.Aud != expectedClientID {
+		return nil, fmt.Errorf("token Google tidak cocok dengan aplikasi ini")
+	}
+
+	if info.Email == "" || info.EmailVerified != "true" {
+		return nil, fmt.Errorf("email Google belum terverifikasi")
+	}
+
+	return &info, nil
+}
+
+// GoogleLogin menangani login/registrasi otomatis lewat Google Sign-In.
+// Body JSON: { "credential": "<id_token dari Google Identity Services>" }
+func GoogleLogin(c *fiber.Ctx) error {
+	db := config.Mongoconn
+
+	var body struct {
+		Credential string `json:"credential"`
+	}
+	if err := c.BodyParser(&body); err != nil || body.Credential == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Token Google tidak ditemukan"})
+	}
+
+	info, err := verifyGoogleIDToken(body.Credential)
+	if err != nil {
+		log.Printf("DEBUG google login verify error: %v\n", err)
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Verifikasi Google gagal: " + err.Error()})
+	}
+
+	// Cek apakah user sudah ada, kalau belum buat akun baru otomatis
+	var dbUser model.Users
+	err = db.Collection("users").FindOne(context.Background(), bson.M{"email": info.Email}).Decode(&dbUser)
+	if err != nil {
+		nama := info.Name
+		if nama == "" {
+			nama = strings.Split(info.Email, "@")[0]
+		}
+		newUser := model.Users{
+			Nama:     nama,
+			Email:    info.Email,
+			Provider: "google",
+		}
+		if _, insertErr := db.Collection("users").InsertOne(context.Background(), newUser); insertErr != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal membuat akun baru"})
+		}
+		dbUser = newUser
+	}
+
+	// Buat session token baru, sama seperti login biasa
+	token, err := generateToken()
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal membuat session"})
+	}
+
+	now := time.Now()
+	session := model.Session{
+		Token:     token,
+		Email:     dbUser.Email,
+		Nama:      dbUser.Nama,
+		CreatedAt: primitive.NewDateTimeFromTime(now),
+		ExpiresAt: primitive.NewDateTimeFromTime(now.Add(sessionDuration)),
+	}
+
+	if _, err := db.Collection("sessions").InsertOne(context.Background(), session); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal menyimpan session"})
+	}
+
+	c.Cookie(&fiber.Cookie{
+		Name:     sessionCookieName,
+		Value:    token,
+		Expires:  now.Add(sessionDuration),
+		HTTPOnly: true,
+		SameSite: "Lax",
+		Path:     "/",
+	})
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message": "Login dengan Google berhasil!",
+		"user": fiber.Map{
+			"nama":  dbUser.Nama,
+			"email": dbUser.Email,
+		},
+	})
 }
 
 // LoginUser untuk masuk ke sistem

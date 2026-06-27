@@ -188,8 +188,9 @@ func UpdateBookingStatus(c *fiber.Ctx) error {
 	db := config.Mongoconn
 
 	var body struct {
-		BookingID string `json:"booking_id"`
-		Status    string `json:"status"`
+		BookingID       string `json:"booking_id"`
+		Status          string `json:"status"`
+		KeteranganTolak string `json:"keterangan_tolak"`
 	}
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Data tidak valid"})
@@ -209,20 +210,32 @@ func UpdateBookingStatus(c *fiber.Ctx) error {
 	var existingBooking model.Booking
 	_ = db.Collection("bookings").FindOne(context.Background(), bson.M{"_id": oid}).Decode(&existingBooking)
 
+	updateFields := bson.M{"status": body.Status}
+	if body.Status == "Dibatalkan" {
+		updateFields["keterangan_tolak"] = body.KeteranganTolak
+	} else {
+		// status lain dianggap bukan penolakan, bersihkan keterangan lama
+		updateFields["keterangan_tolak"] = ""
+	}
+
 	_, err = db.Collection("bookings").UpdateOne(
 		context.Background(),
 		bson.M{"_id": oid},
-		bson.M{"$set": bson.M{"status": body.Status}},
+		bson.M{"$set": updateFields},
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
 
 	if existingBooking.Email != "" {
+		dibatalkanMsg := fmt.Sprintf("Maaf, booking %s telah dibatalkan oleh admin.", existingBooking.Destination)
+		if body.Status == "Dibatalkan" && body.KeteranganTolak != "" {
+			dibatalkanMsg = fmt.Sprintf("Booking %s dibatalkan. Alasan: %s", existingBooking.Destination, body.KeteranganTolak)
+		}
 		statusMessage := map[string]string{
 			"Dibayar":    fmt.Sprintf("Pembayaran booking %s telah dikonfirmasi. Selamat berlibur!", existingBooking.Destination),
 			"Selesai":    fmt.Sprintf("Booking %s telah selesai. Terima kasih telah menggunakan GoTrip!", existingBooking.Destination),
-			"Dibatalkan": fmt.Sprintf("Maaf, booking %s telah dibatalkan oleh admin.", existingBooking.Destination),
+			"Dibatalkan": dibatalkanMsg,
 			"Pending":    fmt.Sprintf("Status booking %s diubah menjadi menunggu konfirmasi.", existingBooking.Destination),
 		}
 		message, ok := statusMessage[body.Status]
@@ -282,4 +295,89 @@ func CancelMyBooking(c *fiber.Ctx) error {
     }
 
     return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Booking berhasil dibatalkan"})
+}
+
+// ReuploadBuktiBayar memungkinkan user mengupload ulang bukti bayar
+// untuk booking miliknya yang berstatus Dibatalkan (misal karena bukti
+// sebelumnya tidak valid). Setelah upload, status balik jadi Pending
+// supaya diverifikasi ulang oleh admin.
+// Menerima multipart/form-data dengan field "bukti_bayar".
+func ReuploadBuktiBayar(c *fiber.Ctx) error {
+	db := config.Mongoconn
+
+	email, err := getSessionEmail(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Silakan login dulu"})
+	}
+
+	bookingID := c.Params("id")
+	oid, err := primitive.ObjectIDFromHex(bookingID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "ID booking tidak valid"})
+	}
+
+	// Pastikan booking ini milik user yang login dan statusnya Dibatalkan
+	var booking model.Booking
+	err = db.Collection("bookings").FindOne(context.Background(), bson.M{
+		"_id":   oid,
+		"email": email,
+	}).Decode(&booking)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "Booking tidak ditemukan"})
+	}
+
+	if booking.Status != "Dibatalkan" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Hanya booking berstatus Dibatalkan yang bisa diupload ulang bukti bayarnya",
+		})
+	}
+
+	fileHeader, err := c.FormFile("bukti_bayar")
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Bukti bayar wajib diupload"})
+	}
+
+	uploadDir := filepath.Join(".", "frontend", "public", "uploads", "bukti-bayar")
+	if _, statErr := os.Stat(uploadDir); os.IsNotExist(statErr) {
+		uploadDir = filepath.Join("..", "frontend", "public", "uploads", "bukti-bayar")
+	}
+	if err := os.MkdirAll(uploadDir, 0755); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal menyiapkan folder upload"})
+	}
+
+	ext := filepath.Ext(fileHeader.Filename)
+	uniqueName := fmt.Sprintf("%s-%d%s", strings.ReplaceAll(email, "@", "_"), time.Now().UnixNano(), ext)
+	savePath := filepath.Join(uploadDir, uniqueName)
+
+	if err := c.SaveFile(fileHeader, savePath); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal menyimpan bukti bayar"})
+	}
+
+	buktiBayarURL := "/uploads/bukti-bayar/" + uniqueName
+
+	_, err = db.Collection("bookings").UpdateOne(
+		context.Background(),
+		bson.M{"_id": oid},
+		bson.M{"$set": bson.M{
+			"bukti_bayar":      buktiBayarURL,
+			"status":           "Pending",
+			"keterangan_tolak": "",
+		}},
+	)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+	}
+
+	_ = CreateNotification(
+		email,
+		"booking",
+		"Bukti Bayar Diperbarui",
+		fmt.Sprintf("Bukti bayar baru untuk booking %s telah dikirim dan menunggu konfirmasi admin.", booking.Destination),
+		"pembayaran.html",
+	)
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"message":     "Bukti bayar berhasil diupload ulang, menunggu konfirmasi admin.",
+		"bukti_bayar": buktiBayarURL,
+	})
 }

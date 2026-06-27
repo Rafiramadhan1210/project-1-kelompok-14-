@@ -9,6 +9,7 @@ type Users struct {
 	Password string `json:"password,omitempty" bson:"password,omitempty"`
 	Foto     string `json:"foto,omitempty" bson:"foto,omitempty"`
 	Wishlist []string `json:"wishlist,omitempty" bson:"wishlist,omitempty"`
+	Provider string `json:"provider,omitempty" bson:"provider,omitempty"` // "local" atau "google"
 }
 
 type UsersLogin struct {
@@ -47,6 +48,7 @@ type Booking struct {
 	TanggalKunjungan string          `bson:"tanggal_kunjungan" json:"tanggal_kunjungan"`
 	BuktiBayar    string             `bson:"bukti_bayar" json:"bukti_bayar"`
 	Status        string             `bson:"status" json:"status"`
+	KeteranganTolak string           `bson:"keterangan_tolak,omitempty" json:"keterangan_tolak,omitempty"`
 	CreatedAt     primitive.DateTime `bson:"created_at" json:"created_at"`
 }
 // Notification merepresentasikan satu notifikasi.

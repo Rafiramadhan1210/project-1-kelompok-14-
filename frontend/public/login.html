@@ -1,77 +1,469 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GoTrip - Masuk</title>
-    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(ellipse at top left, #93c5fd 0%, #ffffff 45%, #fef08a 100%);
+            background-attachment: fixed;
+        }
+
+        /* ===== LOGO ===== */
+        .logo-wrap {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .logo-wrap .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 32px;
+            font-weight: 900;
+            color: #1d4ed8;
+            text-decoration: none;
+        }
+        .logo-wrap .logo i {
+            font-size: 28px;
+            color: #2563eb;
+        }
+        .logo-wrap .logo .dot {
+            width: 18px; height: 18px;
+            background: #facc15;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 -2px;
+        }
+        .logo-wrap small {
+            display: block;
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        /* ===== CARD ===== */
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 36px 40px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+        }
+
+        /* ===== REDIRECT BANNER ===== */
+        .redirect-banner {
+            display: none;
+            align-items: center;
+            gap: 10px;
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            color: #1d4ed8;
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        .redirect-banner.show { display: flex; }
+
+        /* ===== ALERT ===== */
+        .alert {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        .alert.error  { display: block; background: #fef2f2; color: #dc2626; }
+        .alert.success{ display: block; background: #f0fdf4; color: #16a34a; }
+
+        /* ===== BUTTON PRIMARY (Google-style) ===== */
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 13px 16px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            text-decoration: none;
+            margin-bottom: 12px;
+        }
+        .btn-google:hover  { background: #1d4ed8; }
+        .btn-google:active { transform: scale(0.98); }
+        .btn-google .g-icon {
+            width: 32px; height: 32px;
+            background: #fff;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .btn-google .g-icon svg { width: 18px; height: 18px; }
+
+        /* ===== BUTTON SECONDARY (Email) ===== */
+        .btn-email {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 13px 16px;
+            background: #fff;
+            color: #374151;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: border-color 0.2s, background 0.2s, transform 0.1s;
+            margin-bottom: 0;
+        }
+        .btn-email:hover  { border-color: #2563eb; background: #f0f7ff; }
+        .btn-email:active { transform: scale(0.98); }
+        .btn-email i { color: #6b7280; font-size: 16px; }
+
+        /* ===== DIVIDER ===== */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 22px 0;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        /* ===== SOCIAL ICONS ===== */
+        .social-row {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        .social-btn {
+            width: 52px; height: 52px;
+            border-radius: 12px;
+            border: 1.5px solid #e5e7eb;
+            background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+            font-size: 20px;
+        }
+        .social-btn:hover  { border-color: #2563eb; box-shadow: 0 4px 12px rgba(37,99,235,0.15); }
+        .social-btn:active { transform: scale(0.93); }
+        .social-btn.apple    { color: #000; }
+        .social-btn.facebook { color: #1877f2; }
+        .social-btn.tiktok   { color: #010101; }
+        .social-btn.microsoft{ color: #f25022; }
+
+        /* ===== EMAIL FORM (collapsed by default) ===== */
+        .email-form-wrap {
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transition: max-height 0.4s cubic-bezier(0.4,0,0.2,1), opacity 0.3s ease;
+        }
+        .email-form-wrap.open {
+            max-height: 400px;
+            opacity: 1;
+        }
+        .email-form-wrap .form-inner { padding-top: 20px; }
+
+        .field { margin-bottom: 16px; }
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        .field .input-wrap {
+            position: relative;
+        }
+        .field input {
+            width: 100%;
+            padding: 11px 42px 11px 14px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #111827;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafafa;
+        }
+        .field input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+            background: #fff;
+        }
+        .field .toggle-pw {
+            position: absolute; right: 12px; top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af; cursor: pointer;
+            font-size: 15px;
+            background: none; border: none; padding: 0;
+        }
+        .field .toggle-pw:hover { color: #374151; }
+
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 4px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-submit:hover  { background: #1d4ed8; }
+        .btn-submit:active { transform: scale(0.98); }
+        .btn-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+        .btn-submit .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== BACK LINK ===== */
+        .back-link {
+            text-align: center;
+            margin-top: 12px;
+        }
+        .back-link a {
+            font-size: 13px;
+            color: #6b7280;
+            text-decoration: none;
+        }
+        .back-link a:hover { color: #374151; }
+
+        /* ===== TERMS ===== */
+        .terms {
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 24px;
+            line-height: 1.6;
+        }
+        .terms a { color: #2563eb; text-decoration: underline; }
+
+        /* ===== REGISTER LINK ===== */
+        .register-hint {
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 18px;
+        }
+        .register-hint a { color: #2563eb; font-weight: 600; text-decoration: none; }
+        .register-hint a:hover { text-decoration: underline; }
+
+        /* ===== ANIMATION ===== */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .logo-wrap { animation: fadeUp 0.5s ease both; }
+        .card      { animation: fadeUp 0.5s 0.1s ease both; }
+    </style>
 </head>
+<body>
 
-<body class="bg-blue-50 min-h-screen flex items-center justify-center px-4">
+    <!-- Logo -->
+    <div class="logo-wrap">
+        <a href="index.html" class="logo">
+            <i class="fa-solid fa-plane-departure"></i>
+            <span>Go</span><span class="dot"></span><span>Trip</span>
+        </a>
+        <small>Tiket Pariwisata Lokal Terbaik</small>
+    </div>
 
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-        <div class="flex items-center justify-center gap-2 text-blue-600 font-black text-3xl mb-2">
-            <i class="fa-solid fa-plane"></i>
-            <span>GoTrip</span>
+    <!-- Card -->
+    <div class="card">
+
+        <!-- Redirect banner -->
+        <div class="redirect-banner" id="redirect-banner">
+            <i class="fa-solid fa-lock"></i>
+            <span>Silakan masuk terlebih dahulu untuk melanjutkan booking.</span>
         </div>
-        <p class="text-center text-gray-500 mb-6">Masuk ke akun Anda</p>
 
-        <div id="alert-box" class="hidden mb-4 px-4 py-3 rounded-lg text-sm font-medium"></div>
+        <!-- Alert -->
+        <div class="alert" id="alert-box"></div>
 
-        <form id="login-form" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" id="email" name="email" required
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="nama@email.com">
+        <!-- Google (placeholder — backend tidak tersedia, tombol ini hanya UI) -->
+        <button class="btn-google" id="btn-google" type="button">
+            <span class="g-icon">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+            </span>
+            Lanjutkan dengan Google
+        </button>
+
+        <!-- Email / HP -->
+        <button class="btn-email" id="btn-email" type="button">
+            <i class="fa-regular fa-envelope"></i>
+            Lanjut dengan email atau kata sandi
+        </button>
+
+        <!-- Collapsible email form -->
+        <div class="email-form-wrap" id="email-form-wrap">
+            <div class="form-inner">
+                <div class="field">
+                    <label for="email">Email</label>
+                    <div class="input-wrap">
+                        <input type="email" id="email" placeholder="nama@email.com" autocomplete="email">
+                    </div>
+                </div>
+                <div class="field">
+                    <label for="password">Kata Sandi</label>
+                    <div class="input-wrap">
+                        <input type="password" id="password" placeholder="Minimal 6 karakter" autocomplete="current-password">
+                        <button class="toggle-pw" type="button" id="toggle-pw" tabindex="-1">
+                            <i class="fa-regular fa-eye" id="pw-icon"></i>
+                        </button>
+                    </div>
+                </div>
+                <button class="btn-submit" id="login-btn" type="button">
+                    <span id="btn-label">Masuk</span>
+                </button>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" id="password" name="password" required
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="••••••••">
-            </div>
-            <button type="submit" id="login-btn"
-                class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-700 transition">
-                Masuk
-            </button>
-        </form>
+        </div>
 
-        <p class="text-center text-sm text-gray-500 mt-6">
-            Belum punya akun?
-            <a href="register.html" class="text-blue-600 font-semibold hover:underline">Daftar di sini</a>
-        </p>
-        <p class="text-center text-sm mt-2">
-            <a href="index.html" class="text-gray-400 hover:text-gray-600">
-                <i class="fa-solid fa-arrow-left mr-1"></i>Kembali ke Beranda
-            </a>
+        <!-- Divider -->
+        <div class="divider">Atau lanjut dengan</div>
+
+        <!-- Social icons -->
+        <div class="social-row">
+            <button class="social-btn apple"     title="Apple"     type="button"><i class="fa-brands fa-apple"></i></button>
+            <button class="social-btn facebook"  title="Facebook"  type="button"><i class="fa-brands fa-facebook-f"></i></button>
+            <button class="social-btn tiktok"    title="TikTok"    type="button"><i class="fa-brands fa-tiktok"></i></button>
+            <button class="social-btn microsoft" title="Microsoft" type="button"><i class="fa-brands fa-microsoft"></i></button>
+        </div>
+
+        <!-- Register hint -->
+        <div class="register-hint">
+            Belum punya akun? <a href="register.html" id="register-link">Daftar sekarang</a>
+        </div>
+
+        <!-- Back -->
+        <div class="back-link" style="margin-top:14px;">
+            <a href="index.html"><i class="fa-solid fa-arrow-left" style="margin-right:4px;"></i>Kembali ke Beranda</a>
+        </div>
+
+        <!-- Terms -->
+        <p class="terms">
+            Dengan masuk, kamu menyetujui <a href="#">Kebijakan Privasi</a> dan
+            <a href="#">Syarat &amp; Ketentuan</a> GoTrip.
         </p>
     </div>
 
     <script>
-        const form = document.getElementById('login-form');
-        const alertBox = document.getElementById('alert-box');
-        const loginBtn = document.getElementById('login-btn');
+        /* ========== REDIRECT PARAM ========== */
+        const urlParams  = new URLSearchParams(window.location.search);
+        const redirectTo = urlParams.get('redirect') || 'index.html';
 
-        function showAlert(message, type) {
-            alertBox.textContent = message;
-            alertBox.classList.remove('hidden', 'bg-red-50', 'text-red-600', 'bg-green-50', 'text-green-600');
-            if (type === 'error') {
-                alertBox.classList.add('bg-red-50', 'text-red-600');
-            } else {
-                alertBox.classList.add('bg-green-50', 'text-green-600');
-            }
+        // Tampilkan banner kalau diarahkan dari halaman lain
+        if (urlParams.get('redirect') && urlParams.get('redirect') !== 'index.html') {
+            document.getElementById('redirect-banner').classList.add('show');
         }
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email').value.trim();
+        // Teruskan redirect ke halaman register jika user pilih daftar
+        if (redirectTo !== 'index.html') {
+            const regLink = document.getElementById('register-link');
+            if (regLink) regLink.href = `register.html?redirect=${encodeURIComponent(redirectTo)}`;
+        }
+
+        // Auto-redirect kalau sudah login
+        (async () => {
+            try {
+                const res = await fetch('/api/me', { credentials: 'include' });
+                if (res.ok) window.location.href = redirectTo;
+            } catch (e) {}
+        })();
+
+        /* ========== TOGGLE EMAIL FORM ========== */
+        const emailFormWrap = document.getElementById('email-form-wrap');
+        const btnEmail      = document.getElementById('btn-email');
+
+        btnEmail.addEventListener('click', () => {
+            const isOpen = emailFormWrap.classList.contains('open');
+            emailFormWrap.classList.toggle('open');
+            btnEmail.innerHTML = isOpen
+                ? '<i class="fa-regular fa-envelope"></i> Lanjut dengan email atau kata sandi'
+                : '<i class="fa-solid fa-chevron-up" style="font-size:13px;"></i> Tutup form';
+            if (!isOpen) {
+                setTimeout(() => document.getElementById('email').focus(), 350);
+            }
+        });
+
+        /* ========== TOGGLE PASSWORD VISIBILITY ========== */
+        document.getElementById('toggle-pw').addEventListener('click', () => {
+            const pwInput = document.getElementById('password');
+            const pwIcon  = document.getElementById('pw-icon');
+            const isHidden = pwInput.type === 'password';
+            pwInput.type = isHidden ? 'text' : 'password';
+            pwIcon.className = isHidden ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+        });
+
+        /* ========== ALERT ========== */
+        const alertBox = document.getElementById('alert-box');
+        function showAlert(msg, type) {
+            alertBox.textContent = msg;
+            alertBox.className = `alert ${type}`;
+        }
+        function hideAlert() { alertBox.className = 'alert'; }
+
+        /* ========== LOGIN SUBMIT ========== */
+        const loginBtn = document.getElementById('login-btn');
+        const btnLabel = document.getElementById('btn-label');
+
+        async function doLogin() {
+            const email    = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
 
+            if (!email || !password) {
+                showAlert('Mohon isi email dan kata sandi.', 'error');
+                return;
+            }
+
+            hideAlert();
             loginBtn.disabled = true;
-            loginBtn.textContent = 'Memproses...';
+            btnLabel.innerHTML = '<span class="spinner"></span> Memproses...';
 
             try {
                 const res = await fetch('/Login', {
@@ -84,21 +476,38 @@
 
                 if (res.ok) {
                     showAlert(result.message || 'Login berhasil!', 'success');
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 600);
+                    setTimeout(() => { window.location.href = redirectTo; }, 700);
                 } else {
-                    showAlert(result.message || 'Login gagal!', 'error');
+                    showAlert(result.message || 'Email atau kata sandi salah.', 'error');
                     loginBtn.disabled = false;
-                    loginBtn.textContent = 'Masuk';
+                    btnLabel.textContent = 'Masuk';
                 }
             } catch (err) {
                 showAlert('Tidak dapat terhubung ke server.', 'error');
                 loginBtn.disabled = false;
-                loginBtn.textContent = 'Masuk';
+                btnLabel.textContent = 'Masuk';
             }
+        }
+
+        loginBtn.addEventListener('click', doLogin);
+
+        // Enter key di form
+        ['email', 'password'].forEach(id => {
+            document.getElementById(id).addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') doLogin();
+            });
+        });
+
+        /* ========== SOCIAL BUTTONS (placeholder) ========== */
+        document.querySelectorAll('.social-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                showAlert('Fitur login sosial belum tersedia.', 'error');
+            });
+        });
+
+        document.getElementById('btn-google').addEventListener('click', () => {
+            showAlert('Fitur login Google belum tersedia.', 'error');
         });
     </script>
 </body>
-
 </html>

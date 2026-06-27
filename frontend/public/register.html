@@ -1,91 +1,511 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoTrip - Masuk</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>GoTrip - Daftar</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px 16px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: radial-gradient(ellipse at top left, #93c5fd 0%, #ffffff 45%, #fef08a 100%);
+            background-attachment: fixed;
+        }
+
+        /* ===== LOGO ===== */
+        .logo-wrap {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .logo-wrap .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 32px;
+            font-weight: 900;
+            color: #1d4ed8;
+            text-decoration: none;
+        }
+        .logo-wrap .logo i { font-size: 28px; color: #2563eb; }
+        .logo-wrap .logo .dot {
+            width: 18px; height: 18px;
+            background: #facc15;
+            border-radius: 50%;
+            display: inline-block;
+            margin: 0 -2px;
+        }
+        .logo-wrap small {
+            display: block;
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 4px;
+            font-weight: 400;
+        }
+
+        /* ===== CARD ===== */
+        .card {
+            background: #ffffff;
+            border-radius: 20px;
+            padding: 36px 40px;
+            width: 100%;
+            max-width: 440px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+        }
+
+        .card-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #111827;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .card-sub {
+            font-size: 13px;
+            color: #6b7280;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        /* ===== ALERT ===== */
+        .alert {
+            display: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            margin-bottom: 16px;
+        }
+        .alert.error  { display: block; background: #fef2f2; color: #dc2626; }
+        .alert.success{ display: block; background: #f0fdf4; color: #16a34a; }
+
+        /* ===== GOOGLE BUTTON ===== */
+        .btn-google {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            width: 100%;
+            padding: 13px 16px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-bottom: 12px;
+        }
+        .btn-google:hover  { background: #1d4ed8; }
+        .btn-google:active { transform: scale(0.98); }
+        .btn-google .g-icon {
+            width: 32px; height: 32px;
+            background: #fff;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0;
+        }
+        .btn-google .g-icon svg { width: 18px; height: 18px; }
+
+        /* ===== DIVIDER ===== */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #e5e7eb;
+        }
+
+        /* ===== FORM ===== */
+        .field { margin-bottom: 16px; }
+        .field label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        .field .input-wrap { position: relative; }
+        .field input {
+            width: 100%;
+            padding: 11px 42px 11px 14px;
+            border: 1.5px solid #d1d5db;
+            border-radius: 10px;
+            font-size: 14px;
+            color: #111827;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            background: #fafafa;
+        }
+        .field input:focus {
+            border-color: #2563eb;
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+            background: #fff;
+        }
+        .field input.error-field { border-color: #dc2626; }
+        .field .icon {
+            position: absolute; right: 12px; top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af;
+            font-size: 15px;
+        }
+        .field .toggle-pw {
+            position: absolute; right: 12px; top: 50%;
+            transform: translateY(-50%);
+            color: #9ca3af; cursor: pointer;
+            font-size: 15px;
+            background: none; border: none; padding: 0;
+        }
+        .field .toggle-pw:hover { color: #374151; }
+
+        /* ===== PASSWORD STRENGTH ===== */
+        .pw-strength { margin-top: 8px; }
+        .pw-bars {
+            display: flex; gap: 4px; margin-bottom: 4px;
+        }
+        .pw-bar {
+            flex: 1; height: 4px; border-radius: 2px;
+            background: #e5e7eb;
+            transition: background 0.3s;
+        }
+        .pw-bar.active.weak   { background: #ef4444; }
+        .pw-bar.active.fair   { background: #f59e0b; }
+        .pw-bar.active.good   { background: #3b82f6; }
+        .pw-bar.active.strong { background: #22c55e; }
+        .pw-strength-text {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        /* ===== SUBMIT ===== */
+        .btn-submit {
+            width: 100%;
+            padding: 13px;
+            background: #2563eb;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 4px;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-submit:hover  { background: #1d4ed8; }
+        .btn-submit:active { transform: scale(0.98); }
+        .btn-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+        .spinner {
+            width: 16px; height: 16px;
+            border: 2px solid rgba(255,255,255,0.4);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ===== SOCIAL ===== */
+        .social-row {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .social-btn {
+            width: 52px; height: 52px;
+            border-radius: 12px;
+            border: 1.5px solid #e5e7eb;
+            background: #fff;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
+            font-size: 20px;
+        }
+        .social-btn:hover  { border-color: #2563eb; box-shadow: 0 4px 12px rgba(37,99,235,0.15); }
+        .social-btn:active { transform: scale(0.93); }
+        .social-btn.apple    { color: #000; }
+        .social-btn.facebook { color: #1877f2; }
+        .social-btn.tiktok   { color: #010101; }
+        .social-btn.microsoft{ color: #f25022; }
+
+        /* ===== FOOTER ===== */
+        .login-hint {
+            text-align: center;
+            font-size: 13px;
+            color: #6b7280;
+            margin-top: 18px;
+        }
+        .login-hint a { color: #2563eb; font-weight: 600; text-decoration: none; }
+        .login-hint a:hover { text-decoration: underline; }
+
+        .back-link { text-align: center; margin-top: 14px; }
+        .back-link a { font-size: 13px; color: #6b7280; text-decoration: none; }
+        .back-link a:hover { color: #374151; }
+
+        .terms {
+            text-align: center;
+            font-size: 12px;
+            color: #6b7280;
+            margin-top: 20px;
+            line-height: 1.6;
+        }
+        .terms a { color: #2563eb; text-decoration: underline; }
+
+        /* ===== ANIMATION ===== */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .logo-wrap { animation: fadeUp 0.5s ease both; }
+        .card      { animation: fadeUp 0.5s 0.1s ease both; }
+
+        /* ===== STEP INDICATOR ===== */
+        .steps {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+            margin-bottom: 24px;
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .step-circle {
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            color: #9ca3af;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.3s, color 0.3s;
+        }
+        .step.active .step-circle  { background: #2563eb; color: #fff; }
+        .step.done   .step-circle  { background: #22c55e; color: #fff; }
+        .step-label {
+            font-size: 10px;
+            color: #9ca3af;
+            white-space: nowrap;
+        }
+        .step.active .step-label { color: #2563eb; font-weight: 600; }
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: #e5e7eb;
+            margin: 0 8px;
+            margin-bottom: 16px;
+            min-width: 32px;
+            transition: background 0.3s;
+        }
+        .step-line.done { background: #22c55e; }
+    </style>
 </head>
+<body>
 
-<body class="bg-blue-50 min-h-screen flex items-center justify-center px-4">
+    <!-- Logo -->
+    <div class="logo-wrap">
+        <a href="index.html" class="logo">
+            <i class="fa-solid fa-plane-departure"></i>
+            <span>Go</span><span class="dot"></span><span>Trip</span>
+        </a>
+        <small>Tiket Pariwisata Lokal Terbaik</small>
+    </div>
 
-    <div class="w-full max-w-md bg-white rounded-2xl shadow-lg border border-gray-100 p-8">
-        <div class="flex items-center justify-center gap-2 text-blue-600 font-black text-3xl mb-2">
-            <i class="fa-solid fa-plane"></i>
-            <span>GoTrip</span>
+    <!-- Card -->
+    <div class="card">
+        <h2 class="card-title">Buat Akun Baru</h2>
+        <p class="card-sub">Bergabung dan temukan destinasi wisata terbaikmu</p>
+
+        <!-- Alert -->
+        <div class="alert" id="alert-box"></div>
+
+        <!-- Google Signup -->
+        <button class="btn-google" id="btn-google" type="button">
+            <span class="g-icon">
+                <svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                    <path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/>
+                    <path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/>
+                    <path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/>
+                    <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
+                </svg>
+            </span>
+            Daftar dengan Google
+        </button>
+
+        <!-- Divider -->
+        <div class="divider">Atau daftar dengan email</div>
+
+        <!-- Register Form -->
+        <div class="field">
+            <label for="nama">Nama Lengkap</label>
+            <div class="input-wrap">
+                <input type="text" id="nama" placeholder="Nama lengkap kamu" autocomplete="name">
+                <i class="fa-regular fa-user icon"></i>
+            </div>
         </div>
-        <p class="text-center text-gray-500 mb-6">Buat akun baru</p>
 
-        <div id="alert-box" class="hidden mb-4 px-4 py-3 rounded-lg text-sm font-medium"></div>
+        <div class="field">
+            <label for="email">Email</label>
+            <div class="input-wrap">
+                <input type="email" id="email" placeholder="nama@email.com" autocomplete="email">
+                <i class="fa-regular fa-envelope icon"></i>
+            </div>
+        </div>
 
-        <form id="register-form" class="space-y-4">
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Nama</label>
-                <input type="text" id="nama" name="nama" required
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Nama lengkap">
+        <div class="field">
+            <label for="phone">No. HP <span style="font-weight:400;color:#9ca3af;">(Opsional)</span></label>
+            <div class="input-wrap">
+                <input type="tel" id="phone" placeholder="08xxxxxxxxxx" autocomplete="tel">
+                <i class="fa-solid fa-phone icon"></i>
             </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" id="email" name="email" required
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="nama@email.com">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">No. HP</label>
-                <input type="text" id="phone" name="phone"
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="08xxxxxxxxxx">
-            </div>
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-                <input type="password" id="password" name="password" required minlength="6"
-                    class="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="Minimal 6 karakter">
-            </div>
-            <button type="submit" id="register-btn"
-                class="w-full bg-blue-600 text-white font-semibold py-2.5 rounded-lg hover:bg-blue-700 transition">
-                Daftar
-            </button>
-        </form>
+        </div>
 
-        <p class="text-center text-sm text-gray-500 mt-6">
-            Sudah punya akun?
-            <a href="login.html" class="text-blue-600 font-semibold hover:underline">Masuk di sini</a>
-        </p>
-        <p class="text-center text-sm mt-2">
-            <a href="index.html" class="text-gray-400 hover:text-gray-600">
-                <i class="fa-solid fa-arrow-left mr-1"></i>Kembali ke Beranda
-            </a>
+        <div class="field">
+            <label for="password">Kata Sandi</label>
+            <div class="input-wrap">
+                <input type="password" id="password" placeholder="Minimal 6 karakter" autocomplete="new-password">
+                <button class="toggle-pw" type="button" id="toggle-pw" tabindex="-1">
+                    <i class="fa-regular fa-eye" id="pw-icon"></i>
+                </button>
+            </div>
+            <!-- Password strength bar -->
+            <div class="pw-strength" id="pw-strength" style="display:none;">
+                <div class="pw-bars">
+                    <div class="pw-bar" id="bar1"></div>
+                    <div class="pw-bar" id="bar2"></div>
+                    <div class="pw-bar" id="bar3"></div>
+                    <div class="pw-bar" id="bar4"></div>
+                </div>
+                <span class="pw-strength-text" id="pw-strength-text"></span>
+            </div>
+        </div>
+
+        <button class="btn-submit" id="register-btn" type="button">
+            <span id="btn-label">Buat Akun</span>
+        </button>
+
+        <!-- Divider social -->
+        <div class="divider" style="margin-top:22px;">Atau lanjut dengan</div>
+
+        <!-- Social icons -->
+        <div class="social-row">
+            <button class="social-btn apple"     title="Apple"     type="button"><i class="fa-brands fa-apple"></i></button>
+            <button class="social-btn facebook"  title="Facebook"  type="button"><i class="fa-brands fa-facebook-f"></i></button>
+            <button class="social-btn tiktok"    title="TikTok"    type="button"><i class="fa-brands fa-tiktok"></i></button>
+            <button class="social-btn microsoft" title="Microsoft" type="button"><i class="fa-brands fa-microsoft"></i></button>
+        </div>
+
+        <!-- Login hint -->
+        <div class="login-hint">
+            Sudah punya akun? <a href="login.html" id="login-link">Masuk di sini</a>
+        </div>
+
+        <!-- Back -->
+        <div class="back-link">
+            <a href="index.html"><i class="fa-solid fa-arrow-left" style="margin-right:4px;"></i>Kembali ke Beranda</a>
+        </div>
+
+        <!-- Terms -->
+        <p class="terms">
+            Dengan mendaftar, kamu menyetujui <a href="#">Kebijakan Privasi</a> dan
+            <a href="#">Syarat &amp; Ketentuan</a> GoTrip.
         </p>
     </div>
 
     <script>
-        const form = document.getElementById('register-form');
-        const alertBox = document.getElementById('alert-box');
-        const registerBtn = document.getElementById('register-btn');
+        /* ========== REDIRECT PARAM ========== */
+        const urlParams  = new URLSearchParams(window.location.search);
+        const redirectTo = urlParams.get('redirect') || '';
 
-        function showAlert(message, type) {
-            alertBox.textContent = message;
-            alertBox.classList.remove('hidden', 'bg-red-50', 'text-red-600', 'bg-green-50', 'text-green-600');
-            if (type === 'error') {
-                alertBox.classList.add('bg-red-50', 'text-red-600');
-            } else {
-                alertBox.classList.add('bg-green-50', 'text-green-600');
-            }
+        // Teruskan redirect ke link login
+        if (redirectTo) {
+            const loginLink = document.getElementById('login-link');
+            if (loginLink) loginLink.href = `login.html?redirect=${encodeURIComponent(redirectTo)}`;
         }
 
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const nama = document.getElementById('nama').value.trim();
-            const email = document.getElementById('email').value.trim();
-            const phone = document.getElementById('phone').value.trim();
+        /* ========== ALERT ========== */
+        const alertBox = document.getElementById('alert-box');
+        function showAlert(msg, type) {
+            alertBox.textContent = msg;
+            alertBox.className = `alert ${type}`;
+            alertBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        function hideAlert() { alertBox.className = 'alert'; }
+
+        /* ========== TOGGLE PASSWORD ========== */
+        document.getElementById('toggle-pw').addEventListener('click', () => {
+            const pwInput = document.getElementById('password');
+            const pwIcon  = document.getElementById('pw-icon');
+            const isHidden = pwInput.type === 'password';
+            pwInput.type = isHidden ? 'text' : 'password';
+            pwIcon.className = isHidden ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
+        });
+
+        /* ========== PASSWORD STRENGTH ========== */
+        const pwInput     = document.getElementById('password');
+        const pwStrength  = document.getElementById('pw-strength');
+        const pwStrengthT = document.getElementById('pw-strength-text');
+        const bars        = [document.getElementById('bar1'), document.getElementById('bar2'),
+                             document.getElementById('bar3'), document.getElementById('bar4')];
+
+        pwInput.addEventListener('input', () => {
+            const val = pwInput.value;
+            if (!val) { pwStrength.style.display = 'none'; return; }
+            pwStrength.style.display = 'block';
+
+            let score = 0;
+            if (val.length >= 6)  score++;
+            if (val.length >= 10) score++;
+            if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
+            if (/[^A-Za-z0-9]/.test(val)) score++;
+
+            const levels  = ['weak', 'fair', 'good', 'strong'];
+            const labels  = ['Sangat lemah', 'Lemah', 'Sedang', 'Kuat'];
+            const lvl     = Math.max(0, score - 1);
+
+            bars.forEach((bar, i) => {
+                bar.className = 'pw-bar' + (i <= lvl ? ` active ${levels[lvl]}` : '');
+            });
+            pwStrengthT.textContent = labels[lvl];
+            pwStrengthT.style.color = ['#ef4444','#f59e0b','#3b82f6','#22c55e'][lvl];
+        });
+
+        /* ========== REGISTER SUBMIT ========== */
+        const registerBtn = document.getElementById('register-btn');
+        const btnLabel    = document.getElementById('btn-label');
+
+        async function doRegister() {
+            const nama     = document.getElementById('nama').value.trim();
+            const email    = document.getElementById('email').value.trim();
+            const phone    = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value;
 
+            // Validasi
+            if (!nama)     { showAlert('Nama lengkap wajib diisi.', 'error'); return; }
+            if (!email)    { showAlert('Email wajib diisi.', 'error'); return; }
+            if (!password || password.length < 6) { showAlert('Kata sandi minimal 6 karakter.', 'error'); return; }
+
+            hideAlert();
             registerBtn.disabled = true;
-            registerBtn.textContent = 'Memproses...';
+            btnLabel.innerHTML = '<span class="spinner"></span> Memproses...';
 
             try {
                 const res = await fetch('/register', {
@@ -96,22 +516,41 @@
                 const result = await res.json();
 
                 if (res.ok) {
-                    showAlert('Registrasi berhasil! Mengarahkan ke halaman login...', 'success');
+                    showAlert('Akun berhasil dibuat! Mengarahkan ke halaman login...', 'success');
                     setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 800);
+                        const loginUrl = redirectTo
+                            ? `login.html?redirect=${encodeURIComponent(redirectTo)}`
+                            : 'login.html';
+                        window.location.href = loginUrl;
+                    }, 900);
                 } else {
-                    showAlert(result.message || 'Registrasi gagal!', 'error');
+                    showAlert(result.message || 'Pendaftaran gagal. Coba lagi.', 'error');
                     registerBtn.disabled = false;
-                    registerBtn.textContent = 'Daftar';
+                    btnLabel.textContent = 'Buat Akun';
                 }
             } catch (err) {
                 showAlert('Tidak dapat terhubung ke server.', 'error');
                 registerBtn.disabled = false;
-                registerBtn.textContent = 'Daftar';
+                btnLabel.textContent = 'Buat Akun';
             }
+        }
+
+        registerBtn.addEventListener('click', doRegister);
+
+        // Enter key
+        ['nama','email','phone','password'].forEach(id => {
+            document.getElementById(id).addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') doRegister();
+            });
+        });
+
+        /* ========== SOCIAL BUTTONS (placeholder) ========== */
+        document.querySelectorAll('.social-btn').forEach(btn => {
+            btn.addEventListener('click', () => showAlert('Fitur ini belum tersedia.', 'error'));
+        });
+        document.getElementById('btn-google').addEventListener('click', () => {
+            showAlert('Fitur daftar dengan Google belum tersedia.', 'error');
         });
     </script>
 </body>
-
 </html>

@@ -27,8 +27,12 @@ mobileMenuToggle.addEventListener('click', () => {
 });
 
 // Cek status login & sesuaikan tampilan navbar
+let isLoggedIn = false;
+
 async function checkLoginStatus() {
     const loginLink = document.getElementById('login-link');
+    const registerLink = document.getElementById('register-link');
+    const mobileAuthLinks = document.getElementById('mobile-auth-links');
     const profileMenu = document.getElementById('profile-menu');
     const profileName = document.getElementById('profile-name');
     const profileDropdownName = document.getElementById('profile-dropdown-name');
@@ -41,6 +45,7 @@ async function checkLoginStatus() {
         if (res.ok) {
             const result = await res.json();
             const user = result.user || {};
+            isLoggedIn = true;
             if (profileName) profileName.textContent = user.nama || 'Akun';
             if (profileDropdownName) profileDropdownName.textContent = user.nama || 'Pengguna';
             if (profileDropdownEmail) profileDropdownEmail.textContent = user.email || '';
@@ -57,13 +62,21 @@ async function checkLoginStatus() {
 
             profileMenu.classList.remove('hidden');
             loginLink.classList.add('hidden');
+            if (registerLink) registerLink.classList.add('hidden');
+            if (mobileAuthLinks) mobileAuthLinks.classList.add('hidden');
         } else {
+            isLoggedIn = false;
             profileMenu.classList.add('hidden');
             loginLink.classList.remove('hidden');
+            if (registerLink) registerLink.classList.remove('hidden');
+            if (mobileAuthLinks) mobileAuthLinks.classList.remove('hidden');
         }
     } catch (err) {
+        isLoggedIn = false;
         profileMenu.classList.add('hidden');
         loginLink.classList.remove('hidden');
+        if (registerLink) registerLink.classList.remove('hidden');
+        if (mobileAuthLinks) mobileAuthLinks.classList.remove('hidden');
     }
 }
 checkLoginStatus();
@@ -280,7 +293,7 @@ document.addEventListener('click', async (e) => {
         });
 
         if (res.status === 401) {
-            alert('Silakan login dulu untuk menyimpan wishlist.');
+            window.location.href = `login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`;
             return;
         }
 
@@ -441,6 +454,28 @@ if (notificationBtn && notificationDropdown) {
 
 // Klik body kartu (bukan tombol hati/booking) untuk buka halaman detail
 document.addEventListener('click', (e) => {
+    // ===== Guard Booking: redirect ke login kalau belum masuk =====
+    const bookingBtn = e.target.closest('.booking-btn');
+    if (bookingBtn) {
+        e.stopPropagation();
+        if (!isLoggedIn) {
+            // Ambil ID destinasi dari kartu terdekat
+            const card = bookingBtn.closest('[data-id]');
+            const destId = card ? card.dataset.id : '';
+            const redirectUrl = destId
+                ? `destinasi-detail.html?id=${destId}`
+                : window.location.pathname;
+            window.location.href = `login.html?redirect=${encodeURIComponent(redirectUrl)}`;
+            return;
+        }
+        // Sudah login → buka halaman detail destinasi untuk booking
+        const card = bookingBtn.closest('[data-id]');
+        if (card) {
+            window.location.href = `destinasi-detail.html?id=${card.dataset.id}`;
+        }
+        return;
+    }
+
     if (e.target.closest('.wishlist-btn')) return; // jangan buka detail kalau klik tombol hati
     if (e.target.closest('button')) return; // jangan buka detail kalau klik tombol Booking di kartu
 

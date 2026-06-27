@@ -7,6 +7,7 @@ const mobileMenu = document.getElementById('mobile-menu');
 if (profileToggle) {
     profileToggle.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (notificationDropdown) notificationDropdown.classList.add('hidden');
         profileDropdown.classList.toggle('hidden');
     });
 }
@@ -404,6 +405,7 @@ async function refreshUnreadCount() {
 if (notificationBtn && notificationDropdown) {
     notificationBtn.addEventListener('click', (e) => {
         e.stopPropagation();
+        if (profileDropdown) profileDropdown.classList.add('hidden');
         const willOpen = notificationDropdown.classList.contains('hidden');
         notificationDropdown.classList.toggle('hidden');
         if (willOpen) loadNotifications();

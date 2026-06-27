@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoTrip - Bantuan & Dukungan</title>
+    <link href="./output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #f8faff; }
+
+        /* ---- NAVBAR ---- */
+        .navbar {
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky; top: 0; z-index: 50;
+            box-shadow: 0 1px 12px rgba(0,0,0,0.04);
+        }
+
+        /* ---- PAGE HEADER ---- */
+        .page-header {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 60%, #6366f1 100%);
+            padding: 44px 0 110px;
+            position: relative; overflow: hidden;
+        }
+        .page-header::before {
+            content: ''; position: absolute; top: -60px; right: -60px;
+            width: 240px; height: 240px;
+            background: rgba(255,255,255,0.06); border-radius: 50%;
+        }
+        .page-header::after {
+            content: ''; position: absolute; bottom: -80px; left: -40px;
+            width: 200px; height: 200px;
+            background: rgba(255,255,255,0.05); border-radius: 50%;
+        }
+        .page-header h1 { color: #fff; font-size: 30px; font-weight: 800; }
+        .page-header p { color: rgba(255,255,255,0.75); font-size: 14px; margin-top: 6px; }
+
+        /* ---- SEARCH BAR (floating over header) ---- */
+        .search-wrap {
+            position: relative; z-index: 10;
+            margin-top: -64px;
+        }
+        .search-box {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 12px 32px rgba(30,58,138,0.18);
+            padding: 8px;
+            display: flex; align-items: center; gap: 10px;
+        }
+        .search-box i.fa-magnifying-glass { color: #94a3b8; margin-left: 14px; }
+        .search-box input {
+            flex: 1; border: none; outline: none; padding: 12px 4px;
+            font-size: 15px; color: #1e293b; background: transparent;
+        }
+        .search-box input::placeholder { color: #94a3b8; }
+        .search-clear {
+            background: #f1f5f9; color: #64748b; border: none;
+            width: 30px; height: 30px; border-radius: 50%;
+            display: none; align-items: center; justify-content: center;
+            cursor: pointer; flex-shrink: 0; margin-right: 6px;
+            transition: background .15s;
+        }
+        .search-clear:hover { background: #e2e8f0; }
+        .search-clear.show { display: flex; }
+
+        /* ---- QUICK ACTION CARDS ---- */
+        .quick-row {
+            display: flex; flex-wrap: wrap; gap: 16px; margin-top: 32px;
+        }
+        .quick-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 18px;
+            padding: 20px;
+            display: flex; flex-direction: column; gap: 10px;
+            cursor: pointer;
+            transition: transform .2s cubic-bezier(.16,1,.3,1), box-shadow .2s, border-color .2s;
+            text-decoration: none;
+            flex: 1 1 220px;
+        }
+        .quick-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 28px rgba(30,58,138,0.10);
+            border-color: #c7d2fe;
+        }
+        .quick-icon {
+            width: 44px; height: 44px; border-radius: 12px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px;
+        }
+        .quick-card h3 { font-size: 15px; font-weight: 800; color: #1e293b; }
+        .quick-card p { font-size: 12.5px; color: #94a3b8; line-height: 1.5; }
+        .quick-card .go { font-size: 12px; font-weight: 700; color: #3b82f6; display: flex; align-items: center; gap: 6px; margin-top: auto; }
+        .quick-card .go i { transition: transform .2s; }
+        .quick-card:hover .go i { transform: translateX(3px); }
+
+        /* ---- CATEGORY PILLS ---- */
+        .cat-pill {
+            padding: 9px 18px;
+            border-radius: 999px;
+            font-size: 13px; font-weight: 700;
+            background: #fff; color: #475569;
+            border: 1px solid #e2e8f0;
+            cursor: pointer; transition: all .15s; white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 7px;
+        }
+        .cat-pill:hover { border-color: #93c5fd; color: #2563eb; }
+        .cat-pill.active {
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: #fff; border-color: transparent;
+            box-shadow: 0 6px 14px rgba(37,99,235,0.25);
+        }
+
+        /* ---- FAQ ACCORDION ---- */
+        .faq-section-title {
+            font-size: 13px; font-weight: 800; color: #94a3b8;
+            text-transform: uppercase; letter-spacing: .05em;
+            margin: 28px 0 12px;
+        }
+        .faq-item {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: border-color .2s, box-shadow .2s;
+        }
+        .faq-item.open { border-color: #bfdbfe; box-shadow: 0 6px 18px rgba(37,99,235,0.08); }
+        .faq-question {
+            width: 100%; text-align: left;
+            padding: 17px 20px;
+            display: flex; align-items: center; gap: 14px;
+            background: transparent; border: none; cursor: pointer;
+        }
+        .faq-q-icon {
+            width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            background: #eff6ff; color: #2563eb; font-size: 13px;
+        }
+        .faq-question span.q-text { font-size: 14.5px; font-weight: 700; color: #1e293b; flex: 1; }
+        .faq-question .chev { color: #94a3b8; transition: transform .25s ease; font-size: 13px; }
+        .faq-item.open .chev { transform: rotate(180deg); color: #2563eb; }
+        .faq-answer {
+            max-height: 0; overflow: hidden;
+            transition: max-height .3s ease;
+        }
+        .faq-answer-inner {
+            padding: 0 20px 18px 66px;
+            font-size: 13.5px; color: #64748b; line-height: 1.7;
+        }
+        mark.hl { background: #fef08a; color: #1e293b; border-radius: 3px; padding: 0 2px; }
+
+        .no-result {
+            text-align: center; padding: 50px 20px;
+            color: #94a3b8;
+        }
+
+        /* ---- CONTACT FORM ---- */
+        .contact-card {
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .contact-side {
+            background: linear-gradient(160deg, #1e3a8a, #4338ca);
+            color: #fff; padding: 32px 28px;
+            position: relative; overflow: hidden;
+            flex: 1 1 280px;
+        }
+        .contact-form-col {
+            flex: 1.4 1 320px;
+            padding: 28px;
+        }
+        .contact-side::before {
+            content: ''; position: absolute; right: -50px; bottom: -50px;
+            width: 180px; height: 180px; border-radius: 50%;
+            background: rgba(255,255,255,0.07);
+        }
+        .contact-row { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 18px; }
+        .contact-row i { font-size: 15px; margin-top: 2px; color: #93c5fd; width: 18px; }
+        .contact-row b { font-size: 13.5px; display: block; }
+        .contact-row span { font-size: 12.5px; color: rgba(255,255,255,0.7); }
+
+        .input-group { position: relative; margin-bottom: 16px; }
+        .input-group input, .input-group textarea, .input-group select {
+            width: 100%; border: 1.5px solid #e2e8f0; border-radius: 12px;
+            padding: 13px 14px; font-size: 14px; color: #1e293b;
+            outline: none; transition: border-color .15s, box-shadow .15s;
+            background: #fff; font-family: inherit; resize: none;
+        }
+        .input-group textarea { min-height: 100px; }
+        .input-group input:focus, .input-group textarea:focus, .input-group select:focus {
+            border-color: #3b82f6; box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+        .input-group label {
+            font-size: 12px; font-weight: 700; color: #475569; margin-bottom: 6px; display: block;
+        }
+
+        .btn-submit {
+            width: 100%; background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: #fff; font-weight: 800; font-size: 14.5px;
+            padding: 14px; border-radius: 12px; border: none;
+            cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;
+            transition: transform .15s, box-shadow .15s; box-shadow: 0 8px 18px rgba(37,99,235,0.25);
+        }
+        .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 12px 22px rgba(37,99,235,0.32); }
+        .btn-submit:disabled { opacity: .7; cursor: not-allowed; transform: none; }
+
+        .success-box {
+            display: none; text-align: center; padding: 30px 10px;
+        }
+        .success-box.show { display: block; animation: popIn .4s cubic-bezier(.16,1,.3,1); }
+        @keyframes popIn { from { opacity:0; transform: scale(.9); } to { opacity:1; transform: scale(1); } }
+        .success-circle {
+            width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 14px;
+            background: linear-gradient(135deg, #34d399, #10b981);
+            display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 26px;
+            animation: pulseRing 1.4s ease-out;
+        }
+        @keyframes pulseRing {
+            0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.45); }
+            70% { box-shadow: 0 0 0 14px rgba(16,185,129,0); }
+            100% { box-shadow: 0 0 0 0 rgba(16,185,129,0); }
+        }
+
+        /* ---- LIVE CHAT BUTTON ---- */
+        .chat-fab {
+            position: fixed; bottom: 26px; right: 26px; z-index: 60;
+            width: 58px; height: 58px; border-radius: 50%;
+            background: linear-gradient(135deg, #2563eb, #4f46e5);
+            color: #fff; font-size: 22px; border: none; cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 10px 26px rgba(37,99,235,0.35);
+            transition: transform .2s;
+            animation: floatY 2.6s ease-in-out infinite;
+        }
+        .chat-fab:hover { transform: scale(1.08); }
+        @keyframes floatY { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+        .chat-panel {
+            position: fixed; bottom: 96px; right: 26px; z-index: 60;
+            width: 320px; max-width: 88vw;
+            background: #fff; border-radius: 18px;
+            box-shadow: 0 18px 50px rgba(15,23,42,0.22);
+            border: 1px solid #e2e8f0;
+            transform: translateY(16px) scale(.96); opacity: 0; pointer-events: none;
+            transition: all .22s cubic-bezier(.16,1,.3,1);
+            overflow: hidden;
+        }
+        .chat-panel.open { transform: translateY(0) scale(1); opacity: 1; pointer-events: auto; }
+        .chat-head {
+            background: linear-gradient(135deg, #1e3a8a, #4338ca);
+            color: #fff; padding: 16px 18px; display: flex; align-items: center; gap: 10px;
+        }
+        .chat-head .dot { width: 9px; height: 9px; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 2px rgba(52,211,153,0.3); }
+        .chat-body { padding: 16px 18px; max-height: 260px; overflow-y: auto; }
+        .chat-bubble {
+            background: #f1f5f9; color: #334155; padding: 10px 14px;
+            border-radius: 14px 14px 14px 4px; font-size: 13px; line-height: 1.5;
+            max-width: 88%; margin-bottom: 10px; animation: fadeUp .25s ease both;
+        }
+        .chat-bubble.me {
+            background: linear-gradient(135deg,#2563eb,#4f46e5); color: #fff;
+            border-radius: 14px 14px 4px 14px; margin-left: auto;
+        }
+        @keyframes fadeUp { from { opacity:0; transform: translateY(8px); } to { opacity:1; transform: translateY(0); } }
+        .chat-foot { padding: 12px; border-top: 1px solid #f1f5f9; display: flex; gap: 8px; }
+        .chat-foot input {
+            flex: 1; border: 1.5px solid #e2e8f0; border-radius: 999px;
+            padding: 9px 14px; font-size: 13px; outline: none;
+        }
+        .chat-foot input:focus { border-color: #3b82f6; }
+        .chat-foot button {
+            width: 36px; height: 36px; border-radius: 50%; border: none;
+            background: linear-gradient(135deg,#2563eb,#4f46e5); color: #fff; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
+        .typing-dots span {
+            width: 6px; height: 6px; background: #94a3b8; border-radius: 50%;
+            display: inline-block; margin-right: 3px; animation: blink 1.2s infinite;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: .2s; }
+        .typing-dots span:nth-child(3) { animation-delay: .4s; }
+        @keyframes blink { 0%,80%,100% { opacity:.3; } 40% { opacity:1; } }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 text-blue-600 font-black text-2xl">
+                <i class="fa-solid fa-plane"></i>
+                <span>GoTrip</span>
+            </a>
+            <a href="index.html" class="text-gray-500 hover:text-gray-700 font-semibold flex items-center gap-2 text-sm transition">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span class="hidden sm:inline">Kembali ke Beranda</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="container mx-auto px-6 relative z-10 max-w-3xl">
+            <div class="flex items-center gap-3 mb-1">
+                <div style="width:38px;height:38px;background:rgba(255,255,255,0.15);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                    <i class="fa-solid fa-headset" style="color:white;font-size:16px;"></i>
+                </div>
+                <h1>Bantuan & Dukungan</h1>
+            </div>
+            <p>Cari jawaban cepat, atau hubungi tim GoTrip kapan saja</p>
+        </div>
+    </div>
+
+    <main class="container mx-auto px-6 pb-16 max-w-3xl">
+
+        <!-- Search -->
+        <div class="search-wrap">
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="faq-search" placeholder="Cari pertanyaan, misal: refund, ubah jadwal, pembayaran...">
+                <button class="search-clear" id="search-clear"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+        </div>
+
+        <!-- Quick actions -->
+        <div class="quick-row">
+            <a href="booking-saya.html" class="quick-card">
+                <div class="quick-icon" style="background:#dbeafe;color:#2563eb;"><i class="fa-solid fa-ticket"></i></div>
+                <h3>Lacak Booking</h3>
+                <p>Cek status & detail tiket perjalananmu.</p>
+                <span class="go">Lihat booking <i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+            <a href="pembayaran.html" class="quick-card">
+                <div class="quick-icon" style="background:#ede9fe;color:#7c3aed;"><i class="fa-solid fa-credit-card"></i></div>
+                <h3>Masalah Pembayaran</h3>
+                <p>Refund, gagal bayar, atau bukti transfer.</p>
+                <span class="go">Cek pembayaran <i class="fa-solid fa-arrow-right"></i></span>
+            </a>
+            <div class="quick-card" id="open-chat-card">
+                <div class="quick-icon" style="background:#dcfce7;color:#16a34a;"><i class="fa-solid fa-comment-dots"></i></div>
+                <h3>Live Chat</h3>
+                <p>Ngobrol langsung dengan tim support kami.</p>
+                <span class="go">Mulai chat <i class="fa-solid fa-arrow-right"></i></span>
+            </div>
+        </div>
+
+        <!-- Category pills -->
+        <div class="faq-section-title">Pertanyaan Umum</div>
+        <div class="flex gap-2 overflow-x-auto pb-2" id="cat-pills" style="scrollbar-width:none;">
+            <button class="cat-pill active" data-cat="all"><i class="fa-solid fa-layer-group"></i> Semua</button>
+            <button class="cat-pill" data-cat="booking"><i class="fa-solid fa-ticket"></i> Booking</button>
+            <button class="cat-pill" data-cat="pembayaran"><i class="fa-solid fa-credit-card"></i> Pembayaran</button>
+            <button class="cat-pill" data-cat="akun"><i class="fa-solid fa-user"></i> Akun</button>
+            <button class="cat-pill" data-cat="lainnya"><i class="fa-solid fa-circle-question"></i> Lainnya</button>
+        </div>
+
+        <!-- FAQ list -->
+        <div id="faq-list" class="mt-4"></div>
+        <div id="no-result" class="no-result hidden">
+            <i class="fa-solid fa-magnifying-glass-minus text-3xl mb-3"></i>
+            <p class="font-semibold text-gray-500">Tidak ada hasil ditemukan</p>
+            <p class="text-sm">Coba kata kunci lain, atau hubungi kami langsung di bawah.</p>
+        </div>
+
+        <!-- Contact -->
+        <div class="faq-section-title">Hubungi Kami</div>
+        <div class="contact-card">
+            <div class="contact-side">
+                <h3 class="text-lg font-extrabold mb-1">Masih butuh bantuan?</h3>
+                <p class="text-sm text-blue-100 mb-6">Tim kami biasanya membalas dalam waktu kurang dari 1 jam.</p>
+
+                <div class="contact-row">
+                    <i class="fa-solid fa-envelope"></i>
+                    <div><b>Email</b><span>support@gotrip.id</span></div>
+                </div>
+                <div class="contact-row">
+                    <i class="fa-brands fa-whatsapp"></i>
+                    <div><b>WhatsApp</b><span>+62 812-3456-7890</span></div>
+                </div>
+                <div class="contact-row">
+                    <i class="fa-solid fa-clock"></i>
+                    <div><b>Jam Operasional</b><span>Setiap hari, 08.00 - 22.00 WIB</span></div>
+                </div>
+            </div>
+
+            <div class="contact-form-col">
+                <form id="contact-form">
+                    <div class="input-group">
+                        <label for="cf-nama">Nama</label>
+                        <input type="text" id="cf-nama" placeholder="Nama lengkap kamu" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="cf-topik">Topik</label>
+                        <select id="cf-topik" required>
+                            <option value="" disabled selected>Pilih topik bantuan</option>
+                            <option>Booking & Tiket</option>
+                            <option>Pembayaran & Refund</option>
+                            <option>Akun & Keamanan</option>
+                            <option>Lainnya</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="cf-pesan">Pesan</label>
+                        <textarea id="cf-pesan" placeholder="Ceritakan masalah kamu secara singkat..." required></textarea>
+                    </div>
+                    <button type="submit" class="btn-submit" id="cf-btn">
+                        <i class="fa-solid fa-paper-plane" id="cf-icon"></i>
+                        <span id="cf-text">Kirim Pesan</span>
+                    </button>
+                </form>
+
+                <div class="success-box" id="cf-success">
+                    <div class="success-circle"><i class="fa-solid fa-check"></i></div>
+                    <p class="font-extrabold text-gray-800">Pesan terkirim!</p>
+                    <p class="text-sm text-gray-500 mt-1">Tim GoTrip akan segera menghubungi kamu kembali.</p>
+                    <button class="text-blue-600 font-semibold text-sm mt-4" id="cf-reset">Kirim pesan lain</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Live Chat -->
+    <button class="chat-fab" id="chat-fab"><i class="fa-solid fa-comment-dots"></i></button>
+    <div class="chat-panel" id="chat-panel">
+        <div class="chat-head">
+            <span class="dot"></span>
+            <div>
+                <p class="font-bold text-sm leading-tight">GoTrip Support</p>
+                <p class="text-xs text-blue-100">Biasanya membalas dalam hitungan menit</p>
+            </div>
+            <button id="chat-close" class="ml-auto text-blue-100 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="chat-body" id="chat-body">
+            <div class="chat-bubble">Hai! 👋 Ada yang bisa kami bantu seputar booking, pembayaran, atau akun GoTrip kamu?</div>
+        </div>
+        <div class="chat-foot">
+            <input type="text" id="chat-input" placeholder="Tulis pesan...">
+            <button id="chat-send"><i class="fa-solid fa-paper-plane"></i></button>
+        </div>
+    </div>
+
+    <script>
+        // ---------------- FAQ DATA ----------------
+        const FAQS = [
+            { cat: 'booking', q: 'Bagaimana cara melakukan booking tiket wisata?', a: 'Pilih destinasi yang kamu suka, klik tombol "Booking", lalu isi tanggal kunjungan dan jumlah peserta. Setelah itu lanjutkan ke pembayaran untuk mengonfirmasi tiketmu.' },
+            { cat: 'booking', q: 'Apakah saya bisa mengubah tanggal kunjungan setelah booking?', a: 'Bisa, selama booking belum melewati tanggal kunjungan dan masih berstatus "Menunggu" atau "Dikonfirmasi". Buka halaman Booking Saya, lalu pilih opsi ubah jadwal.' },
+            { cat: 'booking', q: 'Bagaimana cara membatalkan booking?', a: 'Masuk ke halaman Booking Saya, pilih booking yang ingin dibatalkan, lalu klik tombol "Batalkan". Pembatalan mengikuti kebijakan refund masing-masing destinasi.' },
+            { cat: 'pembayaran', q: 'Metode pembayaran apa saja yang didukung GoTrip?', a: 'GoTrip mendukung transfer bank, e-wallet, dan kartu debit/kredit. Setelah memilih metode, kamu akan diarahkan ke halaman pembayaran untuk menyelesaikan transaksi.' },
+            { cat: 'pembayaran', q: 'Berapa lama proses refund setelah pembatalan?', a: 'Proses refund umumnya memakan waktu 3-7 hari kerja, tergantung metode pembayaran yang digunakan saat booking.' },
+            { cat: 'pembayaran', q: 'Pembayaran saya gagal tapi saldo terpotong, apa yang harus dilakukan?', a: 'Jangan khawatir, dana yang terpotong akan otomatis dikembalikan dalam 1-3 hari kerja. Jika lebih dari itu, segera hubungi tim support kami melalui live chat atau email.' },
+            { cat: 'akun', q: 'Bagaimana cara mengubah kata sandi akun saya?', a: 'Buka menu Pengaturan dari profil kamu, lalu pilih bagian "Ubah Kata Sandi". Masukkan kata sandi lama dan kata sandi baru untuk menyelesaikan proses.' },
+            { cat: 'akun', q: 'Saya lupa kata sandi, bagaimana cara reset?', a: 'Pada halaman login, klik "Lupa Kata Sandi" dan ikuti instruksi yang dikirimkan ke email kamu untuk membuat kata sandi baru.' },
+            { cat: 'akun', q: 'Bagaimana cara menghapus akun GoTrip saya?', a: 'Kamu dapat menghapus akun melalui menu Pengaturan, lalu gulir ke bagian "Hapus Akun". Perlu diingat, tindakan ini bersifat permanen dan tidak dapat dibatalkan.' },
+            { cat: 'lainnya', q: 'Apakah ada diskon atau promo khusus di GoTrip?', a: 'Tentu! Cek halaman Promo secara rutin untuk mendapatkan info diskon, voucher, dan penawaran menarik dari berbagai destinasi wisata.' },
+            { cat: 'lainnya', q: 'Bagaimana cara menghubungi customer service GoTrip?', a: 'Kamu bisa menghubungi kami lewat live chat di pojok kanan bawah halaman ini, email ke support@gotrip.id, atau WhatsApp di +62 812-3456-7890.' },
+        ];
+
+        const faqList = document.getElementById('faq-list');
+        const noResult = document.getElementById('no-result');
+        let activeCat = 'all';
+        let activeQuery = '';
+
+        function highlight(text, query) {
+            if (!query) return text;
+            const idx = text.toLowerCase().indexOf(query.toLowerCase());
+            if (idx === -1) return text;
+            return text.slice(0, idx) + '<mark class="hl">' + text.slice(idx, idx + query.length) + '</mark>' + text.slice(idx + query.length);
+        }
+
+        const CAT_ICON = { booking: 'fa-ticket', pembayaran: 'fa-credit-card', akun: 'fa-user', lainnya: 'fa-circle-question' };
+
+        function renderFaqs() {
+            const query = activeQuery.trim().toLowerCase();
+            const filtered = FAQS.filter(f => {
+                const matchCat = activeCat === 'all' || f.cat === activeCat;
+                const matchQuery = !query || f.q.toLowerCase().includes(query) || f.a.toLowerCase().includes(query);
+                return matchCat && matchQuery;
+            });
+
+            if (filtered.length === 0) {
+                faqList.innerHTML = '';
+                noResult.classList.remove('hidden');
+                return;
+            }
+            noResult.classList.add('hidden');
+
+            faqList.innerHTML = filtered.map((f, i) => `
+                <div class="faq-item" data-index="${i}">
+                    <button class="faq-question" type="button">
+                        <div class="faq-q-icon"><i class="fa-solid ${CAT_ICON[f.cat]}"></i></div>
+                        <span class="q-text">${highlight(f.q, query)}</span>
+                        <i class="fa-solid fa-chevron-down chev"></i>
+                    </button>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">${highlight(f.a, query)}</div>
+                    </div>
+                </div>
+            `).join('');
+
+            faqList.querySelectorAll('.faq-item').forEach(item => {
+                const btn = item.querySelector('.faq-question');
+                const answer = item.querySelector('.faq-answer');
+                btn.addEventListener('click', () => {
+                    const isOpen = item.classList.contains('open');
+                    // close other open items for a clean accordion feel
+                    faqList.querySelectorAll('.faq-item.open').forEach(other => {
+                        if (other !== item) {
+                            other.classList.remove('open');
+                            other.querySelector('.faq-answer').style.maxHeight = null;
+                        }
+                    });
+                    if (isOpen) {
+                        item.classList.remove('open');
+                        answer.style.maxHeight = null;
+                    } else {
+                        item.classList.add('open');
+                        answer.style.maxHeight = answer.scrollHeight + 'px';
+                    }
+                });
+            });
+        }
+
+        // Category pills
+        document.querySelectorAll('.cat-pill').forEach(pill => {
+            pill.addEventListener('click', () => {
+                document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+                pill.classList.add('active');
+                activeCat = pill.dataset.cat;
+                renderFaqs();
+            });
+        });
+
+        // Search
+        const searchInput = document.getElementById('faq-search');
+        const clearBtn = document.getElementById('search-clear');
+        searchInput.addEventListener('input', () => {
+            activeQuery = searchInput.value;
+            clearBtn.classList.toggle('show', activeQuery.length > 0);
+            renderFaqs();
+        });
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            activeQuery = '';
+            clearBtn.classList.remove('show');
+            renderFaqs();
+        });
+
+        renderFaqs();
+
+        // ---------------- CONTACT FORM ----------------
+        const cfForm = document.getElementById('contact-form');
+        const cfBtn = document.getElementById('cf-btn');
+        const cfIcon = document.getElementById('cf-icon');
+        const cfText = document.getElementById('cf-text');
+        const cfSuccess = document.getElementById('cf-success');
+
+        cfForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            cfBtn.disabled = true;
+            cfIcon.className = 'fa-solid fa-circle-notch fa-spin';
+            cfText.textContent = 'Mengirim...';
+
+            setTimeout(() => {
+                cfForm.classList.add('hidden');
+                cfSuccess.classList.add('show');
+            }, 900);
+        });
+
+        document.getElementById('cf-reset').addEventListener('click', () => {
+            cfForm.reset();
+            cfForm.classList.remove('hidden');
+            cfSuccess.classList.remove('show');
+            cfBtn.disabled = false;
+            cfIcon.className = 'fa-solid fa-paper-plane';
+            cfText.textContent = 'Kirim Pesan';
+        });
+
+        // ---------------- LIVE CHAT WIDGET ----------------
+        const chatFab = document.getElementById('chat-fab');
+        const chatPanel = document.getElementById('chat-panel');
+        const chatClose = document.getElementById('chat-close');
+        const chatBody = document.getElementById('chat-body');
+        const chatInput = document.getElementById('chat-input');
+        const chatSend = document.getElementById('chat-send');
+        const openChatCard = document.getElementById('open-chat-card');
+
+        function openChat() {
+            chatPanel.classList.add('open');
+            chatInput.focus();
+        }
+        chatFab.addEventListener('click', () => chatPanel.classList.toggle('open'));
+        openChatCard.addEventListener('click', openChat);
+        chatClose.addEventListener('click', () => chatPanel.classList.remove('open'));
+
+        const AUTO_REPLIES = [
+            'Terima kasih sudah menghubungi GoTrip! Tim kami akan segera membantu kamu 😊',
+            'Untuk masalah booking atau pembayaran, kamu juga bisa cek FAQ di atas ya.',
+            'Bisa ceritakan lebih detail kendala yang kamu alami?',
+            'Pesan kamu sudah kami terima, mohon tunggu sebentar ya.'
+        ];
+
+        function addBubble(text, me) {
+            const div = document.createElement('div');
+            div.className = 'chat-bubble' + (me ? ' me' : '');
+            div.textContent = text;
+            chatBody.appendChild(div);
+            chatBody.scrollTop = chatBody.scrollHeight;
+        }
+
+        function sendChat() {
+            const val = chatInput.value.trim();
+            if (!val) return;
+            addBubble(val, true);
+            chatInput.value = '';
+
+            const typing = document.createElement('div');
+            typing.className = 'chat-bubble';
+            typing.innerHTML = '<span class="typing-dots"><span></span><span></span><span></span></span>';
+            chatBody.appendChild(typing);
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            setTimeout(() => {
+                typing.remove();
+                const reply = AUTO_REPLIES[Math.floor(Math.random() * AUTO_REPLIES.length)];
+                addBubble(reply, false);
+            }, 1100);
+        }
+
+        chatSend.addEventListener('click', sendChat);
+        chatInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') sendChat(); });
+    </script>
+</body>
+</html>

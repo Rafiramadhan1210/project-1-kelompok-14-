@@ -894,6 +894,10 @@
 
                 if (res.status === 401) {
                     showMessage('info', '🔒 Silakan login dulu untuk melakukan booking.');
+                    const redirect = encodeURIComponent(window.location.pathname.split('/').pop() + window.location.search);
+                    setTimeout(() => {
+                        window.location.href = `login.html?redirect=${redirect}`;
+                    }, 700);
                 } else if (res.ok) {
                     showMessage('success', '🎉 Booking berhasil! Menunggu konfirmasi pembayaran.');
                     document.getElementById('booking-form').reset();
@@ -901,6 +905,9 @@
                     uploadArea.style.borderColor = '';
                     uploadArea.style.background = '';
                     updateTotal();
+                    setTimeout(() => {
+                        window.location.href = 'booking-saya.html';
+                    }, 900);
                 } else {
                     showMessage('error', '✕ ' + (result.message || result.error || 'Booking gagal, coba lagi.'));
                 }

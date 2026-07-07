@@ -5,7 +5,6 @@ import (
 	"gocroot/helper"
 	"gocroot/model"
 	"log"
-	"os"
 
 	"github.com/joho/godotenv"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -17,12 +16,16 @@ var mongoinfo model.DBInfo
 func InitDB() {
 	_ = godotenv.Load()
 
-	MongoString := os.Getenv("MONGOSTRING")
-	log.Printf("DEBUG MONGOSTRING: %s\n", MongoString)
-	log.Printf("DEBUG DBNAME: %s\n", os.Getenv("DBNAME")) 
+	// MongoString := os.Getenv("MONGOSTRING")
+	// log.Printf("DEBUG MONGOSTRING: %s\n", MongoString)
+	// log.Printf("DEBUG DBNAME: %s\n", os.Getenv("DBNAME"))
+	// mongoinfo = model.DBInfo{
+	// 	DBString: helper.SRVLookup(MongoString),
+	// 	DBName:   os.Getenv("DBNAME"),
+	// }
 	mongoinfo = model.DBInfo{
-		DBString: helper.SRVLookup(MongoString),
-		DBName:   os.Getenv("DBNAME"),
+		DBString: "mongodb+srv://shanyalternative_db_user:admin123@cluster0.fu87yod.mongodb.net/?appName=Cluster0",
+		DBName:   "gotrip_db",
 	}
 	log.Printf("DEBUG resolved DBString: %s\n", mongoinfo.DBString)
 	var err error

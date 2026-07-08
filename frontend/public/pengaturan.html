@@ -497,8 +497,8 @@
             if (!nama) { showFormMsg('msg-profil', 'Nama tidak boleh kosong.', 'error'); return; }
             setLoading('btn-profil', 'icon-profil', 'text-profil', true, 'Simpan Perubahan', 'fa-solid fa-floppy-disk');
             try {
-                const res = await fetch('/api/user/profile', {
-                    method: 'PUT',
+                const res = await fetch('/api/profile/update', {
+                    method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
                     body: JSON.stringify({ nama, phone })

@@ -559,10 +559,10 @@
         }
 
         // Load data destinasi
-        fetch('/button')
+        fetch('/destinasi')
             .then(res => res.json())
             .then(result => {
-                allDestinasi = result.data || [];
+                allDestinasi = result || [];
 
                 // Set batas maksimum slider harga otomatis berdasar data
                 const maxHarga = Math.max(1000000, ...allDestinasi.map(d => Number(d.harga || 0)));

@@ -89,7 +89,11 @@ func HandlerIncomingMessage(msg model.IteungMessage) (resp model.Response) {
 
 func GetRandomReplyFromMongo(msg model.IteungMessage) string {
 	// Menggunakan config.Mongoconn biasa tanpa .Client()
-	rply, _ := helper.GetRandomDoc[model.Reply](config.Mongoconn, "reply", 1)
+	rply, err := helper.GetRandomDoc[model.Reply](config.Mongoconn, "reply", 1)
+	if err != nil || len(rply) == 0 {
+		// Koleksi "reply" kosong/belum diisi, hindari panic index out of range
+		return "Maaf, saya belum punya balasan untuk itu."
+	}
 	replymsg := strings.ReplaceAll(rply[0].Message, "#BOTNAME#", msg.Alias_name)
 	replymsg = strings.ReplaceAll(replymsg, "\\n", "\n")
 	return replymsg

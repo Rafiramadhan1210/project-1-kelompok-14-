@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoTrip - Tiket Digital</title>
+    <link href="./output.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        * { font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background: #eef2ff; }
+
+        .navbar {
+            background: #fff;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky; top: 0; z-index: 50;
+            box-shadow: 0 1px 12px rgba(0,0,0,0.04);
+        }
+
+        .page-wrap { max-width: 480px; margin: 0 auto; padding: 32px 16px 60px; }
+
+        .state-box {
+            background: #fff; border-radius: 20px; padding: 48px 24px;
+            text-align: center; box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+        }
+        .state-box i { font-size: 40px; margin-bottom: 14px; }
+        .state-box h3 { font-size: 17px; font-weight: 800; color: #1e293b; margin-bottom: 6px; }
+        .state-box p { font-size: 13px; color: #64748b; line-height: 1.6; }
+
+        /* ---- TICKET ---- */
+        .ticket {
+            background: #fff;
+            border-radius: 22px;
+            overflow: hidden;
+            box-shadow: 0 16px 44px rgba(30,58,138,0.18);
+            position: relative;
+        }
+        .ticket-top {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 55%, #6366f1 100%);
+            color: #fff;
+            padding: 26px 26px 60px;
+            position: relative;
+            overflow: hidden;
+        }
+        .ticket-top::before {
+            content: ''; position: absolute; top: -50px; right: -50px;
+            width: 180px; height: 180px; border-radius: 50%;
+            background: rgba(255,255,255,0.08);
+        }
+        .brand { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 18px; margin-bottom: 18px; }
+        .ticket-status {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: rgba(255,255,255,0.18);
+            padding: 5px 12px; border-radius: 999px;
+            font-size: 11px; font-weight: 700; letter-spacing: 0.03em;
+            margin-bottom: 14px;
+        }
+        .ticket-dest { font-size: 24px; font-weight: 900; line-height: 1.25; position: relative; z-index: 1; }
+        .ticket-sub { font-size: 12.5px; color: rgba(255,255,255,0.8); margin-top: 4px; }
+
+        /* perforation */
+        .perforation {
+            position: relative;
+            height: 0;
+        }
+        .perforation::before {
+            content: '';
+            position: absolute; left: -12px; top: -12px;
+            width: 24px; height: 24px; background: #eef2ff; border-radius: 50%;
+        }
+        .perforation::after {
+            content: '';
+            position: absolute; right: -12px; top: -12px;
+            width: 24px; height: 24px; background: #eef2ff; border-radius: 50%;
+        }
+        .dashed-line {
+            border-top: 2px dashed #cbd5e1;
+            margin: 0 22px;
+        }
+
+        .ticket-bottom { padding: 26px 26px 30px; }
+        .field-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 18px 12px;
+            margin-bottom: 20px;
+        }
+        .field-grid .full { grid-column: 1 / -1; }
+        .field-label {
+            font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 0.05em; color: #94a3b8; margin-bottom: 4px;
+        }
+        .field-value { font-size: 14.5px; font-weight: 700; color: #1e293b; }
+
+        .qr-section {
+            display: flex; align-items: center; gap: 16px;
+            background: #f8faff; border: 1.5px solid #e2e8f0;
+            border-radius: 16px; padding: 16px; margin-bottom: 16px;
+        }
+        .qr-box { flex-shrink: 0; background: #fff; padding: 6px; border-radius: 10px; border: 1px solid #e2e8f0; }
+        .qr-code-text { font-size: 11px; color: #94a3b8; margin-bottom: 2px; }
+        .qr-code-value { font-size: 13.5px; font-weight: 800; color: #1e293b; letter-spacing: 0.04em; word-break: break-all; }
+
+        .notice {
+            background: #fffbeb; border: 1.5px solid #fde68a;
+            border-radius: 12px; padding: 12px 14px;
+            font-size: 12px; color: #92400e; line-height: 1.6;
+            display: flex; gap: 8px;
+        }
+
+        .action-row { display: flex; gap: 10px; margin-top: 22px; }
+        .btn-print {
+            flex: 1; padding: 13px; border-radius: 12px; border: none;
+            background: linear-gradient(135deg, #2563eb, #4f46e5); color: #fff;
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+            box-shadow: 0 4px 14px rgba(59,130,246,0.35);
+            transition: transform 0.15s;
+        }
+        .btn-print:hover { transform: translateY(-2px); }
+        .btn-back {
+            padding: 13px 18px; border-radius: 12px; border: 1.5px solid #e2e8f0;
+            background: #fff; color: #64748b; font-size: 14px; font-weight: 700;
+            cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 8px;
+        }
+
+        /* ---- PRINT ---- */
+        @media print {
+            body { background: #fff; }
+            .navbar, .action-row, .no-print { display: none !important; }
+            .page-wrap { padding: 0; max-width: 100%; }
+            .ticket { box-shadow: none; border: 1.5px solid #cbd5e1; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar no-print">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <a href="index.html" class="flex items-center gap-2 text-blue-600 font-black text-2xl">
+                <i class="fa-solid fa-plane"></i>
+                <span>GoTrip</span>
+            </a>
+            <a href="booking-saya.html" class="text-gray-500 hover:text-gray-700 font-semibold flex items-center gap-2 text-sm transition">
+                <i class="fa-solid fa-arrow-left"></i>
+                <span class="hidden sm:inline">Booking Saya</span>
+            </a>
+        </div>
+    </header>
+
+    <div class="page-wrap">
+
+        <div id="loading-state" class="state-box">
+            <i class="fa-solid fa-circle-notch fa-spin" style="color:#3b82f6;"></i>
+            <h3>Memuat tiket...</h3>
+        </div>
+
+        <div id="error-state" class="state-box hidden">
+            <i class="fa-solid fa-circle-exclamation" style="color:#ef4444;"></i>
+            <h3 id="error-title">Tiket tidak ditemukan</h3>
+            <p id="error-desc">Periksa kembali link tiket kamu, atau kembali ke halaman booking.</p>
+        </div>
+
+        <div id="not-ready-state" class="state-box hidden">
+            <i class="fa-solid fa-hourglass-half" style="color:#f59e0b;"></i>
+            <h3>Tiket Belum Tersedia</h3>
+            <p>Tiket digital baru bisa dicetak setelah pembayaran kamu dikonfirmasi oleh admin. Silakan cek kembali nanti.</p>
+        </div>
+
+        <div id="ticket-wrap" class="hidden">
+            <div class="ticket">
+                <div class="ticket-top">
+                    <div class="brand"><i class="fa-solid fa-plane"></i> GoTrip</div>
+                    <div class="ticket-status">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span id="status-text">TIKET AKTIF</span>
+                    </div>
+                    <div class="ticket-dest" id="dest-name">-</div>
+                    <div class="ticket-sub" id="dest-sub">Tiket Masuk Destinasi Wisata</div>
+                </div>
+
+                <div class="perforation"></div>
+                <div class="dashed-line"></div>
+
+                <div class="ticket-bottom">
+                    <div class="field-grid">
+                        <div>
+                            <div class="field-label">Nama Pemesan</div>
+                            <div class="field-value" id="f-nama">-</div>
+                        </div>
+                        <div>
+                            <div class="field-label">No. HP</div>
+                            <div class="field-value" id="f-hp">-</div>
+                        </div>
+                        <div>
+                            <div class="field-label">Tanggal Kunjungan</div>
+                            <div class="field-value" id="f-tanggal">-</div>
+                        </div>
+                        <div>
+                            <div class="field-label">Jumlah Tiket</div>
+                            <div class="field-value" id="f-jumlah">-</div>
+                        </div>
+                        <div class="full">
+                            <div class="field-label">Total Dibayar</div>
+                            <div class="field-value" id="f-total">-</div>
+                        </div>
+                    </div>
+
+                    <div class="qr-section">
+                        <div class="qr-box" id="qr-code"></div>
+                        <div>
+                            <div class="qr-code-text">Kode Tiket</div>
+                            <div class="qr-code-value" id="f-kode">-</div>
+                            <div class="qr-code-text" style="margin-top:6px;">Tunjukkan QR ini ke petugas saat masuk lokasi wisata.</div>
+                        </div>
+                    </div>
+
+                    <div class="notice">
+                        <i class="fa-solid fa-triangle-exclamation" style="margin-top:1px;"></i>
+                        <span>Tiket ini berlaku 1x untuk jumlah peserta sesuai data di atas pada tanggal kunjungan tertera. Simpan atau cetak tiket ini sebelum berkunjung.</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="action-row no-print">
+                <button onclick="window.print()" class="btn-print">
+                    <i class="fa-solid fa-print"></i> Cetak / Simpan sebagai PDF
+                </button>
+                <a href="booking-saya.html" class="btn-back">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function getQueryParam(name) {
+            const params = new URLSearchParams(window.location.search);
+            return params.get(name);
+        }
+
+        function formatTanggalKunjungan(str) {
+            if (!str) return '-';
+            const [y, m, d] = str.split('-');
+            if (!y || !m || !d) return str;
+            const months = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+            return `${parseInt(d)} ${months[parseInt(m)-1]} ${y}`;
+        }
+
+        function formatRupiah(n) {
+            return 'Rp ' + (n || 0).toLocaleString('id-ID');
+        }
+
+        function showState(id) {
+            ['loading-state', 'error-state', 'not-ready-state', 'ticket-wrap'].forEach(sid => {
+                document.getElementById(sid).classList.toggle('hidden', sid !== id);
+            });
+        }
+
+        async function loadTicket() {
+            const id = getQueryParam('id');
+            if (!id) {
+                showState('error-state');
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/my-bookings/${id}`, { credentials: 'include' });
+                if (res.status === 401) {
+                    window.location.href = `login.html?redirect=${encodeURIComponent(window.location.href)}`;
+                    return;
+                }
+                if (!res.ok) {
+                    showState('error-state');
+                    return;
+                }
+                const result = await res.json();
+                const booking = result.data;
+
+                if (!booking || (booking.status !== 'Dibayar' && booking.status !== 'Selesai')) {
+                    showState('not-ready-state');
+                    return;
+                }
+
+                const bookingId = booking.id || booking._id || id;
+
+                document.getElementById('status-text').textContent =
+                    booking.status === 'Selesai' ? 'PERJALANAN SELESAI' : 'TIKET AKTIF';
+                document.getElementById('dest-name').textContent = booking.destination || 'Destinasi';
+                document.getElementById('f-nama').textContent = booking.nama_user || '-';
+                document.getElementById('f-hp').textContent = booking.no_hp || '-';
+                document.getElementById('f-tanggal').textContent = formatTanggalKunjungan(booking.tanggal_kunjungan);
+                document.getElementById('f-jumlah').textContent = `${booking.total_tiket || 0} orang`;
+                document.getElementById('f-total').textContent = formatRupiah(booking.total_bayar);
+
+                const kode = ('GT-' + bookingId).slice(0, 18).toUpperCase();
+                document.getElementById('f-kode').textContent = kode;
+
+                new QRCode(document.getElementById('qr-code'), {
+                    text: bookingId,
+                    width: 84,
+                    height: 84,
+                    colorDark: '#1e293b',
+                    colorLight: '#ffffff',
+                });
+
+                showState('ticket-wrap');
+            } catch (err) {
+                showState('error-state');
+            }
+        }
+
+        loadTicket();
+    </script>
+</body>
+</html>

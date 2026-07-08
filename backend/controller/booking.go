@@ -148,6 +148,36 @@ func GetAllBooking(c *fiber.Ctx) error {
 	return c.Status(fiber.StatusOK).JSON(data)
 }
 
+// GetMyBookingByID mengembalikan satu booking milik user yang sedang login
+// berdasarkan ID. Dipakai oleh halaman tiket digital (tiket.html).
+func GetMyBookingByID(c *fiber.Ctx) error {
+	db := config.Mongoconn
+
+	email, err := getSessionEmail(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Silakan login dulu"})
+	}
+
+	id := c.Params("id")
+	oid, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "ID booking tidak valid"})
+	}
+
+	var booking model.Booking
+	err = db.Collection("bookings").FindOne(context.Background(), bson.M{
+		"_id":   oid,
+		"email": email,
+	}).Decode(&booking)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "Booking tidak ditemukan"})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{
+		"data": booking,
+	})
+}
+
 // GetMyBookings mengembalikan booking milik user yang sedang login saja,
 // bisa difilter berdasarkan status lewat query ?status=Pending,Dibayar
 func GetMyBookings(c *fiber.Ctx) error {
@@ -256,45 +286,45 @@ func UpdateBookingStatus(c *fiber.Ctx) error {
 
 // CancelMyBooking memungkinkan user membatalkan booking milik mereka sendiri (hanya yang Pending)
 func CancelMyBooking(c *fiber.Ctx) error {
-    db := config.Mongoconn
+	db := config.Mongoconn
 
-    email, err := getSessionEmail(c)
-    if err != nil {
-        return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Silakan login dulu"})
-    }
+	email, err := getSessionEmail(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Silakan login dulu"})
+	}
 
-    bookingID := c.Params("id")
-    oid, err := primitive.ObjectIDFromHex(bookingID)
-    if err != nil {
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "ID booking tidak valid"})
-    }
+	bookingID := c.Params("id")
+	oid, err := primitive.ObjectIDFromHex(bookingID)
+	if err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "ID booking tidak valid"})
+	}
 
-    // Pastikan booking ini milik user yang login dan masih Pending
-    var booking model.Booking
-    err = db.Collection("bookings").FindOne(context.Background(), bson.M{
-        "_id":   oid,
-        "email": email,
-    }).Decode(&booking)
-    if err != nil {
-        return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "Booking tidak ditemukan"})
-    }
+	// Pastikan booking ini milik user yang login dan masih Pending
+	var booking model.Booking
+	err = db.Collection("bookings").FindOne(context.Background(), bson.M{
+		"_id":   oid,
+		"email": email,
+	}).Decode(&booking)
+	if err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "Booking tidak ditemukan"})
+	}
 
-    if booking.Status != "Pending" {
-        return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-            "message": "Hanya booking berstatus Pending yang dapat dibatalkan",
-        })
-    }
+	if booking.Status != "Pending" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Hanya booking berstatus Pending yang dapat dibatalkan",
+		})
+	}
 
-    _, err = db.Collection("bookings").UpdateOne(
-        context.Background(),
-        bson.M{"_id": oid},
-        bson.M{"$set": bson.M{"status": "Dibatalkan"}},
-    )
-    if err != nil {
-        return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
-    }
+	_, err = db.Collection("bookings").UpdateOne(
+		context.Background(),
+		bson.M{"_id": oid},
+		bson.M{"$set": bson.M{"status": "Dibatalkan"}},
+	)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+	}
 
-    return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Booking berhasil dibatalkan"})
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Booking berhasil dibatalkan"})
 }
 
 // ReuploadBuktiBayar memungkinkan user mengupload ulang bukti bayar

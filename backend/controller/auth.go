@@ -56,7 +56,7 @@ func RegisterUser(c *fiber.Ctx) error {
 
 	// Hash password
 	bytes, err := bcrypt.GenerateFromPassword([]byte(user.Password), bcrypt.DefaultCost)
-	
+
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal memproses password"})
 	}
@@ -64,8 +64,7 @@ func RegisterUser(c *fiber.Ctx) error {
 
 	_, err = db.Collection("users").InsertOne(context.Background(), user)
 	if err != nil {
-		result, err := db.Collection("users").InsertOne(context.Background(), user)
-	log.Printf("DEBUG insert result: %+v, err: %v\n", result, err)
+		log.Printf("DEBUG insert error: %v\n", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
 	}
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Registrasi Berhasil!"})
@@ -416,4 +415,89 @@ func UploadProfilePhoto(c *fiber.Ctx) error {
 		"message": "Foto profil berhasil diperbarui",
 		"foto":    fotoURL,
 	})
+}
+
+// ChangePassword mengganti kata sandi user yang sedang login.
+// Body JSON: { "current_password": "...", "new_password": "..." }
+func ChangePassword(c *fiber.Ctx) error {
+	db := config.Mongoconn
+
+	email, err := getSessionEmail(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Silakan login dulu"})
+	}
+
+	var body struct {
+		CurrentPassword string `json:"current_password"`
+		NewPassword     string `json:"new_password"`
+	}
+	if err := c.BodyParser(&body); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Data tidak valid"})
+	}
+
+	if body.CurrentPassword == "" || body.NewPassword == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Kata sandi saat ini dan kata sandi baru wajib diisi"})
+	}
+	if len(body.NewPassword) < 6 {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Kata sandi baru minimal 6 karakter"})
+	}
+
+	var dbUser model.Users
+	if err := db.Collection("users").FindOne(context.Background(), bson.M{"email": email}).Decode(&dbUser); err != nil {
+		return c.Status(fiber.StatusNotFound).JSON(fiber.Map{"message": "User tidak ditemukan"})
+	}
+
+	// Akun yang login lewat Google tidak punya password lokal
+	if dbUser.Password == "" {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Akun ini login menggunakan Google, tidak memiliki kata sandi lokal"})
+	}
+
+	if err := bcrypt.CompareHashAndPassword([]byte(dbUser.Password), []byte(body.CurrentPassword)); err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Kata sandi saat ini salah"})
+	}
+
+	newHash, err := bcrypt.GenerateFromPassword([]byte(body.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal memproses kata sandi baru"})
+	}
+
+	_, err = db.Collection("users").UpdateOne(
+		context.Background(),
+		bson.M{"email": email},
+		bson.M{"$set": bson.M{"password": string(newHash)}},
+	)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+	}
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Kata sandi berhasil diubah"})
+}
+
+// DeleteAccount menghapus akun user yang sedang login beserta session-nya.
+func DeleteAccount(c *fiber.Ctx) error {
+	db := config.Mongoconn
+
+	email, err := getSessionEmail(c)
+	if err != nil {
+		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{"message": "Silakan login dulu"})
+	}
+
+	if _, err := db.Collection("users").DeleteOne(context.Background(), bson.M{"email": email}); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal menghapus akun"})
+	}
+
+	// Hapus semua session milik user ini
+	_, _ = db.Collection("sessions").DeleteMany(context.Background(), bson.M{"email": email})
+
+	// Hapus cookie session di sisi client
+	c.Cookie(&fiber.Cookie{
+		Name:     sessionCookieName,
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+		SameSite: "Lax",
+		Path:     "/",
+	})
+
+	return c.Status(fiber.StatusOK).JSON(fiber.Map{"message": "Akun berhasil dihapus"})
 }

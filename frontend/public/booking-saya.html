@@ -375,6 +375,11 @@
                        <i class="fa-solid fa-xmark"></i> Batalkan Booking
                    </button>` : '';
 
+            const ticketBtn = (item.status === 'Dibayar' || item.status === 'Selesai')
+                ? `<a href="tiket.html?id=${bookingId}" class="btn-cancel" style="background:#eff6ff;color:#2563eb;border-color:#bfdbfe;text-decoration:none;">
+                       <i class="fa-solid fa-ticket"></i> Lihat / Cetak Tiket
+                   </a>` : '';
+
             const delay = index * 80;
 
             return `
@@ -416,6 +421,7 @@
                     </div>
                     ${pendingNote}
                     ${cancelBtn}
+                    ${ticketBtn}
                 </div>
             </div>`;
         }

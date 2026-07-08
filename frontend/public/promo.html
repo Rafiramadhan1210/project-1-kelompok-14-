@@ -423,10 +423,10 @@
             }
         });
 
-        fetch('/button')
+        fetch('/destinasi')
             .then(res => res.json())
             .then(result => {
-                allDestinasi = result.data || [];
+                allDestinasi = result || [];
 
                 const kategoriParam = getQueryParam('kategori');
                 if (kategoriParam) {

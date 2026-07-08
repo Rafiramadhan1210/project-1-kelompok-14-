@@ -4,11 +4,56 @@ const profileDropdown = document.getElementById('profile-dropdown');
 const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
 const mobileMenu = document.getElementById('mobile-menu');
 
+// Menggeser dropdown (notifikasi/profil) supaya selalu berada di dalam
+// batas layar, berapa pun lebar layarnya (HP kecil, HP besar, tablet, dll).
+// Dipanggil setelah dropdown ditampilkan (class "hidden" dihapus), karena
+// posisi & lebar aslinya baru bisa diukur setelah elemen benar-benar tampil.
+function clampDropdownToViewport(dropdown, anchorBtn) {
+    if (!dropdown || !anchorBtn) return;
+
+    // Reset dulu ke posisi alami (CSS asal) sebelum diukur ulang
+    dropdown.style.position = '';
+    dropdown.style.left = '';
+    dropdown.style.right = '';
+    dropdown.style.top = '';
+
+    const margin = 10;
+    const viewportWidth = document.documentElement.clientWidth;
+    const btnRect = anchorBtn.getBoundingClientRect();
+    const ddRect = dropdown.getBoundingClientRect();
+
+    // Kalau dropdown lebih lebar dari layar, paksa jadi (lebar layar - margin)
+    if (ddRect.width > viewportWidth - margin * 2) {
+        dropdown.style.width = (viewportWidth - margin * 2) + 'px';
+        dropdown.style.maxWidth = (viewportWidth - margin * 2) + 'px';
+    }
+
+    const newDdRect = dropdown.getBoundingClientRect();
+
+    if (newDdRect.left < margin) {
+        // Kepotong di kiri -> geser ke kanan
+        dropdown.style.position = 'fixed';
+        dropdown.style.left = margin + 'px';
+        dropdown.style.right = 'auto';
+        dropdown.style.top = (btnRect.bottom + 8) + 'px';
+    } else if (newDdRect.right > viewportWidth - margin) {
+        // Kepotong di kanan -> geser ke kiri
+        dropdown.style.position = 'fixed';
+        dropdown.style.left = (viewportWidth - margin - newDdRect.width) + 'px';
+        dropdown.style.right = 'auto';
+        dropdown.style.top = (btnRect.bottom + 8) + 'px';
+    }
+}
+
 if (profileToggle) {
     profileToggle.addEventListener('click', (e) => {
         e.stopPropagation();
         if (notificationDropdown) notificationDropdown.classList.add('hidden');
+        const willOpen = profileDropdown.classList.contains('hidden');
         profileDropdown.classList.toggle('hidden');
+        if (willOpen) {
+            requestAnimationFrame(() => clampDropdownToViewport(profileDropdown, profileToggle));
+        }
     });
 }
 
@@ -408,7 +453,10 @@ if (notificationBtn && notificationDropdown) {
         if (profileDropdown) profileDropdown.classList.add('hidden');
         const willOpen = notificationDropdown.classList.contains('hidden');
         notificationDropdown.classList.toggle('hidden');
-        if (willOpen) loadNotifications();
+        if (willOpen) {
+            loadNotifications();
+            requestAnimationFrame(() => clampDropdownToViewport(notificationDropdown, notificationBtn));
+        }
     });
 
     notificationDropdown.addEventListener('click', (e) => e.stopPropagation());

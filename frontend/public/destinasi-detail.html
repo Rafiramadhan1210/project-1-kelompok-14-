@@ -684,6 +684,7 @@
     <script>
         const params = new URLSearchParams(window.location.search);
         const destinasiId = params.get('id');
+        const promoDiskon = parseInt(params.get('promo')) || 0; // persen diskon dari halaman promo, 0 jika akses normal
 
         const loadingState = document.getElementById('loading-state');
         const notFoundState = document.getElementById('not-found-state');
@@ -696,9 +697,16 @@
             return 'Rp ' + (angka || 0).toLocaleString('id-ID');
         }
 
+        // Hitung harga setelah diskon promo (jika halaman dibuka dari link Promo)
+        function getHargaEfektif() {
+            const hargaAsli = currentDestinasi ? currentDestinasi.harga || 0 : 0;
+            if (promoDiskon > 0) return Math.round(hargaAsli * (1 - promoDiskon / 100));
+            return hargaAsli;
+        }
+
         function updateTotal() {
             const qty = parseInt(document.getElementById('f-qty').value) || 1;
-            const total = qty * (currentDestinasi ? currentDestinasi.harga || 0 : 0);
+            const total = qty * getHargaEfektif();
             const el = document.getElementById('d-total');
             el.textContent = formatRupiah(total);
             el.classList.add('bump');
@@ -774,7 +782,19 @@
                 document.getElementById('d-lokasi').textContent = currentDestinasi.lokasi || 'Lokasi tidak tersedia';
                 document.getElementById('d-rating').textContent = (currentDestinasi.rating || 0).toFixed(1);
                 document.getElementById('d-deskripsi').textContent = currentDestinasi.deskripsi || 'Belum ada deskripsi.';
-                document.getElementById('d-harga').innerHTML = formatRupiah(currentDestinasi.harga) + ' <span>/tiket</span>';
+
+                if (promoDiskon > 0) {
+                    const hargaAsli = currentDestinasi.harga || 0;
+                    const hargaPromo = getHargaEfektif();
+                    document.getElementById('d-harga').innerHTML = `
+                        <span style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+                            <span style="background:#ef4444;color:#fff;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;">-${promoDiskon}% PROMO</span>
+                            <span style="text-decoration:line-through;opacity:0.6;font-size:14px;font-weight:500;">${formatRupiah(hargaAsli)}</span>
+                        </span>
+                        ${formatRupiah(hargaPromo)} <span>/tiket</span>`;
+                } else {
+                    document.getElementById('d-harga').innerHTML = formatRupiah(currentDestinasi.harga) + ' <span>/tiket</span>';
+                }
 
                 const tanggalInput = document.getElementById('f-tanggal');
                 tanggalInput.min = new Date().toISOString().split('T')[0];
@@ -861,7 +881,7 @@
             const btnText = document.getElementById('btn-text');
             const btnIcon = document.getElementById('btn-icon');
             const qty = parseInt(document.getElementById('f-qty').value) || 1;
-            const total = qty * (currentDestinasi.harga || 0);
+            const total = qty * getHargaEfektif();
             const buktiFile = document.getElementById('f-bukti').files[0];
 
             if (!buktiFile) {

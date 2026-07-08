@@ -570,10 +570,34 @@
             cfIcon.className = 'fa-solid fa-circle-notch fa-spin';
             cfText.textContent = 'Mengirim...';
 
-            setTimeout(() => {
-                cfForm.classList.add('hidden');
-                cfSuccess.classList.add('show');
-            }, 900);
+            fetch('/api/support/message', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    nama: document.getElementById('cf-nama').value,
+                    topik: document.getElementById('cf-topik').value,
+                    pesan: document.getElementById('cf-pesan').value
+                })
+            })
+            .then(res => res.json().then(data => ({ ok: res.ok, data })))
+            .then(({ ok, data }) => {
+                if (ok) {
+                    cfForm.classList.add('hidden');
+                    cfSuccess.classList.add('show');
+                } else {
+                    alert(data.message || 'Gagal mengirim pesan. Coba lagi.');
+                    cfBtn.disabled = false;
+                    cfIcon.className = 'fa-solid fa-paper-plane';
+                    cfText.textContent = 'Kirim Pesan';
+                }
+            })
+            .catch(() => {
+                alert('Tidak dapat terhubung ke server.');
+                cfBtn.disabled = false;
+                cfIcon.className = 'fa-solid fa-paper-plane';
+                cfText.textContent = 'Kirim Pesan';
+            });
         });
 
         document.getElementById('cf-reset').addEventListener('click', () => {

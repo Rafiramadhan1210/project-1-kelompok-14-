@@ -10,6 +10,7 @@ type Users struct {
 	Foto     string `json:"foto,omitempty" bson:"foto,omitempty"`
 	Wishlist []string `json:"wishlist,omitempty" bson:"wishlist,omitempty"`
 	Provider string `json:"provider,omitempty" bson:"provider,omitempty"` // "local" atau "google"
+	Role     string `json:"role,omitempty" bson:"role,omitempty"`         // "admin" atau kosong/"user"
 }
 
 type UsersLogin struct {
@@ -62,6 +63,17 @@ type Notification struct {
 	Message   string             `bson:"message" json:"message"`
 	Link      string             `bson:"link,omitempty" json:"link,omitempty"`
 	ReadBy    []string           `bson:"read_by" json:"-"`
+	CreatedAt primitive.DateTime `bson:"created_at" json:"created_at"`
+}
+
+// SupportMessage menyimpan pesan dari form "Hubungi Kami" di halaman bantuan.
+type SupportMessage struct {
+	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	Nama      string             `bson:"nama" json:"nama"`
+	Email     string             `bson:"email" json:"email"`
+	Topik     string             `bson:"topik" json:"topik"`
+	Pesan     string             `bson:"pesan" json:"pesan"`
+	Status    string             `bson:"status" json:"status"` // "Baru" | "Dibalas"
 	CreatedAt primitive.DateTime `bson:"created_at" json:"created_at"`
 }
 

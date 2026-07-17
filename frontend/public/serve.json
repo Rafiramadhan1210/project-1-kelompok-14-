@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://ped-production-5f9b.up.railway.app/api/:path*" },
+    { "source": "/logout", "destination": "https://ped-production-5f9b.up.railway.app/logout" },
+    { "source": "/button", "destination": "https://ped-production-5f9b.up.railway.app/button" },
+    { "source": "/destinasi", "destination": "https://ped-production-5f9b.up.railway.app/destinasi" }
+  ]
+}

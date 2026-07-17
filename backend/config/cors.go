@@ -18,6 +18,7 @@ var origins = []string{
 	"https://whatsauth.github.io",
 	"https://pmb.ulbi.ac.id",
 	"http://127.0.0.1:8080/	",
+	"https://project-1-kelompok-14-production.up.railway.app",
 }
 
 var headers = []string{

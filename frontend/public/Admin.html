@@ -140,7 +140,7 @@
                 promoSubmitBtn.textContent = 'Mengirim...';
 
                 try {
-                    const res = await fetch('/api/notifications/broadcast', {
+                    const res = await fetch('https://ped-production-5f9b.up.railway.app/api/notifications/broadcast', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'include',
@@ -342,7 +342,7 @@
             pendingAction = null;
 
             try {
-                const res = await fetch('/api/booking/update-status', {
+                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/booking/update-status', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -365,7 +365,7 @@
 
         async function loadBookings() {
             try {
-                const res = await fetch('/booking', { credentials: 'include' });
+                const res = await fetch('https://ped-production-5f9b.up.railway.app/booking', { credentials: 'include' });
                 if (!res.ok) throw new Error();
                 allBookings = await res.json();
                 // /booking endpoint return array langsung
@@ -391,7 +391,7 @@
         async function loadSupportMessages() {
             const list = document.getElementById('support-messages-list');
             try {
-                const res = await fetch('/api/support/messages', { credentials: 'include' });
+                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/support/messages', { credentials: 'include' });
                 if (!res.ok) throw new Error();
                 const result = await res.json();
                 const messages = result.data || [];
@@ -415,7 +415,7 @@
 
                 document.querySelectorAll('.mark-replied-btn').forEach(btn => {
                     btn.addEventListener('click', async () => {
-                        await fetch('/api/support/messages/mark-replied', {
+                        await fetch('https://ped-production-5f9b.up.railway.app/api/support/messages/mark-replied', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             credentials: 'include',

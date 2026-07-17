@@ -475,7 +475,7 @@
         // Fetch user data
         async function fetchUserData() {
             try {
-                const res = await fetch('/api/me', { credentials: 'include' });
+                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/me', { credentials: 'include' });
                 const data = await res.json();
                 if (res.ok) {
                     document.getElementById('nama').value = data.user.nama || '';
@@ -497,7 +497,7 @@
             if (!nama) { showFormMsg('msg-profil', 'Nama tidak boleh kosong.', 'error'); return; }
             setLoading('btn-profil', 'icon-profil', 'text-profil', true, 'Simpan Perubahan', 'fa-solid fa-floppy-disk');
             try {
-                const res = await fetch('/api/profile/update', {
+                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/profile/update', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -532,7 +532,7 @@
             }
             setLoading('btn-pw', 'icon-pw', 'text-pw', true, 'Ubah Kata Sandi', 'fa-solid fa-key');
             try {
-                const res = await fetch('/api/user/password', {
+                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/user/password', {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -566,7 +566,7 @@
         document.getElementById('delete-yes').addEventListener('click', async () => {
             document.getElementById('delete-modal').classList.remove('show');
             try {
-                const res = await fetch('/api/user', { method: 'DELETE', credentials: 'include' });
+                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/user', { method: 'DELETE', credentials: 'include' });
                 const data = await res.json();
                 if (res.ok) {
                     showAlert(data.message || 'Akun berhasil dihapus.', 'success');

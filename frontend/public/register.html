@@ -494,7 +494,7 @@
             btnLabel.innerHTML = '<span class="spinner"></span> Memproses...';
 
             try {
-                const res = await fetch('/register', {
+                const res = await fetch('https://ped-production-5f9b.up.railway.app/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ nama, email, phone, password })
@@ -537,7 +537,7 @@
         async function handleGoogleCredential(response) {
             hideAlert();
             try {
-                const res = await fetch('/api/auth/google', {
+                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/auth/google', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',

@@ -112,7 +112,7 @@ function cssUrl(value) {
 }
 
 // Load Destinasi dari API
-fetch('/button')
+fetch('https://ped-production-5f9b.up.railway.app/button')
     .then(res => res.json())
     .then(result => {
         const list = document.getElementById('destinasi-list');

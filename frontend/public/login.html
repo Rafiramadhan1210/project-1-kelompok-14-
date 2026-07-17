@@ -398,7 +398,7 @@
         // Auto-redirect kalau sudah login
         (async () => {
             try {
-                const res = await fetch('/api/me', { credentials: 'include' });
+                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/me', { credentials: 'include' });
                 if (res.ok) window.location.href = redirectTo;
             } catch (e) {}
         })();
@@ -453,7 +453,7 @@
             btnLabel.innerHTML = '<span class="spinner"></span> Memproses...';
 
             try {
-                const res = await fetch('/Login', {
+                const res = await fetch('https://ped-production-5f9b.up.railway.app/Login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -492,7 +492,7 @@
         async function handleGoogleCredential(response) {
             hideAlert();
             try {
-                const res = await fetch('/api/auth/google', {
+                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/auth/google', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',

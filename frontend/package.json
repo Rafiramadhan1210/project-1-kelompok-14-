@@ -5,8 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build:css": "node build-css.js",
-    "build:js": "node -e \"require('fs').copyFileSync('./src/app.js', './public/app.js')\"",
-    "build": "npm run build:css && npm run build:js",
+    "build": "npm run build:css",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "npx serve -l $PORT"
   },

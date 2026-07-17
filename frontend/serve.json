@@ -1,5 +1,6 @@
 {
   "public": "public",
+  "cleanUrls": false,
   "rewrites": [
     { "source": "/api/:path*", "destination": "https://ped-production-5f9b.up.railway.app/api/:path*" },
     { "source": "/logout", "destination": "https://ped-production-5f9b.up.railway.app/logout" },

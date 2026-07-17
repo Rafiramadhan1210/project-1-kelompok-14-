@@ -7,7 +7,6 @@ import (
 )
 
 func Web(page *fiber.App) {
-	page.Get("/", controller.Homepage)
 	page.Get("/ip", controller.GetIPServer)
 	page.Get("/whatsauth/refreshtoken", controller.RefreshWAToken)
 	page.Post("/whatsauth/webhook", controller.WhatsAuthReceiver)

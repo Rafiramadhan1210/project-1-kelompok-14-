@@ -87,7 +87,7 @@ async function checkLoginStatus() {
     if (!loginLink || !profileMenu) return;
 
     try {
-        const res = await fetch('https://ped-production-5f9b.up.railway.app/api/me', { credentials: 'include' });
+        const res = await fetch('/api/me', { credentials: 'include' });
         if (res.ok) {
             const result = await res.json();
             const user = result.user || {};
@@ -132,7 +132,7 @@ const logoutBtn = document.getElementById('logout-btn');
 if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
         try {
-            await fetch('https://ped-production-5f9b.up.railway.app/logout', { method: 'POST', credentials: 'include' });
+            await fetch('/logout', { method: 'POST', credentials: 'include' });
         } catch (err) {
             // tetap arahkan ke login walau request gagal
         }
@@ -250,7 +250,7 @@ if (searchBtnHero) {
 }
 
 // Load Destinasi dari API Backend
-fetch('https://ped-production-5f9b.up.railway.app/button')
+fetch('/button')
     .then(res => res.json())
     .then(result => {
         const list = document.getElementById('destinasi-list');
@@ -301,7 +301,7 @@ let myWishlistIds = new Set();
 
 async function loadMyWishlistIds() {
     try {
-        const res = await fetch('https://ped-production-5f9b.up.railway.app/api/my-wishlist', { credentials: 'include' });
+        const res = await fetch('/api/my-wishlist', { credentials: 'include' });
         if (!res.ok) return; // belum login, biarkan semua hati kosong
         const result = await res.json();
         myWishlistIds = new Set((result.data || []).map(d => d._id));
@@ -331,7 +331,7 @@ document.addEventListener('click', async (e) => {
 
     const destinationId = btn.dataset.id;
     try {
-        const res = await fetch('https://ped-production-5f9b.up.railway.app/api/wishlist/toggle', {
+        const res = await fetch('/api/wishlist/toggle', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             credentials: 'include',
@@ -422,7 +422,7 @@ function renderNotificationList(items) {
 async function loadNotifications() {
     if (!notificationList) return;
     try {
-        const res = await fetch('https://ped-production-5f9b.up.railway.app/api/notifications', { credentials: 'include' });
+        const res = await fetch('/api/notifications', { credentials: 'include' });
         if (!res.ok) {
             renderNotificationList([]);
             renderNotificationBadge(0);
@@ -439,7 +439,7 @@ async function loadNotifications() {
 async function refreshUnreadCount() {
     if (!notificationBadge) return;
     try {
-        const res = await fetch('https://ped-production-5f9b.up.railway.app/api/notifications/unread-count', { credentials: 'include' });
+        const res = await fetch('/api/notifications/unread-count', { credentials: 'include' });
         const result = await res.json();
         renderNotificationBadge(result.unread_count || 0);
     } catch (err) {
@@ -472,7 +472,7 @@ if (notificationBtn && notificationDropdown) {
         const link = item.dataset.link;
 
         try {
-            await fetch('https://ped-production-5f9b.up.railway.app/api/notifications/read', {
+            await fetch('/api/notifications/read', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -490,7 +490,7 @@ if (notificationBtn && notificationDropdown) {
         notificationMarkAll.addEventListener('click', async (e) => {
             e.stopPropagation();
             try {
-                await fetch('https://ped-production-5f9b.up.railway.app/api/notifications/read-all', { method: 'POST', credentials: 'include' });
+                await fetch('/api/notifications/read-all', { method: 'POST', credentials: 'include' });
                 loadNotifications();
             } catch (err) {
                 // diamkan
@@ -537,7 +537,7 @@ document.addEventListener('click', (e) => {
 });
 
 async function loadKategori() {
-    const response = await fetch('https://ped-production-5f9b.up.railway.app/api/kategori');
+    const response = await fetch('/api/kategori');
     const data = await response.json();
     
     const container = document.getElementById('kategori-container');

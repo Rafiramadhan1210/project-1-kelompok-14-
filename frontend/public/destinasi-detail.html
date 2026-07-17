@@ -813,7 +813,7 @@
 
         async function checkWishlistStatus() {
             try {
-                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/my-wishlist', { credentials: 'include' });
+                const res = await fetch('/api/my-wishlist', { credentials: 'include' });
                 if (!res.ok) return;
                 const result = await res.json();
                 const ids = (result.data || []).map(d => d._id);
@@ -835,7 +835,7 @@
 
         document.getElementById('wishlist-detail-btn').addEventListener('click', async () => {
             try {
-                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/wishlist/toggle', {
+                const res = await fetch('/api/wishlist/toggle', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include',
@@ -904,7 +904,7 @@
             formData.append('bukti_bayar', buktiFile);
 
             try {
-                const res = await fetch('https://ped-production-5f9b.up.railway.app/booking', {
+                const res = await fetch('/booking', {
                     method: 'POST',
                     credentials: 'include',
                     body: formData

@@ -481,7 +481,7 @@
 
         async function loadBookings() {
             try {
-                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/my-bookings?status=Pending,Dibayar', { credentials: 'include' });
+                const res = await fetch('/api/my-bookings?status=Pending,Dibayar', { credentials: 'include' });
                 if (res.status === 401) {
                     document.getElementById('loading-state').classList.add('hidden');
                     document.getElementById('login-required').classList.remove('hidden');

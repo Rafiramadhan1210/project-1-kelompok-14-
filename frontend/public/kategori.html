@@ -559,7 +559,7 @@
         }
 
         // Load data destinasi
-        fetch('https://ped-production-5f9b.up.railway.app/destinasi')
+        fetch('/destinasi')
             .then(res => res.json())
             .then(result => {
                 allDestinasi = result || [];

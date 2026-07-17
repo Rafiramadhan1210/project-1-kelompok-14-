@@ -570,7 +570,7 @@
             cfIcon.className = 'fa-solid fa-circle-notch fa-spin';
             cfText.textContent = 'Mengirim...';
 
-            fetch('https://ped-production-5f9b.up.railway.app/api/support/message', {
+            fetch('/api/support/message', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',

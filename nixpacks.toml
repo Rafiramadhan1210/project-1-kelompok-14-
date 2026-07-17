@@ -1,5 +1,5 @@
 [phases.setup]
-nixPkgs = ["go_1_22"]
+nixPkgs = ["go_1_25"]
 
 [phases.build]
 cmds = ["cd backend && go build -tags netgo -ldflags '-s -w' -o app"]

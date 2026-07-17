@@ -152,7 +152,7 @@
             const list = document.getElementById('booking-list');
 
             try {
-                const res = await fetch('https://ped-production-5f9b.up.railway.app/api/my-bookings?status=Selesai,Dibatalkan', { credentials: 'include' });
+                const res = await fetch('/api/my-bookings?status=Selesai,Dibatalkan', { credentials: 'include' });
 
                 if (res.status === 401) {
                     loadingState.classList.add('hidden');

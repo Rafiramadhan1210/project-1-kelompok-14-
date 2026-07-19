@@ -124,10 +124,9 @@ Rumusan masalah -> tujuan -> requirement -> solusi -> pengujian saling mengunci 
 - [x] Bahan bukti profil Proyek 1 tersedia -> dilengkapi di Bab VII
 - [x] Format sesuai template ULBI (cover, kata pengantar, lembar pengesahan, dst)
 - [x] Masalah nyata & requirement terukur (Bab I-II)
-- [ ] Kontribusi tiap anggota tim eksplisit -- belum ada, tambahkan bila diperlukan
-- [ ] Tabel uji terima requirement -> hasil -> bukti -- belum ada, pertimbangkan ditambahkan
-- [ ] Bukti SCM/CI-CD konkret (tautan repo, screenshot commit/Actions) -- perlu dilampirkan
-      mahasiswa sendiri (lihat placeholder merah di Bab VII)
+- [x] Kontribusi tiap anggota tim eksplisit -- ditambahkan di Bab V (5.5)
+- [x] Tabel uji terima requirement -> hasil -> bukti -- ditambahkan di Bab V (5.4)
+- [x] Bukti SCM/CI-CD konkret (tautan repo, screenshot commit/Actions) -- diverifikasi sesuai repositori dan dilampirkan di Bab VII (7.2 dan 7.3)
 - [x] Disclosure vibe coding -- sudah ada di Bab VII (7.4)
 - [ ] Similarity check & atribusi lisensi pihak ketiga -- belum dicek, disarankan sebelum sidang
 

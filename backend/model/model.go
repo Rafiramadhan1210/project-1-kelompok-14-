@@ -52,7 +52,16 @@ type Booking struct {
 	Status        string             `bson:"status" json:"status"` // "Pending" | "Dibayar" | "Checked-in" | "Selesai" | "Dibatalkan"
 	KeteranganTolak string           `bson:"keterangan_tolak,omitempty" json:"keterangan_tolak,omitempty"`
 	CreatedAt     primitive.DateTime `bson:"created_at" json:"created_at"`
+
+	// Komisi platform. Dihitung & dikunci sekali saat status pertama kali jadi
+	// "Dibayar", memakai persentase komisi yang berlaku SAAT ITU. Tidak dihitung
+	// ulang meskipun persentase komisi platform diubah di kemudian hari, supaya
+	// riwayat transaksi lama tetap akurat.
+	KomisiPersen     float64 `bson:"komisi_persen,omitempty" json:"komisi_persen,omitempty"`
+	KomisiNominal    int     `bson:"komisi_nominal,omitempty" json:"komisi_nominal,omitempty"`
+	PendapatanBersih int     `bson:"pendapatan_bersih,omitempty" json:"pendapatan_bersih,omitempty"` // total_bayar - komisi_nominal, ini yang jadi hak pengelola
 }
+
 // Notification merepresentasikan satu notifikasi.
 // Email kosong ("") berarti notifikasi broadcast (promo) untuk semua user.
 // ReadBy menyimpan daftar email yang sudah membaca notifikasi ini.
@@ -82,4 +91,13 @@ type Kategori struct {
     ID    primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
     Nama  string             `bson:"nama" json:"nama"`
     Slug  string             `bson:"slug" json:"slug"` // Opsional, untuk URL friendly
+}
+
+// PlatformConfig menyimpan pengaturan global platform. Hanya ada 1 dokumen
+// di collection "platform_config" (semacam singleton). Kalau belum pernah
+// diset, dianggap default 10%.
+type PlatformConfig struct {
+	ID                    primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	KomisiPersen          float64            `bson:"komisi_persen" json:"komisi_persen"`                     // misal 10 artinya 10%
+	TotalKomisiTerkumpul  int                `bson:"total_komisi_terkumpul" json:"total_komisi_terkumpul"`   // akumulasi komisi dari semua booking yang sudah Dibayar (pencatatan, bukan uang riil di rekening)
 }

@@ -128,6 +128,16 @@ func UpdateBookingStatusPengelola(c *fiber.Ctx) error {
 		updateFields["keterangan_tolak"] = ""
 	}
 
+	// Hitung komisi platform sekali saja, saat status pertama kali jadi "Dibayar".
+	komisiBaru := 0
+	if body.Status == "Dibayar" && booking.KomisiPersen == 0 {
+		persen, nominal, bersih := hitungKomisi(booking.TotalBayar)
+		updateFields["komisi_persen"] = persen
+		updateFields["komisi_nominal"] = nominal
+		updateFields["pendapatan_bersih"] = bersih
+		komisiBaru = nominal
+	}
+
 	_, err = db.Collection("bookings").UpdateOne(
 		context.Background(),
 		bson.M{"_id": oid},
@@ -135,6 +145,10 @@ func UpdateBookingStatusPengelola(c *fiber.Ctx) error {
 	)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": err.Error()})
+	}
+
+	if komisiBaru > 0 {
+		TambahKomisiTerkumpul(komisiBaru)
 	}
 
 	statusMessage := map[string]string{

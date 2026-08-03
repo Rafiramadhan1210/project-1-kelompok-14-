@@ -40,11 +40,13 @@ func GetPengelolaStatistik(c *fiber.Ctx) error {
 	}
 	if len(names) == 0 {
 		return c.Status(fiber.StatusOK).JSON(fiber.Map{
-			"total_pendapatan":       0,
-			"pendapatan_per_bulan":   []pendapatanBulanan{},
-			"booking_per_destinasi":  []bookingPerDestinasi{},
-			"tren_pengunjung_bulan":  []pengunjungBulanan{},
-			"total_booking":          0,
+			"total_pendapatan":        0,
+			"total_komisi":            0,
+			"total_pendapatan_bersih": 0,
+			"pendapatan_per_bulan":    []pendapatanBulanan{},
+			"booking_per_destinasi":   []bookingPerDestinasi{},
+			"tren_pengunjung_bulan":   []pengunjungBulanan{},
+			"total_booking":           0,
 		})
 	}
 
@@ -61,6 +63,8 @@ func GetPengelolaStatistik(c *fiber.Ctx) error {
 	pendapatanStatus := map[string]bool{"Dibayar": true, "Checked-in": true, "Selesai": true}
 
 	totalPendapatan := 0
+	totalKomisi := 0
+	totalBersih := 0
 	pendapatanBulanMap := map[string]int{}
 	pengunjungBulanMap := map[string]int{}
 	destinasiMap := map[string]int{}
@@ -70,6 +74,8 @@ func GetPengelolaStatistik(c *fiber.Ctx) error {
 
 		if pendapatanStatus[b.Status] {
 			totalPendapatan += b.TotalBayar
+			totalKomisi += b.KomisiNominal
+			totalBersih += b.PendapatanBersih
 
 			bulanKey := "-"
 			if b.CreatedAt.Time().Unix() > 0 {
@@ -108,6 +114,8 @@ func GetPengelolaStatistik(c *fiber.Ctx) error {
 
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"total_pendapatan":      totalPendapatan,
+		"total_komisi":          totalKomisi,
+		"total_pendapatan_bersih": totalBersih,
 		"total_booking":         len(bookings),
 		"pendapatan_per_bulan":  pendapatanPerBulan,
 		"booking_per_destinasi": bookingPerDest,

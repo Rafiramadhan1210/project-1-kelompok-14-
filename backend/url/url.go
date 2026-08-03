@@ -52,4 +52,8 @@ func Web(page *fiber.App) {
 
 	// Pengelola Wisata: statistik pendapatan & tren pengunjung
 	page.Get("/api/pengelola/statistik", controller.RequirePengelola, controller.GetPengelolaStatistik)
+
+	// Konfigurasi komisi platform (khusus admin)
+	page.Get("/api/admin/platform-config", controller.RequireAdmin, controller.GetPlatformConfig)
+	page.Post("/api/admin/platform-config", controller.RequireAdmin, controller.UpdatePlatformConfig)
 }

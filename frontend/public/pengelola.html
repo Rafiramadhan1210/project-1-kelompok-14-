@@ -60,7 +60,8 @@
                 <p>Memuat destinasi...</p>
             </div>
 
-            <div id="destinasi-empty" class="hidden text-center py-16 text-gray-400 bg-white rounded-2xl border border-gray-100">
+            <div id="destinasi-empty"
+                class="hidden text-center py-16 text-gray-400 bg-white rounded-2xl border border-gray-100">
                 <i class="fa-solid fa-map text-3xl mb-2"></i>
                 <p>Kamu belum punya destinasi. Klik "Tambah Destinasi" untuk mulai.</p>
             </div>
@@ -72,12 +73,18 @@
         <section id="tab-booking" class="tab-section hidden">
             <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-4 flex flex-wrap gap-3 items-center">
                 <span class="text-sm font-medium text-gray-600">Filter:</span>
-                <button onclick="filterBookingStatus('')" id="bk-btn-all" class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-600 text-white transition">Semua</button>
-                <button onclick="filterBookingStatus('Pending')" id="bk-btn-Pending" class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Pending</button>
-                <button onclick="filterBookingStatus('Dibayar')" id="bk-btn-Dibayar" class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Dibayar</button>
-                <button onclick="filterBookingStatus('Checked-in')" id="bk-btn-Checked-in" class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Checked-in</button>
-                <button onclick="filterBookingStatus('Selesai')" id="bk-btn-Selesai" class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Selesai</button>
-                <button onclick="filterBookingStatus('Dibatalkan')" id="bk-btn-Dibatalkan" class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Dibatalkan</button>
+                <button onclick="filterBookingStatus('')" id="bk-btn-all"
+                    class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-600 text-white transition">Semua</button>
+                <button onclick="filterBookingStatus('Pending')" id="bk-btn-Pending"
+                    class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Pending</button>
+                <button onclick="filterBookingStatus('Dibayar')" id="bk-btn-Dibayar"
+                    class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Dibayar</button>
+                <button onclick="filterBookingStatus('Checked-in')" id="bk-btn-Checked-in"
+                    class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Checked-in</button>
+                <button onclick="filterBookingStatus('Selesai')" id="bk-btn-Selesai"
+                    class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Selesai</button>
+                <button onclick="filterBookingStatus('Dibatalkan')" id="bk-btn-Dibatalkan"
+                    class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Dibatalkan</button>
             </div>
 
             <div id="booking-loading" class="text-center py-16 text-gray-400">
@@ -117,14 +124,28 @@
             </div>
 
             <div id="statistik-content" class="hidden">
-                <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="grid grid-cols-2 gap-4 mb-4">
                     <div class="bg-white rounded-2xl border border-gray-100 p-4">
-                        <p class="text-xs text-gray-400 mb-1">Total Pendapatan</p>
-                        <p id="stat-total-pendapatan" class="text-2xl font-bold text-green-600">Rp 0</p>
+                        <p class="text-xs text-gray-400 mb-1">Pendapatan Kotor</p>
+                        <p id="stat-total-pendapatan" class="text-2xl font-bold text-gray-800">Rp 0</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-gray-100 p-4">
                         <p class="text-xs text-gray-400 mb-1">Total Booking</p>
                         <p id="stat-total-booking" class="text-2xl font-bold text-blue-600">0</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-red-50 rounded-2xl border border-red-100 p-4">
+                        <p class="text-xs text-red-400 mb-1">
+                            <i class="fa-solid fa-circle-info"></i> Komisi Platform (<span
+                                id="stat-komisi-persen">10</span>%)
+                        </p>
+                        <p id="stat-total-komisi" class="text-xl font-bold text-red-500">- Rp 0</p>
+                    </div>
+                    <div class="bg-green-50 rounded-2xl border border-green-100 p-4">
+                        <p class="text-xs text-green-500 mb-1">Pendapatan Bersih (Hak Kamu)</p>
+                        <p id="stat-total-bersih" class="text-xl font-bold text-green-600">Rp 0</p>
                     </div>
                 </div>
 
@@ -155,29 +176,35 @@
                 <input type="hidden" id="d-id">
                 <div>
                     <label class="text-sm font-medium text-gray-600">Nama Destinasi</label>
-                    <input type="text" id="d-nama" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
+                    <input type="text" id="d-nama" required
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
                 </div>
                 <div>
                     <label class="text-sm font-medium text-gray-600">Deskripsi</label>
-                    <textarea id="d-deskripsi" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"></textarea>
+                    <textarea id="d-deskripsi" rows="3"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"></textarea>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="text-sm font-medium text-gray-600">Kategori</label>
-                        <input type="text" id="d-kategori" required placeholder="mis. Pantai" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
+                        <input type="text" id="d-kategori" required placeholder="mis. Pantai"
+                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
                     </div>
                     <div>
                         <label class="text-sm font-medium text-gray-600">Harga (Rp)</label>
-                        <input type="number" id="d-harga" required min="1" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
+                        <input type="number" id="d-harga" required min="1"
+                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
                     </div>
                 </div>
                 <div>
                     <label class="text-sm font-medium text-gray-600">Lokasi</label>
-                    <input type="text" id="d-lokasi" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
+                    <input type="text" id="d-lokasi"
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
                 </div>
                 <div>
                     <label class="text-sm font-medium text-gray-600">URL Gambar</label>
-                    <input type="text" id="d-gambar" placeholder="https://..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
+                    <input type="text" id="d-gambar" placeholder="https://..."
+                        class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
                 </div>
                 <p id="destinasi-form-error" class="hidden text-red-500 text-sm"></p>
                 <div class="flex gap-3 pt-2">
@@ -194,13 +221,16 @@
     <div id="action-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
         <div class="bg-white rounded-2xl p-6 max-w-sm w-full">
             <div class="text-center mb-5">
-                <div id="modal-icon-wrap" class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3"></div>
+                <div id="modal-icon-wrap" class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3">
+                </div>
                 <h3 id="modal-title" class="font-bold text-gray-800 text-lg"></h3>
                 <p id="modal-desc" class="text-gray-500 text-sm mt-1"></p>
             </div>
             <div class="flex gap-3">
-                <button id="modal-cancel" class="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold hover:bg-gray-50 transition">Batal</button>
-                <button id="modal-confirm" class="flex-1 py-2.5 rounded-xl text-white font-semibold transition"></button>
+                <button id="modal-cancel"
+                    class="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold hover:bg-gray-50 transition">Batal</button>
+                <button id="modal-confirm"
+                    class="flex-1 py-2.5 rounded-xl text-white font-semibold transition"></button>
             </div>
         </div>
     </div>
@@ -485,9 +515,9 @@
         function doBookingAction(id, newStatus, desc, confirmLabel, btnClass) {
             pendingBookingAction = { id, newStatus };
             const iconMap = {
-                'Dibayar':    { icon: 'fa-check', bg: 'bg-blue-100', color: 'text-blue-600' },
+                'Dibayar': { icon: 'fa-check', bg: 'bg-blue-100', color: 'text-blue-600' },
                 'Checked-in': { icon: 'fa-map-pin', bg: 'bg-purple-100', color: 'text-purple-600' },
-                'Selesai':    { icon: 'fa-flag-checkered', bg: 'bg-green-100', color: 'text-green-600' },
+                'Selesai': { icon: 'fa-flag-checkered', bg: 'bg-green-100', color: 'text-green-600' },
                 'Dibatalkan': { icon: 'fa-xmark', bg: 'bg-red-100', color: 'text-red-500' },
             };
             const ico = iconMap[newStatus] || { icon: 'fa-circle', bg: 'bg-gray-100', color: 'text-gray-600' };
@@ -548,6 +578,17 @@
                 document.getElementById('stat-total-pendapatan').textContent =
                     'Rp ' + (stat.total_pendapatan || 0).toLocaleString('id-ID');
                 document.getElementById('stat-total-booking').textContent = stat.total_booking || 0;
+                document.getElementById('stat-total-komisi').textContent =
+                    '- Rp ' + (stat.total_komisi || 0).toLocaleString('id-ID');
+                document.getElementById('stat-total-bersih').textContent =
+                    'Rp ' + (stat.total_pendapatan_bersih || 0).toLocaleString('id-ID');
+
+                // Persentase komisi dihitung dari data aktual (kalau ada booking yang sudah dibayar),
+                // biar akurat walau persentase platform sempat berubah-ubah antar booking.
+                if (stat.total_pendapatan > 0) {
+                    const persenAktual = (stat.total_komisi / stat.total_pendapatan * 100).toFixed(1);
+                    document.getElementById('stat-komisi-persen').textContent = persenAktual;
+                }
 
                 renderChartPendapatan(stat.pendapatan_per_bulan || []);
                 renderChartPengunjung(stat.tren_pengunjung_bulan || []);
@@ -635,4 +676,5 @@
         loadDestinasi();
     </script>
 </body>
+
 </html>

@@ -47,6 +47,12 @@ func RegisterUser(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"message": "Email dan Password wajib diisi!"})
 	}
 
+	// Validasi & default role. Hanya "user" atau "pengelola_wisata" yang boleh
+	// dipilih sendiri saat registrasi (role "admin" tidak bisa didaftarkan lewat sini).
+	if user.Role != "user" && user.Role != "pengelola_wisata" {
+		user.Role = "user"
+	}
+
 	// Cek apakah email sudah terdaftar
 	var existing model.Users
 	err := db.Collection("users").FindOne(context.Background(), bson.M{"email": user.Email}).Decode(&existing)
@@ -145,6 +151,7 @@ func GoogleLogin(c *fiber.Ctx) error {
 			Nama:     nama,
 			Email:    info.Email,
 			Provider: "google",
+			Role:     "user",
 		}
 		if _, insertErr := db.Collection("users").InsertOne(context.Background(), newUser); insertErr != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"message": "Gagal membuat akun baru"})

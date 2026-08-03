@@ -13,6 +13,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 // getSessionEmail mengambil email user yang sedang login dari session cookie.
@@ -135,7 +136,8 @@ func GetAllBooking(c *fiber.Ctx) error {
 	db := config.Mongoconn
 	var data []model.Booking
 
-	cursor, err := db.Collection("bookings").Find(context.Background(), bson.M{})
+	opts := options.Find().SetSort(bson.D{{Key: "_id", Value: -1}})
+	cursor, err := db.Collection("bookings").Find(context.Background(), bson.M{}, opts)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}
@@ -197,7 +199,8 @@ func GetMyBookings(c *fiber.Ctx) error {
 	}
 
 	var data []model.Booking
-	cursor, err := db.Collection("bookings").Find(context.Background(), filter)
+	opts := options.Find().SetSort(bson.D{{Key: "_id", Value: -1}})
+	cursor, err := db.Collection("bookings").Find(context.Background(), filter, opts)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{"error": err.Error()})
 	}

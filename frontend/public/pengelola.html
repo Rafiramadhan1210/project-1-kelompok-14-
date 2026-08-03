@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoTrip - Pengelola Wisata</title>
+    <link rel="stylesheet" href="./output.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body class="bg-gray-50 min-h-screen">
+
+    <header class="bg-blue-700 text-white sticky top-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-mountain-sun text-xl"></i>
+                <div>
+                    <span class="font-black text-lg">GoTrip</span>
+                    <span class="ml-2 text-xs bg-white/20 px-2 py-0.5 rounded-full font-medium">Pengelola Wisata</span>
+                </div>
+            </div>
+            <a href="index.html" class="text-white/70 hover:text-white text-sm flex items-center gap-2 transition">
+                <i class="fa-solid fa-arrow-left"></i> Ke Beranda
+            </a>
+        </div>
+    </header>
+
+    <main class="container mx-auto px-6 py-8 max-w-6xl">
+
+        <!-- Tabs -->
+        <div class="bg-white rounded-2xl border border-gray-100 p-2 mb-6 flex gap-2 flex-wrap">
+            <button onclick="switchTab('destinasi')" id="tab-btn-destinasi"
+                class="tab-btn flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-blue-600 text-white transition">
+                <i class="fa-solid fa-map-location-dot mr-1"></i> Destinasi Saya
+            </button>
+            <button onclick="switchTab('booking')" id="tab-btn-booking"
+                class="tab-btn flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">
+                <i class="fa-solid fa-ticket mr-1"></i> Booking Masuk
+            </button>
+            <button onclick="switchTab('statistik')" id="tab-btn-statistik"
+                class="tab-btn flex-1 px-4 py-2.5 rounded-xl text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">
+                <i class="fa-solid fa-chart-line mr-1"></i> Statistik
+            </button>
+        </div>
+
+        <!-- ================= TAB: DESTINASI SAYA ================= -->
+        <section id="tab-destinasi" class="tab-section">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="font-bold text-gray-800 text-lg">Destinasi Saya</h2>
+                <button onclick="openDestinasiModal()"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition">
+                    <i class="fa-solid fa-plus mr-1"></i> Tambah Destinasi
+                </button>
+            </div>
+
+            <div id="destinasi-loading" class="text-center py-16 text-gray-400">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i>
+                <p>Memuat destinasi...</p>
+            </div>
+
+            <div id="destinasi-empty" class="hidden text-center py-16 text-gray-400 bg-white rounded-2xl border border-gray-100">
+                <i class="fa-solid fa-map text-3xl mb-2"></i>
+                <p>Kamu belum punya destinasi. Klik "Tambah Destinasi" untuk mulai.</p>
+            </div>
+
+            <div id="destinasi-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+        </section>
+
+        <!-- ================= TAB: BOOKING MASUK ================= -->
+        <section id="tab-booking" class="tab-section hidden">
+            <div class="bg-white rounded-2xl border border-gray-100 p-4 mb-4 flex flex-wrap gap-3 items-center">
+                <span class="text-sm font-medium text-gray-600">Filter:</span>
+                <button onclick="filterBookingStatus('')" id="bk-btn-all" class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-blue-600 text-white transition">Semua</button>
+                <button onclick="filterBookingStatus('Pending')" id="bk-btn-Pending" class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Pending</button>
+                <button onclick="filterBookingStatus('Dibayar')" id="bk-btn-Dibayar" class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Dibayar</button>
+                <button onclick="filterBookingStatus('Checked-in')" id="bk-btn-Checked-in" class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Checked-in</button>
+                <button onclick="filterBookingStatus('Selesai')" id="bk-btn-Selesai" class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Selesai</button>
+                <button onclick="filterBookingStatus('Dibatalkan')" id="bk-btn-Dibatalkan" class="bk-filter-btn px-3 py-1.5 rounded-lg text-sm font-semibold bg-gray-100 text-gray-600 hover:bg-gray-200 transition">Dibatalkan</button>
+            </div>
+
+            <div id="booking-loading" class="text-center py-16 text-gray-400">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i>
+                <p>Memuat booking...</p>
+            </div>
+
+            <div id="booking-table-wrapper" class="hidden bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                        <thead class="bg-gray-50 border-b border-gray-100">
+                            <tr>
+                                <th class="text-left px-5 py-3 text-gray-500 font-semibold">Pemesan</th>
+                                <th class="text-left px-5 py-3 text-gray-500 font-semibold">Destinasi</th>
+                                <th class="text-left px-5 py-3 text-gray-500 font-semibold">Kunjungan</th>
+                                <th class="text-left px-5 py-3 text-gray-500 font-semibold">Tiket</th>
+                                <th class="text-left px-5 py-3 text-gray-500 font-semibold">Total</th>
+                                <th class="text-left px-5 py-3 text-gray-500 font-semibold">Status</th>
+                                <th class="text-left px-5 py-3 text-gray-500 font-semibold">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="booking-tbody"></tbody>
+                    </table>
+                </div>
+                <div id="booking-empty" class="hidden text-center py-12 text-gray-400">
+                    <i class="fa-solid fa-inbox text-3xl mb-2"></i>
+                    <p>Tidak ada booking dengan filter ini.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TAB: STATISTIK ================= -->
+        <section id="tab-statistik" class="tab-section hidden">
+            <div id="statistik-loading" class="text-center py-16 text-gray-400">
+                <i class="fa-solid fa-circle-notch fa-spin text-3xl mb-3"></i>
+                <p>Memuat statistik...</p>
+            </div>
+
+            <div id="statistik-content" class="hidden">
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="bg-white rounded-2xl border border-gray-100 p-4">
+                        <p class="text-xs text-gray-400 mb-1">Total Pendapatan</p>
+                        <p id="stat-total-pendapatan" class="text-2xl font-bold text-green-600">Rp 0</p>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-100 p-4">
+                        <p class="text-xs text-gray-400 mb-1">Total Booking</p>
+                        <p id="stat-total-booking" class="text-2xl font-bold text-blue-600">0</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4">Pendapatan per Bulan</h3>
+                    <canvas id="chart-pendapatan" height="90"></canvas>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-100 p-5 mb-6">
+                    <h3 class="font-bold text-gray-800 mb-4">Tren Pengunjung per Bulan</h3>
+                    <canvas id="chart-pengunjung" height="90"></canvas>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-100 p-5">
+                    <h3 class="font-bold text-gray-800 mb-4">Booking per Destinasi</h3>
+                    <div id="stat-per-destinasi" class="space-y-2"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Tambah/Edit Destinasi -->
+    <div id="destinasi-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+        <div class="bg-white rounded-2xl p-6 max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <h3 id="destinasi-modal-title" class="font-bold text-gray-800 text-lg mb-4">Tambah Destinasi</h3>
+            <form id="destinasi-form" class="space-y-3">
+                <input type="hidden" id="d-id">
+                <div>
+                    <label class="text-sm font-medium text-gray-600">Nama Destinasi</label>
+                    <input type="text" id="d-nama" required class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-600">Deskripsi</label>
+                    <textarea id="d-deskripsi" rows="3" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="text-sm font-medium text-gray-600">Kategori</label>
+                        <input type="text" id="d-kategori" required placeholder="mis. Pantai" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
+                    </div>
+                    <div>
+                        <label class="text-sm font-medium text-gray-600">Harga (Rp)</label>
+                        <input type="number" id="d-harga" required min="1" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-600">Lokasi</label>
+                    <input type="text" id="d-lokasi" class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
+                </div>
+                <div>
+                    <label class="text-sm font-medium text-gray-600">URL Gambar</label>
+                    <input type="text" id="d-gambar" placeholder="https://..." class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm mt-1">
+                </div>
+                <p id="destinasi-form-error" class="hidden text-red-500 text-sm"></p>
+                <div class="flex gap-3 pt-2">
+                    <button type="button" onclick="closeDestinasiModal()"
+                        class="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold hover:bg-gray-50 transition">Batal</button>
+                    <button type="submit" id="destinasi-form-submit"
+                        class="flex-1 py-2.5 rounded-xl bg-blue-600 text-white font-semibold hover:bg-blue-700 transition">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal konfirmasi aksi booking -->
+    <div id="action-modal" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center px-4">
+        <div class="bg-white rounded-2xl p-6 max-w-sm w-full">
+            <div class="text-center mb-5">
+                <div id="modal-icon-wrap" class="w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3"></div>
+                <h3 id="modal-title" class="font-bold text-gray-800 text-lg"></h3>
+                <p id="modal-desc" class="text-gray-500 text-sm mt-1"></p>
+            </div>
+            <div class="flex gap-3">
+                <button id="modal-cancel" class="flex-1 py-2.5 rounded-xl border border-gray-200 text-gray-600 font-semibold hover:bg-gray-50 transition">Batal</button>
+                <button id="modal-confirm" class="flex-1 py-2.5 rounded-xl text-white font-semibold transition"></button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /* ============ TAB SWITCHING ============ */
+        function switchTab(name) {
+            document.querySelectorAll('.tab-section').forEach(el => el.classList.add('hidden'));
+            document.getElementById('tab-' + name).classList.remove('hidden');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-gray-600');
+            });
+            const activeBtn = document.getElementById('tab-btn-' + name);
+            activeBtn.classList.remove('bg-gray-100', 'text-gray-600');
+            activeBtn.classList.add('bg-blue-600', 'text-white');
+
+            if (name === 'destinasi' && !destinasiLoaded) loadDestinasi();
+            if (name === 'booking' && !bookingLoaded) loadBooking();
+            if (name === 'statistik' && !statistikLoaded) loadStatistik();
+        }
+
+        /* ============ DESTINASI SAYA ============ */
+        let destinasiLoaded = false;
+        let allDestinasi = [];
+
+        async function loadDestinasi() {
+            try {
+                const res = await fetch('/api/pengelola/destinasi', { credentials: 'include' });
+                if (!res.ok) throw new Error();
+                const result = await res.json();
+                allDestinasi = result.data || [];
+                destinasiLoaded = true;
+
+                document.getElementById('destinasi-loading').classList.add('hidden');
+
+                if (allDestinasi.length === 0) {
+                    document.getElementById('destinasi-empty').classList.remove('hidden');
+                    document.getElementById('destinasi-grid').innerHTML = '';
+                    return;
+                }
+                document.getElementById('destinasi-empty').classList.add('hidden');
+                renderDestinasiGrid();
+            } catch (err) {
+                document.getElementById('destinasi-loading').innerHTML = `
+                    <i class="fa-solid fa-triangle-exclamation text-3xl text-red-300 mb-3"></i>
+                    <p class="text-red-500">Gagal memuat data. Pastikan kamu login sebagai pengelola wisata.</p>`;
+            }
+        }
+
+        function renderDestinasiGrid() {
+            document.getElementById('destinasi-grid').innerHTML = allDestinasi.map(d => `
+                <div class="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+                    <div class="h-36 bg-gray-100 flex items-center justify-center overflow-hidden">
+                        ${d.gambar ? `<img src="${d.gambar}" class="w-full h-full object-cover">` : `<i class="fa-solid fa-image text-3xl text-gray-300"></i>`}
+                    </div>
+                    <div class="p-4">
+                        <p class="font-bold text-gray-800">${d.nama}</p>
+                        <p class="text-xs text-gray-400 mb-1">${d.kategori || '-'} &middot; ${d.lokasi || '-'}</p>
+                        <p class="text-sm font-semibold text-blue-600 mb-3">Rp ${(d.harga || 0).toLocaleString('id-ID')}</p>
+                        <div class="flex gap-2">
+                            <button onclick='openDestinasiModal(${JSON.stringify(d)})' class="flex-1 text-xs px-2.5 py-1.5 rounded-lg bg-blue-50 text-blue-600 font-semibold hover:bg-blue-100 transition">
+                                <i class="fa-solid fa-pen"></i> Edit
+                            </button>
+                            <button onclick="hapusDestinasi('${d._id}')" class="flex-1 text-xs px-2.5 py-1.5 rounded-lg bg-red-50 text-red-500 font-semibold hover:bg-red-100 transition">
+                                <i class="fa-solid fa-trash"></i> Hapus
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openDestinasiModal(data) {
+            document.getElementById('destinasi-form-error').classList.add('hidden');
+            document.getElementById('destinasi-form').reset();
+            if (data) {
+                document.getElementById('destinasi-modal-title').textContent = 'Edit Destinasi';
+                document.getElementById('d-id').value = data._id;
+                document.getElementById('d-nama').value = data.nama || '';
+                document.getElementById('d-deskripsi').value = data.deskripsi || '';
+                document.getElementById('d-kategori').value = data.kategori || '';
+                document.getElementById('d-harga').value = data.harga || '';
+                document.getElementById('d-lokasi').value = data.lokasi || '';
+                document.getElementById('d-gambar').value = data.gambar || '';
+            } else {
+                document.getElementById('destinasi-modal-title').textContent = 'Tambah Destinasi';
+                document.getElementById('d-id').value = '';
+            }
+            document.getElementById('destinasi-modal').classList.remove('hidden');
+        }
+
+        function closeDestinasiModal() {
+            document.getElementById('destinasi-modal').classList.add('hidden');
+        }
+
+        document.getElementById('destinasi-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errEl = document.getElementById('destinasi-form-error');
+            errEl.classList.add('hidden');
+
+            const id = document.getElementById('d-id').value;
+            const payload = {
+                nama: document.getElementById('d-nama').value.trim(),
+                deskripsi: document.getElementById('d-deskripsi').value.trim(),
+                kategori: document.getElementById('d-kategori').value.trim(),
+                harga: parseInt(document.getElementById('d-harga').value, 10) || 0,
+                lokasi: document.getElementById('d-lokasi').value.trim(),
+                gambar: document.getElementById('d-gambar').value.trim(),
+            };
+
+            const submitBtn = document.getElementById('destinasi-form-submit');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Menyimpan...';
+
+            try {
+                const url = id ? `/api/pengelola/destinasi/${id}` : '/api/pengelola/destinasi';
+                const method = id ? 'PUT' : 'POST';
+                const res = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                if (!res.ok) {
+                    errEl.textContent = result.message || 'Gagal menyimpan destinasi.';
+                    errEl.classList.remove('hidden');
+                    return;
+                }
+                closeDestinasiModal();
+                destinasiLoaded = false;
+                loadDestinasi();
+            } catch (err) {
+                errEl.textContent = 'Tidak dapat terhubung ke server.';
+                errEl.classList.remove('hidden');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Simpan';
+            }
+        });
+
+        async function hapusDestinasi(id) {
+            if (!confirm('Yakin ingin menghapus destinasi ini? Booking yang sudah ada tidak akan terhapus.')) return;
+            try {
+                const res = await fetch(`/api/pengelola/destinasi/${id}`, { method: 'DELETE', credentials: 'include' });
+                const result = await res.json();
+                if (!res.ok) {
+                    alert(result.message || 'Gagal menghapus destinasi.');
+                    return;
+                }
+                destinasiLoaded = false;
+                loadDestinasi();
+            } catch (err) {
+                alert('Tidak dapat terhubung ke server.');
+            }
+        }
+
+        /* ============ BOOKING MASUK ============ */
+        let bookingLoaded = false;
+        let allPengelolaBookings = [];
+        let currentBookingFilter = '';
+
+        async function loadBooking() {
+            try {
+                const res = await fetch('/api/pengelola/booking', { credentials: 'include' });
+                if (!res.ok) throw new Error();
+                const result = await res.json();
+                allPengelolaBookings = result.data || [];
+                bookingLoaded = true;
+
+                document.getElementById('booking-loading').classList.add('hidden');
+                document.getElementById('booking-table-wrapper').classList.remove('hidden');
+                renderBookingTable();
+            } catch (err) {
+                document.getElementById('booking-loading').innerHTML = `
+                    <i class="fa-solid fa-triangle-exclamation text-3xl text-red-300 mb-3"></i>
+                    <p class="text-red-500">Gagal memuat data booking.</p>`;
+            }
+        }
+
+        function filterBookingStatus(status) {
+            currentBookingFilter = status;
+            document.querySelectorAll('.bk-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-600', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-gray-600');
+            });
+            const id = status === '' ? 'bk-btn-all' : 'bk-btn-' + status;
+            const btn = document.getElementById(id);
+            if (btn) {
+                btn.classList.remove('bg-gray-100', 'text-gray-600');
+                btn.classList.add('bg-blue-600', 'text-white');
+            }
+            renderBookingTable();
+        }
+
+        function formatTanggal(str) {
+            if (!str) return '-';
+            const d = new Date(str);
+            if (isNaN(d.getTime())) return str;
+            return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        function badgeStatus(status) {
+            const map = {
+                'Pending': 'bg-yellow-50 text-yellow-600',
+                'Dibayar': 'bg-blue-50 text-blue-600',
+                'Checked-in': 'bg-purple-50 text-purple-600',
+                'Selesai': 'bg-green-50 text-green-600',
+                'Dibatalkan': 'bg-red-50 text-red-500',
+            };
+            return map[status] || 'bg-gray-50 text-gray-500';
+        }
+
+        function renderBookingTable() {
+            let data = allPengelolaBookings;
+            if (currentBookingFilter) data = data.filter(b => b.status === currentBookingFilter);
+
+            const tbody = document.getElementById('booking-tbody');
+            const emptyEl = document.getElementById('booking-empty');
+
+            if (data.length === 0) {
+                tbody.innerHTML = '';
+                emptyEl.classList.remove('hidden');
+                return;
+            }
+            emptyEl.classList.add('hidden');
+
+            tbody.innerHTML = data.map(b => {
+                const id = b.id || b._id;
+                let aksiHTML = '';
+                if (b.status === 'Pending') {
+                    aksiHTML = `<button onclick="doBookingAction('${id}','Dibayar','Konfirmasi pembayaran booking ini?','Konfirmasi','bg-blue-600 hover:bg-blue-700')"
+                        class="text-xs px-2.5 py-1 rounded-lg bg-blue-50 text-blue-600 font-semibold hover:bg-blue-100 transition mr-1">
+                        <i class="fa-solid fa-check"></i> Konfirmasi
+                    </button>
+                    <button onclick="doBookingAction('${id}','Dibatalkan','Batalkan booking ini?','Batalkan','bg-red-500 hover:bg-red-600')"
+                        class="text-xs px-2.5 py-1 rounded-lg bg-red-50 text-red-500 font-semibold hover:bg-red-100 transition">
+                        <i class="fa-solid fa-xmark"></i> Tolak
+                    </button>`;
+                } else if (b.status === 'Dibayar') {
+                    aksiHTML = `<button onclick="doBookingAction('${id}','Checked-in','Tandai pengunjung ini sudah hadir di lokasi?','Tandai Hadir','bg-purple-600 hover:bg-purple-700')"
+                        class="text-xs px-2.5 py-1 rounded-lg bg-purple-50 text-purple-600 font-semibold hover:bg-purple-100 transition mr-1">
+                        <i class="fa-solid fa-map-pin"></i> Tandai Hadir
+                    </button>
+                    <button onclick="doBookingAction('${id}','Dibatalkan','Batalkan booking yang sudah dibayar ini?','Batalkan','bg-red-500 hover:bg-red-600')"
+                        class="text-xs px-2.5 py-1 rounded-lg bg-red-50 text-red-500 font-semibold hover:bg-red-100 transition">
+                        <i class="fa-solid fa-xmark"></i> Batalkan
+                    </button>`;
+                } else if (b.status === 'Checked-in') {
+                    aksiHTML = `<button onclick="doBookingAction('${id}','Selesai','Tandai kunjungan ini selesai?','Selesai','bg-green-600 hover:bg-green-700')"
+                        class="text-xs px-2.5 py-1 rounded-lg bg-green-50 text-green-600 font-semibold hover:bg-green-100 transition">
+                        <i class="fa-solid fa-flag-checkered"></i> Selesai
+                    </button>`;
+                } else {
+                    aksiHTML = '<span class="text-gray-300 text-xs">-</span>';
+                }
+
+                return `
+                    <tr class="border-b border-gray-50 hover:bg-gray-50/50 transition">
+                        <td class="px-5 py-3">
+                            <p class="font-semibold text-gray-800">${b.nama_user || '-'}</p>
+                            <p class="text-xs text-gray-400">${b.email || ''}</p>
+                            <p class="text-xs text-gray-400">${b.no_hp || ''}</p>
+                        </td>
+                        <td class="px-5 py-3 text-gray-700">${b.destination || '-'}</td>
+                        <td class="px-5 py-3 text-gray-600">${formatTanggal(b.tanggal_kunjungan)}</td>
+                        <td class="px-5 py-3 text-gray-600">${b.total_tiket || 0} orang</td>
+                        <td class="px-5 py-3 font-semibold text-gray-800">Rp ${(b.total_bayar || 0).toLocaleString('id-ID')}</td>
+                        <td class="px-5 py-3">
+                            <span class="text-xs font-semibold px-2.5 py-1 rounded-full ${badgeStatus(b.status)}">${b.status}</span>
+                        </td>
+                        <td class="px-5 py-3 whitespace-nowrap">${aksiHTML}</td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        let pendingBookingAction = null;
+
+        function doBookingAction(id, newStatus, desc, confirmLabel, btnClass) {
+            pendingBookingAction = { id, newStatus };
+            const iconMap = {
+                'Dibayar':    { icon: 'fa-check', bg: 'bg-blue-100', color: 'text-blue-600' },
+                'Checked-in': { icon: 'fa-map-pin', bg: 'bg-purple-100', color: 'text-purple-600' },
+                'Selesai':    { icon: 'fa-flag-checkered', bg: 'bg-green-100', color: 'text-green-600' },
+                'Dibatalkan': { icon: 'fa-xmark', bg: 'bg-red-100', color: 'text-red-500' },
+            };
+            const ico = iconMap[newStatus] || { icon: 'fa-circle', bg: 'bg-gray-100', color: 'text-gray-600' };
+
+            document.getElementById('modal-icon-wrap').className = `w-14 h-14 rounded-full flex items-center justify-center mx-auto mb-3 ${ico.bg}`;
+            document.getElementById('modal-icon-wrap').innerHTML = `<i class="fa-solid ${ico.icon} text-2xl ${ico.color}"></i>`;
+            document.getElementById('modal-title').textContent = confirmLabel + '?';
+            document.getElementById('modal-desc').textContent = desc;
+            document.getElementById('modal-confirm').textContent = confirmLabel;
+            document.getElementById('modal-confirm').className = `flex-1 py-2.5 rounded-xl text-white font-semibold transition ${btnClass}`;
+            document.getElementById('action-modal').classList.remove('hidden');
+        }
+
+        document.getElementById('modal-cancel').addEventListener('click', () => {
+            document.getElementById('action-modal').classList.add('hidden');
+            pendingBookingAction = null;
+        });
+
+        document.getElementById('modal-confirm').addEventListener('click', async () => {
+            if (!pendingBookingAction) return;
+            const { id, newStatus } = pendingBookingAction;
+            document.getElementById('action-modal').classList.add('hidden');
+            pendingBookingAction = null;
+
+            try {
+                const res = await fetch('/api/pengelola/booking/update-status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include',
+                    body: JSON.stringify({ booking_id: id, status: newStatus }),
+                });
+                const result = await res.json();
+                if (!res.ok) {
+                    alert(result.message || 'Gagal mengubah status.');
+                    return;
+                }
+                const booking = allPengelolaBookings.find(b => (b.id || b._id) === id);
+                if (booking) booking.status = newStatus;
+                renderBookingTable();
+            } catch (err) {
+                alert('Tidak dapat terhubung ke server.');
+            }
+        });
+
+        /* ============ STATISTIK ============ */
+        let statistikLoaded = false;
+
+        async function loadStatistik() {
+            try {
+                const res = await fetch('/api/pengelola/statistik', { credentials: 'include' });
+                if (!res.ok) throw new Error();
+                const stat = await res.json();
+                statistikLoaded = true;
+
+                document.getElementById('statistik-loading').classList.add('hidden');
+                document.getElementById('statistik-content').classList.remove('hidden');
+
+                document.getElementById('stat-total-pendapatan').textContent =
+                    'Rp ' + (stat.total_pendapatan || 0).toLocaleString('id-ID');
+                document.getElementById('stat-total-booking').textContent = stat.total_booking || 0;
+
+                renderChartPendapatan(stat.pendapatan_per_bulan || []);
+                renderChartPengunjung(stat.tren_pengunjung_bulan || []);
+                renderPerDestinasi(stat.booking_per_destinasi || []);
+            } catch (err) {
+                document.getElementById('statistik-loading').innerHTML = `
+                    <i class="fa-solid fa-triangle-exclamation text-3xl text-red-300 mb-3"></i>
+                    <p class="text-red-500">Gagal memuat statistik.</p>`;
+            }
+        }
+
+        function renderChartPendapatan(data) {
+            const ctx = document.getElementById('chart-pendapatan');
+            if (data.length === 0) {
+                ctx.parentElement.innerHTML += '<p class="text-center text-gray-400 text-sm py-6">Belum ada data pendapatan.</p>';
+                return;
+            }
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.map(d => d.bulan),
+                    datasets: [{
+                        label: 'Pendapatan (Rp)',
+                        data: data.map(d => d.total),
+                        backgroundColor: '#3b82f6',
+                        borderRadius: 6,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true } }
+                }
+            });
+        }
+
+        function renderChartPengunjung(data) {
+            const ctx = document.getElementById('chart-pengunjung');
+            if (data.length === 0) {
+                ctx.parentElement.innerHTML += '<p class="text-center text-gray-400 text-sm py-6">Belum ada data pengunjung.</p>';
+                return;
+            }
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: data.map(d => d.bulan),
+                    datasets: [{
+                        label: 'Jumlah Pengunjung',
+                        data: data.map(d => d.jumlah),
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139,92,246,0.1)',
+                        fill: true,
+                        tension: 0.3,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } }
+                }
+            });
+        }
+
+        function renderPerDestinasi(data) {
+            const el = document.getElementById('stat-per-destinasi');
+            if (data.length === 0) {
+                el.innerHTML = '<p class="text-center text-gray-400 text-sm py-4">Belum ada booking.</p>';
+                return;
+            }
+            const max = Math.max(...data.map(d => d.jumlah));
+            el.innerHTML = data.map(d => `
+                <div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-700 font-medium">${d.destinasi}</span>
+                        <span class="text-gray-500">${d.jumlah} booking</span>
+                    </div>
+                    <div class="w-full bg-gray-100 rounded-full h-2">
+                        <div class="bg-blue-600 h-2 rounded-full" style="width: ${(d.jumlah / max * 100).toFixed(0)}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        /* ============ INIT ============ */
+        loadDestinasi();
+    </script>
+</body>
+</html>

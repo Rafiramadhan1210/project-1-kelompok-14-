@@ -39,4 +39,17 @@ func Web(page *fiber.App) {
 	page.Post("/api/support/message", controller.SubmitSupportMessage)
 	page.Get("/api/support/messages", controller.RequireAdmin, controller.GetAllSupportMessages)
 	page.Post("/api/support/messages/mark-replied", controller.RequireAdmin, controller.MarkSupportMessageReplied)
+
+	// Pengelola Wisata: kelola destinasi milik sendiri
+	page.Get("/api/pengelola/destinasi", controller.RequirePengelola, controller.GetMyDestinasi)
+	page.Post("/api/pengelola/destinasi", controller.RequirePengelola, controller.CreateDestinasi)
+	page.Put("/api/pengelola/destinasi/:id", controller.RequirePengelola, controller.UpdateDestinasi)
+	page.Delete("/api/pengelola/destinasi/:id", controller.RequirePengelola, controller.DeleteDestinasi)
+
+	// Pengelola Wisata: booking untuk destinasi milik sendiri + check-in
+	page.Get("/api/pengelola/booking", controller.RequirePengelola, controller.GetPengelolaBookings)
+	page.Post("/api/pengelola/booking/update-status", controller.RequirePengelola, controller.UpdateBookingStatusPengelola)
+
+	// Pengelola Wisata: statistik pendapatan & tren pengunjung
+	page.Get("/api/pengelola/statistik", controller.RequirePengelola, controller.GetPengelolaStatistik)
 }

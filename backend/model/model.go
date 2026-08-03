@@ -10,7 +10,7 @@ type Users struct {
 	Foto     string `json:"foto,omitempty" bson:"foto,omitempty"`
 	Wishlist []string `json:"wishlist,omitempty" bson:"wishlist,omitempty"`
 	Provider string `json:"provider,omitempty" bson:"provider,omitempty"` // "local" atau "google"
-	Role     string `json:"role,omitempty" bson:"role,omitempty"`         // "admin" atau kosong/"user"
+	Role     string `json:"role,omitempty" bson:"role,omitempty"`         // "admin", "pengelola_wisata", atau kosong/"user"
 }
 
 type UsersLogin struct {
@@ -28,14 +28,15 @@ type Session struct {
 }
 
 type Destinations struct {
-	ID        primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
-	Nama      string             `bson:"nama" json:"nama"`
-	Deskripsi string             `bson:"deskripsi" json:"deskripsi"`
-	Kategori  string             `bson:"kategori" json:"kategori"`
-	Harga     int                `bson:"harga" json:"harga"`
-	Gambar    string             `bson:"gambar" json:"gambar"`
-	Rating    float64            `bson:"rating" json:"rating"`
-	Lokasi    string             `bson:"lokasi" json:"lokasi"`
+	ID             primitive.ObjectID `bson:"_id,omitempty" json:"_id,omitempty"`
+	Nama           string             `bson:"nama" json:"nama"`
+	Deskripsi      string             `bson:"deskripsi" json:"deskripsi"`
+	Kategori       string             `bson:"kategori" json:"kategori"`
+	Harga          int                `bson:"harga" json:"harga"`
+	Gambar         string             `bson:"gambar" json:"gambar"`
+	Rating         float64            `bson:"rating" json:"rating"`
+	Lokasi         string             `bson:"lokasi" json:"lokasi"`
+	PengelolaEmail string             `bson:"pengelola_email,omitempty" json:"pengelola_email,omitempty"` // email akun role "pengelola_wisata" pemilik destinasi ini
 }
 
 type Booking struct {
@@ -48,7 +49,7 @@ type Booking struct {
 	TotalBayar    int                `bson:"total_bayar" json:"total_bayar"`
 	TanggalKunjungan string          `bson:"tanggal_kunjungan" json:"tanggal_kunjungan"`
 	BuktiBayar    string             `bson:"bukti_bayar" json:"bukti_bayar"`
-	Status        string             `bson:"status" json:"status"`
+	Status        string             `bson:"status" json:"status"` // "Pending" | "Dibayar" | "Checked-in" | "Selesai" | "Dibatalkan"
 	KeteranganTolak string           `bson:"keterangan_tolak,omitempty" json:"keterangan_tolak,omitempty"`
 	CreatedAt     primitive.DateTime `bson:"created_at" json:"created_at"`
 }

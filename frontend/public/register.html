@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,11 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             min-height: 100vh;
@@ -26,6 +31,7 @@
             text-align: center;
             margin-bottom: 28px;
         }
+
         .logo-wrap .logo {
             display: inline-flex;
             align-items: center;
@@ -35,14 +41,21 @@
             color: #1d4ed8;
             text-decoration: none;
         }
-        .logo-wrap .logo i { font-size: 28px; color: #2563eb; }
+
+        .logo-wrap .logo i {
+            font-size: 28px;
+            color: #2563eb;
+        }
+
         .logo-wrap .logo .dot {
-            width: 18px; height: 18px;
+            width: 18px;
+            height: 18px;
             background: #facc15;
             border-radius: 50%;
             display: inline-block;
             margin: 0 -2px;
         }
+
         .logo-wrap small {
             display: block;
             font-size: 12px;
@@ -58,7 +71,7 @@
             padding: 36px 40px;
             width: 100%;
             max-width: 440px;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.10);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.10);
         }
 
         .card-title {
@@ -68,6 +81,7 @@
             text-align: center;
             margin-bottom: 4px;
         }
+
         .card-sub {
             font-size: 13px;
             color: #6b7280;
@@ -84,8 +98,18 @@
             font-weight: 500;
             margin-bottom: 16px;
         }
-        .alert.error  { display: block; background: #fef2f2; color: #dc2626; }
-        .alert.success{ display: block; background: #f0fdf4; color: #16a34a; }
+
+        .alert.error {
+            display: block;
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        .alert.success {
+            display: block;
+            background: #f0fdf4;
+            color: #16a34a;
+        }
 
         /* ===== GOOGLE BUTTON ===== */
         .google-btn-wrap {
@@ -94,6 +118,7 @@
             margin-bottom: 16px;
             min-height: 44px;
         }
+
         .btn-google {
             display: flex;
             align-items: center;
@@ -111,16 +136,30 @@
             transition: background 0.2s, transform 0.1s;
             margin-bottom: 12px;
         }
-        .btn-google:hover  { background: #1d4ed8; }
-        .btn-google:active { transform: scale(0.98); }
+
+        .btn-google:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-google:active {
+            transform: scale(0.98);
+        }
+
         .btn-google .g-icon {
-            width: 32px; height: 32px;
+            width: 32px;
+            height: 32px;
             background: #fff;
             border-radius: 6px;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             flex-shrink: 0;
         }
-        .btn-google .g-icon svg { width: 18px; height: 18px; }
+
+        .btn-google .g-icon svg {
+            width: 18px;
+            height: 18px;
+        }
 
         /* ===== DIVIDER ===== */
         .divider {
@@ -131,7 +170,9 @@
             color: #9ca3af;
             font-size: 13px;
         }
-        .divider::before, .divider::after {
+
+        .divider::before,
+        .divider::after {
             content: '';
             flex: 1;
             height: 1px;
@@ -139,7 +180,10 @@
         }
 
         /* ===== FORM ===== */
-        .field { margin-bottom: 16px; }
+        .field {
+            margin-bottom: 16px;
+        }
+
         .field label {
             display: block;
             font-size: 13px;
@@ -147,7 +191,11 @@
             color: #374151;
             margin-bottom: 6px;
         }
-        .field .input-wrap { position: relative; }
+
+        .field .input-wrap {
+            position: relative;
+        }
+
         .field input {
             width: 100%;
             padding: 11px 42px 11px 14px;
@@ -159,41 +207,78 @@
             transition: border-color 0.2s, box-shadow 0.2s;
             background: #fafafa;
         }
+
         .field input:focus {
             border-color: #2563eb;
-            box-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
             background: #fff;
         }
-        .field input.error-field { border-color: #dc2626; }
+
+        .field input.error-field {
+            border-color: #dc2626;
+        }
+
         .field .icon {
-            position: absolute; right: 12px; top: 50%;
+            position: absolute;
+            right: 12px;
+            top: 50%;
             transform: translateY(-50%);
             color: #9ca3af;
             font-size: 15px;
         }
+
         .field .toggle-pw {
-            position: absolute; right: 12px; top: 50%;
+            position: absolute;
+            right: 12px;
+            top: 50%;
             transform: translateY(-50%);
-            color: #9ca3af; cursor: pointer;
+            color: #9ca3af;
+            cursor: pointer;
             font-size: 15px;
-            background: none; border: none; padding: 0;
+            background: none;
+            border: none;
+            padding: 0;
         }
-        .field .toggle-pw:hover { color: #374151; }
+
+        .field .toggle-pw:hover {
+            color: #374151;
+        }
 
         /* ===== PASSWORD STRENGTH ===== */
-        .pw-strength { margin-top: 8px; }
-        .pw-bars {
-            display: flex; gap: 4px; margin-bottom: 4px;
+        .pw-strength {
+            margin-top: 8px;
         }
+
+        .pw-bars {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 4px;
+        }
+
         .pw-bar {
-            flex: 1; height: 4px; border-radius: 2px;
+            flex: 1;
+            height: 4px;
+            border-radius: 2px;
             background: #e5e7eb;
             transition: background 0.3s;
         }
-        .pw-bar.active.weak   { background: #ef4444; }
-        .pw-bar.active.fair   { background: #f59e0b; }
-        .pw-bar.active.good   { background: #3b82f6; }
-        .pw-bar.active.strong { background: #22c55e; }
+
+        .pw-bar.active.weak {
+            background: #ef4444;
+        }
+
+        .pw-bar.active.fair {
+            background: #f59e0b;
+        }
+
+        .pw-bar.active.good {
+            background: #3b82f6;
+        }
+
+        .pw-bar.active.strong {
+            background: #22c55e;
+        }
+
         .pw-strength-text {
             font-size: 11px;
             color: #6b7280;
@@ -212,19 +297,40 @@
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
             margin-top: 4px;
-            display: flex; align-items: center; justify-content: center; gap: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
         }
-        .btn-submit:hover  { background: #1d4ed8; }
-        .btn-submit:active { transform: scale(0.98); }
-        .btn-submit:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
+
+        .btn-submit:hover {
+            background: #1d4ed8;
+        }
+
+        .btn-submit:active {
+            transform: scale(0.98);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .spinner {
-            width: 16px; height: 16px;
-            border: 2px solid rgba(255,255,255,0.4);
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
             border-top-color: #fff;
             border-radius: 50%;
             animation: spin 0.7s linear infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         /* ===== SOCIAL ===== */
         .social-row {
@@ -233,22 +339,45 @@
             gap: 14px;
             margin-bottom: 24px;
         }
+
         .social-btn {
-            width: 52px; height: 52px;
+            width: 52px;
+            height: 52px;
             border-radius: 12px;
             border: 1.5px solid #e5e7eb;
             background: #fff;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             transition: border-color 0.2s, box-shadow 0.2s, transform 0.1s;
             font-size: 20px;
         }
-        .social-btn:hover  { border-color: #2563eb; box-shadow: 0 4px 12px rgba(37,99,235,0.15); }
-        .social-btn:active { transform: scale(0.93); }
-        .social-btn.apple    { color: #000; }
-        .social-btn.facebook { color: #1877f2; }
-        .social-btn.tiktok   { color: #010101; }
-        .social-btn.microsoft{ color: #f25022; }
+
+        .social-btn:hover {
+            border-color: #2563eb;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+        }
+
+        .social-btn:active {
+            transform: scale(0.93);
+        }
+
+        .social-btn.apple {
+            color: #000;
+        }
+
+        .social-btn.facebook {
+            color: #1877f2;
+        }
+
+        .social-btn.tiktok {
+            color: #010101;
+        }
+
+        .social-btn.microsoft {
+            color: #f25022;
+        }
 
         /* ===== FOOTER ===== */
         .login-hint {
@@ -257,12 +386,31 @@
             color: #6b7280;
             margin-top: 18px;
         }
-        .login-hint a { color: #2563eb; font-weight: 600; text-decoration: none; }
-        .login-hint a:hover { text-decoration: underline; }
 
-        .back-link { text-align: center; margin-top: 14px; }
-        .back-link a { font-size: 13px; color: #6b7280; text-decoration: none; }
-        .back-link a:hover { color: #374151; }
+        .login-hint a {
+            color: #2563eb;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .login-hint a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            text-align: center;
+            margin-top: 14px;
+        }
+
+        .back-link a {
+            font-size: 13px;
+            color: #6b7280;
+            text-decoration: none;
+        }
+
+        .back-link a:hover {
+            color: #374151;
+        }
 
         .terms {
             text-align: center;
@@ -271,15 +419,32 @@
             margin-top: 20px;
             line-height: 1.6;
         }
-        .terms a { color: #2563eb; text-decoration: underline; }
+
+        .terms a {
+            color: #2563eb;
+            text-decoration: underline;
+        }
 
         /* ===== ANIMATION ===== */
         @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(24px); }
-            to   { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        .logo-wrap { animation: fadeUp 0.5s ease both; }
-        .card      { animation: fadeUp 0.5s 0.1s ease both; }
+
+        .logo-wrap {
+            animation: fadeUp 0.5s ease both;
+        }
+
+        .card {
+            animation: fadeUp 0.5s 0.1s ease both;
+        }
 
         /* ===== STEP INDICATOR ===== */
         .steps {
@@ -289,30 +454,49 @@
             gap: 0;
             margin-bottom: 24px;
         }
+
         .step {
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
         }
+
         .step-circle {
-            width: 28px; height: 28px;
+            width: 28px;
+            height: 28px;
             border-radius: 50%;
             background: #e5e7eb;
             color: #9ca3af;
             font-size: 12px;
             font-weight: 700;
-            display: flex; align-items: center; justify-content: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: background 0.3s, color 0.3s;
         }
-        .step.active .step-circle  { background: #2563eb; color: #fff; }
-        .step.done   .step-circle  { background: #22c55e; color: #fff; }
+
+        .step.active .step-circle {
+            background: #2563eb;
+            color: #fff;
+        }
+
+        .step.done .step-circle {
+            background: #22c55e;
+            color: #fff;
+        }
+
         .step-label {
             font-size: 10px;
             color: #9ca3af;
             white-space: nowrap;
         }
-        .step.active .step-label { color: #2563eb; font-weight: 600; }
+
+        .step.active .step-label {
+            color: #2563eb;
+            font-weight: 600;
+        }
+
         .step-line {
             flex: 1;
             height: 2px;
@@ -322,9 +506,13 @@
             min-width: 32px;
             transition: background 0.3s;
         }
-        .step-line.done { background: #22c55e; }
+
+        .step-line.done {
+            background: #22c55e;
+        }
     </style>
 </head>
+
 <body>
 
     <!-- Logo -->
@@ -395,6 +583,18 @@
             </div>
         </div>
 
+        <div class="field">
+            <label for="role">Daftar Sebagai</label>
+            <div class="input-wrap">
+                <select id="role"
+                    style="width:100%;padding:12px 40px 12px 14px;border:1px solid #e5e7eb;border-radius:10px;font-size:14px;appearance:none;background:#fff;">
+                    <option value="user">Wisatawan (User)</option>
+                    <option value="pengelola_wisata">Pengelola Wisata</option>
+                </select>
+                <i class="fa-solid fa-chevron-down icon"></i>
+            </div>
+        </div>
+
         <button class="btn-submit" id="register-btn" type="button">
             <span id="btn-label">Buat Akun</span>
         </button>
@@ -418,7 +618,7 @@
 
     <script>
         /* ========== REDIRECT PARAM ========== */
-        const urlParams  = new URLSearchParams(window.location.search);
+        const urlParams = new URLSearchParams(window.location.search);
         const redirectTo = urlParams.get('redirect') || '';
 
         // Teruskan redirect ke link login
@@ -439,18 +639,18 @@
         /* ========== TOGGLE PASSWORD ========== */
         document.getElementById('toggle-pw').addEventListener('click', () => {
             const pwInput = document.getElementById('password');
-            const pwIcon  = document.getElementById('pw-icon');
+            const pwIcon = document.getElementById('pw-icon');
             const isHidden = pwInput.type === 'password';
             pwInput.type = isHidden ? 'text' : 'password';
             pwIcon.className = isHidden ? 'fa-regular fa-eye-slash' : 'fa-regular fa-eye';
         });
 
         /* ========== PASSWORD STRENGTH ========== */
-        const pwInput     = document.getElementById('password');
-        const pwStrength  = document.getElementById('pw-strength');
+        const pwInput = document.getElementById('password');
+        const pwStrength = document.getElementById('pw-strength');
         const pwStrengthT = document.getElementById('pw-strength-text');
-        const bars        = [document.getElementById('bar1'), document.getElementById('bar2'),
-                             document.getElementById('bar3'), document.getElementById('bar4')];
+        const bars = [document.getElementById('bar1'), document.getElementById('bar2'),
+        document.getElementById('bar3'), document.getElementById('bar4')];
 
         pwInput.addEventListener('input', () => {
             const val = pwInput.value;
@@ -458,35 +658,36 @@
             pwStrength.style.display = 'block';
 
             let score = 0;
-            if (val.length >= 6)  score++;
+            if (val.length >= 6) score++;
             if (val.length >= 10) score++;
             if (/[A-Z]/.test(val) && /[0-9]/.test(val)) score++;
             if (/[^A-Za-z0-9]/.test(val)) score++;
 
-            const levels  = ['weak', 'fair', 'good', 'strong'];
-            const labels  = ['Sangat lemah', 'Lemah', 'Sedang', 'Kuat'];
-            const lvl     = Math.max(0, score - 1);
+            const levels = ['weak', 'fair', 'good', 'strong'];
+            const labels = ['Sangat lemah', 'Lemah', 'Sedang', 'Kuat'];
+            const lvl = Math.max(0, score - 1);
 
             bars.forEach((bar, i) => {
                 bar.className = 'pw-bar' + (i <= lvl ? ` active ${levels[lvl]}` : '');
             });
             pwStrengthT.textContent = labels[lvl];
-            pwStrengthT.style.color = ['#ef4444','#f59e0b','#3b82f6','#22c55e'][lvl];
+            pwStrengthT.style.color = ['#ef4444', '#f59e0b', '#3b82f6', '#22c55e'][lvl];
         });
 
         /* ========== REGISTER SUBMIT ========== */
         const registerBtn = document.getElementById('register-btn');
-        const btnLabel    = document.getElementById('btn-label');
+        const btnLabel = document.getElementById('btn-label');
 
         async function doRegister() {
-            const nama     = document.getElementById('nama').value.trim();
-            const email    = document.getElementById('email').value.trim();
-            const phone    = document.getElementById('phone').value.trim();
+            const nama = document.getElementById('nama').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
             const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
 
             // Validasi
-            if (!nama)     { showAlert('Nama lengkap wajib diisi.', 'error'); return; }
-            if (!email)    { showAlert('Email wajib diisi.', 'error'); return; }
+            if (!nama) { showAlert('Nama lengkap wajib diisi.', 'error'); return; }
+            if (!email) { showAlert('Email wajib diisi.', 'error'); return; }
             if (!password || password.length < 6) { showAlert('Kata sandi minimal 6 karakter.', 'error'); return; }
 
             hideAlert();
@@ -497,7 +698,7 @@
                 const res = await fetch('/register', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ nama, email, phone, password })
+                    body: JSON.stringify({ nama, email, phone, password, role })
                 });
                 const result = await res.json();
 
@@ -524,7 +725,7 @@
         registerBtn.addEventListener('click', doRegister);
 
         // Enter key
-        ['nama','email','phone','password'].forEach(id => {
+        ['nama', 'email', 'phone', 'password'].forEach(id => {
             document.getElementById(id).addEventListener('keydown', (e) => {
                 if (e.key === 'Enter') doRegister();
             });
@@ -572,4 +773,5 @@
         };
     </script>
 </body>
+
 </html>
